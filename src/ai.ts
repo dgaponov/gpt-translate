@@ -10,12 +10,13 @@ import { minimumTokens, modelTokens } from './models'
 import { error, getInput, info } from '@actions/core'
 import { getInputAsNumber } from './utils'
 import { encode } from 'gpt-3-encoder'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
 const apiKey = getInput('apikey', { required: true })
 const provider = getInput('provider', { required: true })
 const basePath = getInput('basePath')
 
-class AI {
+export class AI {
   private readonly provider: any
   private readonly model: string
   private prompt: string
@@ -41,6 +42,7 @@ class AI {
       mistral: createMistral,
       cohere: createCohere,
       deepseek: createDeepSeek,
+      openrouter: createOpenRouter,
     }
 
     const initializer = providerInitializers[providerName]

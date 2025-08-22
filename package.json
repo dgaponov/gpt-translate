@@ -10,6 +10,7 @@
   "author": "Ryuya",
   "license": "MIT",
   "scripts": {
+    "build-node": "tsc",
     "build": "npx @vercel/ncc build src/index.ts -o dist",
     "release:patch": "scripts/update_version.sh Patch && npm run build",
     "release:minor": "scripts/update_version.sh Minor && npm run build",
@@ -26,7 +27,8 @@
     "@ai-sdk/google": "^0.0.24",
     "@ai-sdk/mistral": "^0.0.20",
     "@ai-sdk/openai": "^0.0.34",
-    "ai": "^3.2.15",
+    "@openrouter/ai-sdk-provider": "^1.1.2",
+    "ai": "^5.0.8",
     "glob": "^10.3.4",
     "gpt-3-encoder": "^1.1.4"
   },
