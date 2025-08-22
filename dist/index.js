@@ -5662,7 +5662,7 @@ var createStatusCodeErrorResponseHandler = () => async ({ response, url, request
 
 // src/zod-schema.ts
 var z4 = __toESM(__nccwpck_require__(5350));
-var import_zod_to_json_schema = __toESM(__nccwpck_require__(3638));
+var import_zod_to_json_schema = __toESM(__nccwpck_require__(2708));
 function zod3Schema(zodSchema2, options) {
   var _a;
   const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
@@ -5787,6 +5787,2383 @@ var import_stream2 = __nccwpck_require__(4938);
 /***/ }),
 
 /***/ 8481:
+/***/ ((module) => {
+
+"use strict";
+
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name14 in all)
+    __defProp(target, name14, { get: all[name14], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  AISDKError: () => AISDKError,
+  APICallError: () => APICallError,
+  EmptyResponseBodyError: () => EmptyResponseBodyError,
+  InvalidArgumentError: () => InvalidArgumentError,
+  InvalidPromptError: () => InvalidPromptError,
+  InvalidResponseDataError: () => InvalidResponseDataError,
+  JSONParseError: () => JSONParseError,
+  LoadAPIKeyError: () => LoadAPIKeyError,
+  LoadSettingError: () => LoadSettingError,
+  NoContentGeneratedError: () => NoContentGeneratedError,
+  NoSuchModelError: () => NoSuchModelError,
+  TooManyEmbeddingValuesForCallError: () => TooManyEmbeddingValuesForCallError,
+  TypeValidationError: () => TypeValidationError,
+  UnsupportedFunctionalityError: () => UnsupportedFunctionalityError,
+  getErrorMessage: () => getErrorMessage,
+  isJSONArray: () => isJSONArray,
+  isJSONObject: () => isJSONObject,
+  isJSONValue: () => isJSONValue
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/errors/ai-sdk-error.ts
+var marker = "vercel.ai.error";
+var symbol = Symbol.for(marker);
+var _a;
+var _AISDKError = class _AISDKError extends Error {
+  /**
+   * Creates an AI SDK Error.
+   *
+   * @param {Object} params - The parameters for creating the error.
+   * @param {string} params.name - The name of the error.
+   * @param {string} params.message - The error message.
+   * @param {unknown} [params.cause] - The underlying cause of the error.
+   */
+  constructor({
+    name: name14,
+    message,
+    cause
+  }) {
+    super(message);
+    this[_a] = true;
+    this.name = name14;
+    this.cause = cause;
+  }
+  /**
+   * Checks if the given error is an AI SDK Error.
+   * @param {unknown} error - The error to check.
+   * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
+   */
+  static isInstance(error) {
+    return _AISDKError.hasMarker(error, marker);
+  }
+  static hasMarker(error, marker15) {
+    const markerSymbol = Symbol.for(marker15);
+    return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
+  }
+};
+_a = symbol;
+var AISDKError = _AISDKError;
+
+// src/errors/api-call-error.ts
+var name = "AI_APICallError";
+var marker2 = `vercel.ai.error.${name}`;
+var symbol2 = Symbol.for(marker2);
+var _a2;
+var APICallError = class extends AISDKError {
+  constructor({
+    message,
+    url,
+    requestBodyValues,
+    statusCode,
+    responseHeaders,
+    responseBody,
+    cause,
+    isRetryable = statusCode != null && (statusCode === 408 || // request timeout
+    statusCode === 409 || // conflict
+    statusCode === 429 || // too many requests
+    statusCode >= 500),
+    // server error
+    data
+  }) {
+    super({ name, message, cause });
+    this[_a2] = true;
+    this.url = url;
+    this.requestBodyValues = requestBodyValues;
+    this.statusCode = statusCode;
+    this.responseHeaders = responseHeaders;
+    this.responseBody = responseBody;
+    this.isRetryable = isRetryable;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker2);
+  }
+};
+_a2 = symbol2;
+
+// src/errors/empty-response-body-error.ts
+var name2 = "AI_EmptyResponseBodyError";
+var marker3 = `vercel.ai.error.${name2}`;
+var symbol3 = Symbol.for(marker3);
+var _a3;
+var EmptyResponseBodyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message = "Empty response body" } = {}) {
+    super({ name: name2, message });
+    this[_a3] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker3);
+  }
+};
+_a3 = symbol3;
+
+// src/errors/get-error-message.ts
+function getErrorMessage(error) {
+  if (error == null) {
+    return "unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+
+// src/errors/invalid-argument-error.ts
+var name3 = "AI_InvalidArgumentError";
+var marker4 = `vercel.ai.error.${name3}`;
+var symbol4 = Symbol.for(marker4);
+var _a4;
+var InvalidArgumentError = class extends AISDKError {
+  constructor({
+    message,
+    cause,
+    argument
+  }) {
+    super({ name: name3, message, cause });
+    this[_a4] = true;
+    this.argument = argument;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker4);
+  }
+};
+_a4 = symbol4;
+
+// src/errors/invalid-prompt-error.ts
+var name4 = "AI_InvalidPromptError";
+var marker5 = `vercel.ai.error.${name4}`;
+var symbol5 = Symbol.for(marker5);
+var _a5;
+var InvalidPromptError = class extends AISDKError {
+  constructor({
+    prompt,
+    message,
+    cause
+  }) {
+    super({ name: name4, message: `Invalid prompt: ${message}`, cause });
+    this[_a5] = true;
+    this.prompt = prompt;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker5);
+  }
+};
+_a5 = symbol5;
+
+// src/errors/invalid-response-data-error.ts
+var name5 = "AI_InvalidResponseDataError";
+var marker6 = `vercel.ai.error.${name5}`;
+var symbol6 = Symbol.for(marker6);
+var _a6;
+var InvalidResponseDataError = class extends AISDKError {
+  constructor({
+    data,
+    message = `Invalid response data: ${JSON.stringify(data)}.`
+  }) {
+    super({ name: name5, message });
+    this[_a6] = true;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker6);
+  }
+};
+_a6 = symbol6;
+
+// src/errors/json-parse-error.ts
+var name6 = "AI_JSONParseError";
+var marker7 = `vercel.ai.error.${name6}`;
+var symbol7 = Symbol.for(marker7);
+var _a7;
+var JSONParseError = class extends AISDKError {
+  constructor({ text, cause }) {
+    super({
+      name: name6,
+      message: `JSON parsing failed: Text: ${text}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a7] = true;
+    this.text = text;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker7);
+  }
+};
+_a7 = symbol7;
+
+// src/errors/load-api-key-error.ts
+var name7 = "AI_LoadAPIKeyError";
+var marker8 = `vercel.ai.error.${name7}`;
+var symbol8 = Symbol.for(marker8);
+var _a8;
+var LoadAPIKeyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message }) {
+    super({ name: name7, message });
+    this[_a8] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker8);
+  }
+};
+_a8 = symbol8;
+
+// src/errors/load-setting-error.ts
+var name8 = "AI_LoadSettingError";
+var marker9 = `vercel.ai.error.${name8}`;
+var symbol9 = Symbol.for(marker9);
+var _a9;
+var LoadSettingError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message }) {
+    super({ name: name8, message });
+    this[_a9] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker9);
+  }
+};
+_a9 = symbol9;
+
+// src/errors/no-content-generated-error.ts
+var name9 = "AI_NoContentGeneratedError";
+var marker10 = `vercel.ai.error.${name9}`;
+var symbol10 = Symbol.for(marker10);
+var _a10;
+var NoContentGeneratedError = class extends AISDKError {
+  // used in isInstance
+  constructor({
+    message = "No content generated."
+  } = {}) {
+    super({ name: name9, message });
+    this[_a10] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker10);
+  }
+};
+_a10 = symbol10;
+
+// src/errors/no-such-model-error.ts
+var name10 = "AI_NoSuchModelError";
+var marker11 = `vercel.ai.error.${name10}`;
+var symbol11 = Symbol.for(marker11);
+var _a11;
+var NoSuchModelError = class extends AISDKError {
+  constructor({
+    errorName = name10,
+    modelId,
+    modelType,
+    message = `No such ${modelType}: ${modelId}`
+  }) {
+    super({ name: errorName, message });
+    this[_a11] = true;
+    this.modelId = modelId;
+    this.modelType = modelType;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker11);
+  }
+};
+_a11 = symbol11;
+
+// src/errors/too-many-embedding-values-for-call-error.ts
+var name11 = "AI_TooManyEmbeddingValuesForCallError";
+var marker12 = `vercel.ai.error.${name11}`;
+var symbol12 = Symbol.for(marker12);
+var _a12;
+var TooManyEmbeddingValuesForCallError = class extends AISDKError {
+  constructor(options) {
+    super({
+      name: name11,
+      message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
+    });
+    this[_a12] = true;
+    this.provider = options.provider;
+    this.modelId = options.modelId;
+    this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
+    this.values = options.values;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker12);
+  }
+};
+_a12 = symbol12;
+
+// src/errors/type-validation-error.ts
+var name12 = "AI_TypeValidationError";
+var marker13 = `vercel.ai.error.${name12}`;
+var symbol13 = Symbol.for(marker13);
+var _a13;
+var _TypeValidationError = class _TypeValidationError extends AISDKError {
+  constructor({ value, cause }) {
+    super({
+      name: name12,
+      message: `Type validation failed: Value: ${JSON.stringify(value)}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a13] = true;
+    this.value = value;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker13);
+  }
+  /**
+   * Wraps an error into a TypeValidationError.
+   * If the cause is already a TypeValidationError with the same value, it returns the cause.
+   * Otherwise, it creates a new TypeValidationError.
+   *
+   * @param {Object} params - The parameters for wrapping the error.
+   * @param {unknown} params.value - The value that failed validation.
+   * @param {unknown} params.cause - The original error or cause of the validation failure.
+   * @returns {TypeValidationError} A TypeValidationError instance.
+   */
+  static wrap({
+    value,
+    cause
+  }) {
+    return _TypeValidationError.isInstance(cause) && cause.value === value ? cause : new _TypeValidationError({ value, cause });
+  }
+};
+_a13 = symbol13;
+var TypeValidationError = _TypeValidationError;
+
+// src/errors/unsupported-functionality-error.ts
+var name13 = "AI_UnsupportedFunctionalityError";
+var marker14 = `vercel.ai.error.${name13}`;
+var symbol14 = Symbol.for(marker14);
+var _a14;
+var UnsupportedFunctionalityError = class extends AISDKError {
+  constructor({
+    functionality,
+    message = `'${functionality}' functionality not supported.`
+  }) {
+    super({ name: name13, message });
+    this[_a14] = true;
+    this.functionality = functionality;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker14);
+  }
+};
+_a14 = symbol14;
+
+// src/json-value/is-json.ts
+function isJSONValue(value) {
+  if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJSONValue);
+  }
+  if (typeof value === "object") {
+    return Object.entries(value).every(
+      ([key, val]) => typeof key === "string" && isJSONValue(val)
+    );
+  }
+  return false;
+}
+function isJSONArray(value) {
+  return Array.isArray(value) && value.every(isJSONValue);
+}
+function isJSONObject(value) {
+  return value != null && typeof value === "object" && Object.entries(value).every(
+    ([key, val]) => typeof key === "string" && isJSONValue(val)
+  );
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 7860:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name7 in all)
+    __defProp(target, name7, { get: all[name7], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  GatewayAuthenticationError: () => GatewayAuthenticationError,
+  GatewayError: () => GatewayError,
+  GatewayInternalServerError: () => GatewayInternalServerError,
+  GatewayInvalidRequestError: () => GatewayInvalidRequestError,
+  GatewayModelNotFoundError: () => GatewayModelNotFoundError,
+  GatewayRateLimitError: () => GatewayRateLimitError,
+  GatewayResponseError: () => GatewayResponseError,
+  createGateway: () => createGatewayProvider,
+  createGatewayProvider: () => createGatewayProvider,
+  gateway: () => gateway
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/gateway-provider.ts
+var import_provider2 = __nccwpck_require__(8091);
+var import_provider_utils4 = __nccwpck_require__(7815);
+
+// src/errors/as-gateway-error.ts
+var import_provider = __nccwpck_require__(8091);
+
+// src/errors/create-gateway-error.ts
+var import_v42 = __nccwpck_require__(5350);
+
+// src/errors/gateway-error.ts
+var marker = "vercel.ai.gateway.error";
+var symbol = Symbol.for(marker);
+var _a, _b;
+var GatewayError = class _GatewayError extends (_b = Error, _a = symbol, _b) {
+  constructor({
+    message,
+    statusCode = 500,
+    cause
+  }) {
+    super(message);
+    this[_a] = true;
+    this.statusCode = statusCode;
+    this.cause = cause;
+  }
+  /**
+   * Checks if the given error is a Gateway Error.
+   * @param {unknown} error - The error to check.
+   * @returns {boolean} True if the error is a Gateway Error, false otherwise.
+   */
+  static isInstance(error) {
+    return _GatewayError.hasMarker(error);
+  }
+  static hasMarker(error) {
+    return typeof error === "object" && error !== null && symbol in error && error[symbol] === true;
+  }
+};
+
+// src/errors/gateway-authentication-error.ts
+var name = "GatewayAuthenticationError";
+var marker2 = `vercel.ai.gateway.error.${name}`;
+var symbol2 = Symbol.for(marker2);
+var _a2, _b2;
+var GatewayAuthenticationError = class _GatewayAuthenticationError extends (_b2 = GatewayError, _a2 = symbol2, _b2) {
+  constructor({
+    message = "Authentication failed",
+    statusCode = 401,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a2] = true;
+    // used in isInstance
+    this.name = name;
+    this.type = "authentication_error";
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol2 in error;
+  }
+  /**
+   * Creates a contextual error message when authentication fails
+   */
+  static createContextualError({
+    apiKeyProvided,
+    oidcTokenProvided,
+    message = "Authentication failed",
+    statusCode = 401,
+    cause
+  }) {
+    let contextualMessage;
+    if (apiKeyProvided) {
+      contextualMessage = `AI Gateway authentication failed: Invalid API key provided.
+
+The token is expected to be provided via the 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.`;
+    } else if (oidcTokenProvided) {
+      contextualMessage = `AI Gateway authentication failed: Invalid OIDC token provided.
+
+The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment variable. It expires every 12 hours.
+- make sure your Vercel project settings have OIDC enabled
+- if running locally with 'vercel dev', the token is automatically obtained and refreshed
+- if running locally with your own dev server, run 'vercel env pull' to fetch the token
+- in production/preview, the token is automatically obtained and refreshed
+
+Alternative: Provide an API key via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.`;
+    } else {
+      contextualMessage = `AI Gateway authentication failed: No authentication provided.
+
+Provide either an API key or OIDC token.
+
+API key instructions:
+
+The token is expected to be provided via the 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+
+OIDC token instructions:
+
+The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment variable. It expires every 12 hours.
+- make sure your Vercel project settings have OIDC enabled
+- if running locally with 'vercel dev', the token is automatically obtained and refreshed
+- if running locally with your own dev server, run 'vercel env pull' to fetch the token
+- in production/preview, the token is automatically obtained and refreshed`;
+    }
+    return new _GatewayAuthenticationError({
+      message: contextualMessage,
+      statusCode,
+      cause
+    });
+  }
+};
+
+// src/errors/gateway-invalid-request-error.ts
+var name2 = "GatewayInvalidRequestError";
+var marker3 = `vercel.ai.gateway.error.${name2}`;
+var symbol3 = Symbol.for(marker3);
+var _a3, _b3;
+var GatewayInvalidRequestError = class extends (_b3 = GatewayError, _a3 = symbol3, _b3) {
+  constructor({
+    message = "Invalid request",
+    statusCode = 400,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a3] = true;
+    // used in isInstance
+    this.name = name2;
+    this.type = "invalid_request_error";
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol3 in error;
+  }
+};
+
+// src/errors/gateway-rate-limit-error.ts
+var name3 = "GatewayRateLimitError";
+var marker4 = `vercel.ai.gateway.error.${name3}`;
+var symbol4 = Symbol.for(marker4);
+var _a4, _b4;
+var GatewayRateLimitError = class extends (_b4 = GatewayError, _a4 = symbol4, _b4) {
+  constructor({
+    message = "Rate limit exceeded",
+    statusCode = 429,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a4] = true;
+    // used in isInstance
+    this.name = name3;
+    this.type = "rate_limit_exceeded";
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol4 in error;
+  }
+};
+
+// src/errors/gateway-model-not-found-error.ts
+var import_v4 = __nccwpck_require__(5350);
+var name4 = "GatewayModelNotFoundError";
+var marker5 = `vercel.ai.gateway.error.${name4}`;
+var symbol5 = Symbol.for(marker5);
+var modelNotFoundParamSchema = import_v4.z.object({
+  modelId: import_v4.z.string()
+});
+var _a5, _b5;
+var GatewayModelNotFoundError = class extends (_b5 = GatewayError, _a5 = symbol5, _b5) {
+  constructor({
+    message = "Model not found",
+    statusCode = 404,
+    modelId,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a5] = true;
+    // used in isInstance
+    this.name = name4;
+    this.type = "model_not_found";
+    this.modelId = modelId;
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol5 in error;
+  }
+};
+
+// src/errors/gateway-internal-server-error.ts
+var name5 = "GatewayInternalServerError";
+var marker6 = `vercel.ai.gateway.error.${name5}`;
+var symbol6 = Symbol.for(marker6);
+var _a6, _b6;
+var GatewayInternalServerError = class extends (_b6 = GatewayError, _a6 = symbol6, _b6) {
+  constructor({
+    message = "Internal server error",
+    statusCode = 500,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a6] = true;
+    // used in isInstance
+    this.name = name5;
+    this.type = "internal_server_error";
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol6 in error;
+  }
+};
+
+// src/errors/gateway-response-error.ts
+var name6 = "GatewayResponseError";
+var marker7 = `vercel.ai.gateway.error.${name6}`;
+var symbol7 = Symbol.for(marker7);
+var _a7, _b7;
+var GatewayResponseError = class extends (_b7 = GatewayError, _a7 = symbol7, _b7) {
+  constructor({
+    message = "Invalid response from Gateway",
+    statusCode = 502,
+    response,
+    validationError,
+    cause
+  } = {}) {
+    super({ message, statusCode, cause });
+    this[_a7] = true;
+    // used in isInstance
+    this.name = name6;
+    this.type = "response_error";
+    this.response = response;
+    this.validationError = validationError;
+  }
+  static isInstance(error) {
+    return GatewayError.hasMarker(error) && symbol7 in error;
+  }
+};
+
+// src/errors/create-gateway-error.ts
+function createGatewayErrorFromResponse({
+  response,
+  statusCode,
+  defaultMessage = "Gateway request failed",
+  cause,
+  authMethod
+}) {
+  const parseResult = gatewayErrorResponseSchema.safeParse(response);
+  if (!parseResult.success) {
+    return new GatewayResponseError({
+      message: `Invalid error response format: ${defaultMessage}`,
+      statusCode,
+      response,
+      validationError: parseResult.error,
+      cause
+    });
+  }
+  const validatedResponse = parseResult.data;
+  const errorType = validatedResponse.error.type;
+  const message = validatedResponse.error.message;
+  switch (errorType) {
+    case "authentication_error":
+      return GatewayAuthenticationError.createContextualError({
+        apiKeyProvided: authMethod === "api-key",
+        oidcTokenProvided: authMethod === "oidc",
+        statusCode,
+        cause
+      });
+    case "invalid_request_error":
+      return new GatewayInvalidRequestError({ message, statusCode, cause });
+    case "rate_limit_exceeded":
+      return new GatewayRateLimitError({ message, statusCode, cause });
+    case "model_not_found": {
+      const modelResult = modelNotFoundParamSchema.safeParse(
+        validatedResponse.error.param
+      );
+      return new GatewayModelNotFoundError({
+        message,
+        statusCode,
+        modelId: modelResult.success ? modelResult.data.modelId : void 0,
+        cause
+      });
+    }
+    case "internal_server_error":
+      return new GatewayInternalServerError({ message, statusCode, cause });
+    default:
+      return new GatewayInternalServerError({ message, statusCode, cause });
+  }
+}
+var gatewayErrorResponseSchema = import_v42.z.object({
+  error: import_v42.z.object({
+    message: import_v42.z.string(),
+    type: import_v42.z.string().nullish(),
+    param: import_v42.z.unknown().nullish(),
+    code: import_v42.z.union([import_v42.z.string(), import_v42.z.number()]).nullish()
+  })
+});
+
+// src/errors/as-gateway-error.ts
+function asGatewayError(error, authMethod) {
+  var _a8;
+  if (GatewayError.isInstance(error)) {
+    return error;
+  }
+  if (import_provider.APICallError.isInstance(error)) {
+    return createGatewayErrorFromResponse({
+      response: extractApiCallResponse(error),
+      statusCode: (_a8 = error.statusCode) != null ? _a8 : 500,
+      defaultMessage: "Gateway request failed",
+      cause: error,
+      authMethod
+    });
+  }
+  return createGatewayErrorFromResponse({
+    response: {},
+    statusCode: 500,
+    defaultMessage: error instanceof Error ? `Gateway request failed: ${error.message}` : "Unknown Gateway error",
+    cause: error,
+    authMethod
+  });
+}
+
+// src/errors/extract-api-call-response.ts
+function extractApiCallResponse(error) {
+  if (error.data !== void 0) {
+    return error.data;
+  }
+  if (error.responseBody != null) {
+    try {
+      return JSON.parse(error.responseBody);
+    } catch (e) {
+      return error.responseBody;
+    }
+  }
+  return {};
+}
+
+// src/errors/parse-auth-method.ts
+var import_v43 = __nccwpck_require__(5350);
+var GATEWAY_AUTH_METHOD_HEADER = "ai-gateway-auth-method";
+function parseAuthMethod(headers) {
+  const result = gatewayAuthMethodSchema.safeParse(
+    headers[GATEWAY_AUTH_METHOD_HEADER]
+  );
+  return result.success ? result.data : void 0;
+}
+var gatewayAuthMethodSchema = import_v43.z.union([
+  import_v43.z.literal("api-key"),
+  import_v43.z.literal("oidc")
+]);
+
+// src/gateway-fetch-metadata.ts
+var import_provider_utils = __nccwpck_require__(7815);
+var import_v44 = __nccwpck_require__(5350);
+var GatewayFetchMetadata = class {
+  constructor(config) {
+    this.config = config;
+  }
+  async getAvailableModels() {
+    try {
+      const { value } = await (0, import_provider_utils.getFromApi)({
+        url: `${this.config.baseURL}/config`,
+        headers: await (0, import_provider_utils.resolve)(this.config.headers()),
+        successfulResponseHandler: (0, import_provider_utils.createJsonResponseHandler)(
+          gatewayFetchMetadataSchema
+        ),
+        failedResponseHandler: (0, import_provider_utils.createJsonErrorResponseHandler)({
+          errorSchema: import_v44.z.any(),
+          errorToMessage: (data) => data
+        }),
+        fetch: this.config.fetch
+      });
+      return value;
+    } catch (error) {
+      throw asGatewayError(error);
+    }
+  }
+};
+var gatewayLanguageModelSpecificationSchema = import_v44.z.object({
+  specificationVersion: import_v44.z.literal("v2"),
+  provider: import_v44.z.string(),
+  modelId: import_v44.z.string()
+});
+var gatewayLanguageModelPricingSchema = import_v44.z.object({
+  input: import_v44.z.string(),
+  output: import_v44.z.string()
+});
+var gatewayLanguageModelEntrySchema = import_v44.z.object({
+  id: import_v44.z.string(),
+  name: import_v44.z.string(),
+  description: import_v44.z.string().nullish(),
+  pricing: gatewayLanguageModelPricingSchema.nullish(),
+  specification: gatewayLanguageModelSpecificationSchema,
+  modelType: import_v44.z.enum(["language", "embedding", "image"]).nullish()
+});
+var gatewayFetchMetadataSchema = import_v44.z.object({
+  models: import_v44.z.array(gatewayLanguageModelEntrySchema)
+});
+
+// src/gateway-language-model.ts
+var import_provider_utils2 = __nccwpck_require__(7815);
+var import_v45 = __nccwpck_require__(5350);
+var GatewayLanguageModel = class {
+  constructor(modelId, config) {
+    this.modelId = modelId;
+    this.config = config;
+    this.specificationVersion = "v2";
+    this.supportedUrls = { "*/*": [/.*/] };
+  }
+  get provider() {
+    return this.config.provider;
+  }
+  async getArgs(options) {
+    const { abortSignal: _abortSignal, ...optionsWithoutSignal } = options;
+    return {
+      args: this.maybeEncodeFileParts(optionsWithoutSignal),
+      warnings: []
+    };
+  }
+  async doGenerate(options) {
+    const { args, warnings } = await this.getArgs(options);
+    const { abortSignal } = options;
+    const resolvedHeaders = await (0, import_provider_utils2.resolve)(this.config.headers());
+    try {
+      const {
+        responseHeaders,
+        value: responseBody,
+        rawValue: rawResponse
+      } = await (0, import_provider_utils2.postJsonToApi)({
+        url: this.getUrl(),
+        headers: (0, import_provider_utils2.combineHeaders)(
+          resolvedHeaders,
+          options.headers,
+          this.getModelConfigHeaders(this.modelId, false),
+          await (0, import_provider_utils2.resolve)(this.config.o11yHeaders)
+        ),
+        body: args,
+        successfulResponseHandler: (0, import_provider_utils2.createJsonResponseHandler)(import_v45.z.any()),
+        failedResponseHandler: (0, import_provider_utils2.createJsonErrorResponseHandler)({
+          errorSchema: import_v45.z.any(),
+          errorToMessage: (data) => data
+        }),
+        ...abortSignal && { abortSignal },
+        fetch: this.config.fetch
+      });
+      return {
+        ...responseBody,
+        request: { body: args },
+        response: { headers: responseHeaders, body: rawResponse },
+        warnings
+      };
+    } catch (error) {
+      throw asGatewayError(error, parseAuthMethod(resolvedHeaders));
+    }
+  }
+  async doStream(options) {
+    const { args, warnings } = await this.getArgs(options);
+    const { abortSignal } = options;
+    const resolvedHeaders = await (0, import_provider_utils2.resolve)(this.config.headers());
+    try {
+      const { value: response, responseHeaders } = await (0, import_provider_utils2.postJsonToApi)({
+        url: this.getUrl(),
+        headers: (0, import_provider_utils2.combineHeaders)(
+          resolvedHeaders,
+          options.headers,
+          this.getModelConfigHeaders(this.modelId, true),
+          await (0, import_provider_utils2.resolve)(this.config.o11yHeaders)
+        ),
+        body: args,
+        successfulResponseHandler: (0, import_provider_utils2.createEventSourceResponseHandler)(import_v45.z.any()),
+        failedResponseHandler: (0, import_provider_utils2.createJsonErrorResponseHandler)({
+          errorSchema: import_v45.z.any(),
+          errorToMessage: (data) => data
+        }),
+        ...abortSignal && { abortSignal },
+        fetch: this.config.fetch
+      });
+      return {
+        stream: response.pipeThrough(
+          new TransformStream({
+            start(controller) {
+              if (warnings.length > 0) {
+                controller.enqueue({ type: "stream-start", warnings });
+              }
+            },
+            transform(chunk, controller) {
+              if (chunk.success) {
+                const streamPart = chunk.value;
+                if (streamPart.type === "raw" && !options.includeRawChunks) {
+                  return;
+                }
+                if (streamPart.type === "response-metadata" && streamPart.timestamp && typeof streamPart.timestamp === "string") {
+                  streamPart.timestamp = new Date(streamPart.timestamp);
+                }
+                controller.enqueue(streamPart);
+              } else {
+                controller.error(
+                  chunk.error
+                );
+              }
+            }
+          })
+        ),
+        request: { body: args },
+        response: { headers: responseHeaders }
+      };
+    } catch (error) {
+      throw asGatewayError(error, parseAuthMethod(resolvedHeaders));
+    }
+  }
+  isFilePart(part) {
+    return part && typeof part === "object" && "type" in part && part.type === "file";
+  }
+  /**
+   * Encodes file parts in the prompt to base64. Mutates the passed options
+   * instance directly to avoid copying the file data.
+   * @param options - The options to encode.
+   * @returns The options with the file parts encoded.
+   */
+  maybeEncodeFileParts(options) {
+    for (const message of options.prompt) {
+      for (const part of message.content) {
+        if (this.isFilePart(part)) {
+          const filePart = part;
+          if (filePart.data instanceof Uint8Array) {
+            const buffer = Uint8Array.from(filePart.data);
+            const base64Data = Buffer.from(buffer).toString("base64");
+            filePart.data = new URL(
+              `data:${filePart.mediaType || "application/octet-stream"};base64,${base64Data}`
+            );
+          }
+        }
+      }
+    }
+    return options;
+  }
+  getUrl() {
+    return `${this.config.baseURL}/language-model`;
+  }
+  getModelConfigHeaders(modelId, streaming) {
+    return {
+      "ai-language-model-specification-version": "2",
+      "ai-language-model-id": modelId,
+      "ai-language-model-streaming": String(streaming)
+    };
+  }
+};
+
+// src/gateway-embedding-model.ts
+var import_provider_utils3 = __nccwpck_require__(7815);
+var import_v46 = __nccwpck_require__(5350);
+var GatewayEmbeddingModel = class {
+  constructor(modelId, config) {
+    this.modelId = modelId;
+    this.config = config;
+    this.specificationVersion = "v2";
+    this.maxEmbeddingsPerCall = 2048;
+    this.supportsParallelCalls = true;
+  }
+  get provider() {
+    return this.config.provider;
+  }
+  async doEmbed({
+    values,
+    headers,
+    abortSignal,
+    providerOptions
+  }) {
+    var _a8;
+    const resolvedHeaders = await (0, import_provider_utils3.resolve)(this.config.headers());
+    try {
+      const {
+        responseHeaders,
+        value: responseBody,
+        rawValue
+      } = await (0, import_provider_utils3.postJsonToApi)({
+        url: this.getUrl(),
+        headers: (0, import_provider_utils3.combineHeaders)(
+          resolvedHeaders,
+          headers != null ? headers : {},
+          this.getModelConfigHeaders(),
+          await (0, import_provider_utils3.resolve)(this.config.o11yHeaders)
+        ),
+        body: {
+          input: values.length === 1 ? values[0] : values,
+          ...providerOptions != null ? providerOptions : {}
+        },
+        successfulResponseHandler: (0, import_provider_utils3.createJsonResponseHandler)(
+          gatewayEmbeddingResponseSchema
+        ),
+        failedResponseHandler: (0, import_provider_utils3.createJsonErrorResponseHandler)({
+          errorSchema: import_v46.z.any(),
+          errorToMessage: (data) => data
+        }),
+        ...abortSignal && { abortSignal },
+        fetch: this.config.fetch
+      });
+      return {
+        embeddings: responseBody.embeddings,
+        usage: (_a8 = responseBody.usage) != null ? _a8 : void 0,
+        providerMetadata: responseBody.providerMetadata,
+        response: { headers: responseHeaders, body: rawValue }
+      };
+    } catch (error) {
+      throw asGatewayError(error, parseAuthMethod(resolvedHeaders));
+    }
+  }
+  getUrl() {
+    return `${this.config.baseURL}/embedding-model`;
+  }
+  getModelConfigHeaders() {
+    return {
+      "ai-embedding-model-specification-version": "2",
+      "ai-model-id": this.modelId
+    };
+  }
+};
+var gatewayEmbeddingResponseSchema = import_v46.z.object({
+  embeddings: import_v46.z.array(import_v46.z.array(import_v46.z.number())),
+  usage: import_v46.z.object({ tokens: import_v46.z.number() }).nullish(),
+  providerMetadata: import_v46.z.record(import_v46.z.string(), import_v46.z.record(import_v46.z.string(), import_v46.z.unknown())).optional()
+});
+
+// src/vercel-environment.ts
+async function getVercelOidcToken() {
+  var _a8, _b8;
+  const token = (_b8 = (_a8 = getContext().headers) == null ? void 0 : _a8["x-vercel-oidc-token"]) != null ? _b8 : process.env.VERCEL_OIDC_TOKEN;
+  if (!token) {
+    throw new GatewayAuthenticationError({
+      message: "OIDC token not available",
+      statusCode: 401
+    });
+  }
+  return token;
+}
+async function getVercelRequestId() {
+  var _a8;
+  return (_a8 = getContext().headers) == null ? void 0 : _a8["x-vercel-id"];
+}
+var SYMBOL_FOR_REQ_CONTEXT = Symbol.for("@vercel/request-context");
+function getContext() {
+  var _a8, _b8, _c;
+  const fromSymbol = globalThis;
+  return (_c = (_b8 = (_a8 = fromSymbol[SYMBOL_FOR_REQ_CONTEXT]) == null ? void 0 : _a8.get) == null ? void 0 : _b8.call(_a8)) != null ? _c : {};
+}
+
+// src/gateway-provider.ts
+var AI_GATEWAY_PROTOCOL_VERSION = "0.0.1";
+function createGatewayProvider(options = {}) {
+  var _a8, _b8;
+  let pendingMetadata = null;
+  let metadataCache = null;
+  const cacheRefreshMillis = (_a8 = options.metadataCacheRefreshMillis) != null ? _a8 : 1e3 * 60 * 5;
+  let lastFetchTime = 0;
+  const baseURL = (_b8 = (0, import_provider_utils4.withoutTrailingSlash)(options.baseURL)) != null ? _b8 : "https://ai-gateway.vercel.sh/v1/ai";
+  const getHeaders = async () => {
+    const auth = await getGatewayAuthToken(options);
+    if (auth) {
+      return {
+        Authorization: `Bearer ${auth.token}`,
+        "ai-gateway-protocol-version": AI_GATEWAY_PROTOCOL_VERSION,
+        [GATEWAY_AUTH_METHOD_HEADER]: auth.authMethod,
+        ...options.headers
+      };
+    }
+    throw GatewayAuthenticationError.createContextualError({
+      apiKeyProvided: false,
+      oidcTokenProvided: false,
+      statusCode: 401
+    });
+  };
+  const createO11yHeaders = () => {
+    const deploymentId = (0, import_provider_utils4.loadOptionalSetting)({
+      settingValue: void 0,
+      environmentVariableName: "VERCEL_DEPLOYMENT_ID"
+    });
+    const environment = (0, import_provider_utils4.loadOptionalSetting)({
+      settingValue: void 0,
+      environmentVariableName: "VERCEL_ENV"
+    });
+    const region = (0, import_provider_utils4.loadOptionalSetting)({
+      settingValue: void 0,
+      environmentVariableName: "VERCEL_REGION"
+    });
+    return async () => {
+      const requestId = await getVercelRequestId();
+      return {
+        ...deploymentId && { "ai-o11y-deployment-id": deploymentId },
+        ...environment && { "ai-o11y-environment": environment },
+        ...region && { "ai-o11y-region": region },
+        ...requestId && { "ai-o11y-request-id": requestId }
+      };
+    };
+  };
+  const createLanguageModel = (modelId) => {
+    return new GatewayLanguageModel(modelId, {
+      provider: "gateway",
+      baseURL,
+      headers: getHeaders,
+      fetch: options.fetch,
+      o11yHeaders: createO11yHeaders()
+    });
+  };
+  const getAvailableModels = async () => {
+    var _a9, _b9, _c;
+    const now = (_c = (_b9 = (_a9 = options._internal) == null ? void 0 : _a9.currentDate) == null ? void 0 : _b9.call(_a9).getTime()) != null ? _c : Date.now();
+    if (!pendingMetadata || now - lastFetchTime > cacheRefreshMillis) {
+      lastFetchTime = now;
+      pendingMetadata = new GatewayFetchMetadata({
+        baseURL,
+        headers: getHeaders,
+        fetch: options.fetch
+      }).getAvailableModels().then((metadata) => {
+        metadataCache = metadata;
+        return metadata;
+      }).catch(async (error) => {
+        throw asGatewayError(error, parseAuthMethod(await getHeaders()));
+      });
+    }
+    return metadataCache ? Promise.resolve(metadataCache) : pendingMetadata;
+  };
+  const provider = function(modelId) {
+    if (new.target) {
+      throw new Error(
+        "The Gateway Provider model function cannot be called with the new keyword."
+      );
+    }
+    return createLanguageModel(modelId);
+  };
+  provider.getAvailableModels = getAvailableModels;
+  provider.imageModel = (modelId) => {
+    throw new import_provider2.NoSuchModelError({ modelId, modelType: "imageModel" });
+  };
+  provider.languageModel = createLanguageModel;
+  provider.textEmbeddingModel = (modelId) => {
+    return new GatewayEmbeddingModel(modelId, {
+      provider: "gateway",
+      baseURL,
+      headers: getHeaders,
+      fetch: options.fetch,
+      o11yHeaders: createO11yHeaders()
+    });
+  };
+  return provider;
+}
+var gateway = createGatewayProvider();
+async function getGatewayAuthToken(options) {
+  const apiKey = (0, import_provider_utils4.loadOptionalSetting)({
+    settingValue: options.apiKey,
+    environmentVariableName: "AI_GATEWAY_API_KEY"
+  });
+  if (apiKey) {
+    return {
+      token: apiKey,
+      authMethod: "api-key"
+    };
+  }
+  try {
+    const oidcToken = await getVercelOidcToken();
+    return {
+      token: oidcToken,
+      authMethod: "oidc"
+    };
+  } catch (e) {
+    return null;
+  }
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 7815:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  EventSourceParserStream: () => import_stream2.EventSourceParserStream,
+  asSchema: () => asSchema,
+  asValidator: () => asValidator,
+  combineHeaders: () => combineHeaders,
+  convertAsyncIteratorToReadableStream: () => convertAsyncIteratorToReadableStream,
+  convertBase64ToUint8Array: () => convertBase64ToUint8Array,
+  convertToBase64: () => convertToBase64,
+  convertUint8ArrayToBase64: () => convertUint8ArrayToBase64,
+  createBinaryResponseHandler: () => createBinaryResponseHandler,
+  createEventSourceResponseHandler: () => createEventSourceResponseHandler,
+  createIdGenerator: () => createIdGenerator,
+  createJsonErrorResponseHandler: () => createJsonErrorResponseHandler,
+  createJsonResponseHandler: () => createJsonResponseHandler,
+  createJsonStreamResponseHandler: () => createJsonStreamResponseHandler,
+  createProviderDefinedToolFactory: () => createProviderDefinedToolFactory,
+  createProviderDefinedToolFactoryWithOutputSchema: () => createProviderDefinedToolFactoryWithOutputSchema,
+  createStatusCodeErrorResponseHandler: () => createStatusCodeErrorResponseHandler,
+  delay: () => delay,
+  dynamicTool: () => dynamicTool,
+  executeTool: () => executeTool,
+  extractResponseHeaders: () => extractResponseHeaders,
+  generateId: () => generateId,
+  getErrorMessage: () => getErrorMessage,
+  getFromApi: () => getFromApi,
+  injectJsonInstructionIntoMessages: () => injectJsonInstructionIntoMessages,
+  isAbortError: () => isAbortError,
+  isParsableJson: () => isParsableJson,
+  isUrlSupported: () => isUrlSupported,
+  isValidator: () => isValidator,
+  jsonSchema: () => jsonSchema,
+  loadApiKey: () => loadApiKey,
+  loadOptionalSetting: () => loadOptionalSetting,
+  loadSetting: () => loadSetting,
+  mediaTypeToExtension: () => mediaTypeToExtension,
+  parseJSON: () => parseJSON,
+  parseJsonEventStream: () => parseJsonEventStream,
+  parseProviderOptions: () => parseProviderOptions,
+  postFormDataToApi: () => postFormDataToApi,
+  postJsonToApi: () => postJsonToApi,
+  postToApi: () => postToApi,
+  removeUndefinedEntries: () => removeUndefinedEntries,
+  resolve: () => resolve,
+  safeParseJSON: () => safeParseJSON,
+  safeValidateTypes: () => safeValidateTypes,
+  standardSchemaValidator: () => standardSchemaValidator,
+  tool: () => tool,
+  validateTypes: () => validateTypes,
+  validator: () => validator,
+  validatorSymbol: () => validatorSymbol,
+  withoutTrailingSlash: () => withoutTrailingSlash,
+  zodSchema: () => zodSchema
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/combine-headers.ts
+function combineHeaders(...headers) {
+  return headers.reduce(
+    (combinedHeaders, currentHeaders) => ({
+      ...combinedHeaders,
+      ...currentHeaders != null ? currentHeaders : {}
+    }),
+    {}
+  );
+}
+
+// src/convert-async-iterator-to-readable-stream.ts
+function convertAsyncIteratorToReadableStream(iterator) {
+  return new ReadableStream({
+    /**
+     * Called when the consumer wants to pull more data from the stream.
+     *
+     * @param {ReadableStreamDefaultController<T>} controller - The controller to enqueue data into the stream.
+     * @returns {Promise<void>}
+     */
+    async pull(controller) {
+      try {
+        const { value, done } = await iterator.next();
+        if (done) {
+          controller.close();
+        } else {
+          controller.enqueue(value);
+        }
+      } catch (error) {
+        controller.error(error);
+      }
+    },
+    /**
+     * Called when the consumer cancels the stream.
+     */
+    cancel() {
+    }
+  });
+}
+
+// src/delay.ts
+async function delay(delayInMs, options) {
+  if (delayInMs == null) {
+    return Promise.resolve();
+  }
+  const signal = options == null ? void 0 : options.abortSignal;
+  return new Promise((resolve2, reject) => {
+    if (signal == null ? void 0 : signal.aborted) {
+      reject(createAbortError());
+      return;
+    }
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      resolve2();
+    }, delayInMs);
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      signal == null ? void 0 : signal.removeEventListener("abort", onAbort);
+    };
+    const onAbort = () => {
+      cleanup();
+      reject(createAbortError());
+    };
+    signal == null ? void 0 : signal.addEventListener("abort", onAbort);
+  });
+}
+function createAbortError() {
+  return new DOMException("Delay was aborted", "AbortError");
+}
+
+// src/extract-response-headers.ts
+function extractResponseHeaders(response) {
+  return Object.fromEntries([...response.headers]);
+}
+
+// src/generate-id.ts
+var import_provider = __nccwpck_require__(8091);
+var createIdGenerator = ({
+  prefix,
+  size = 16,
+  alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  separator = "-"
+} = {}) => {
+  const generator = () => {
+    const alphabetLength = alphabet.length;
+    const chars = new Array(size);
+    for (let i = 0; i < size; i++) {
+      chars[i] = alphabet[Math.random() * alphabetLength | 0];
+    }
+    return chars.join("");
+  };
+  if (prefix == null) {
+    return generator;
+  }
+  if (alphabet.includes(separator)) {
+    throw new import_provider.InvalidArgumentError({
+      argument: "separator",
+      message: `The separator "${separator}" must not be part of the alphabet "${alphabet}".`
+    });
+  }
+  return () => `${prefix}${separator}${generator()}`;
+};
+var generateId = createIdGenerator();
+
+// src/get-error-message.ts
+function getErrorMessage(error) {
+  if (error == null) {
+    return "unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+
+// src/get-from-api.ts
+var import_provider3 = __nccwpck_require__(8091);
+
+// src/handle-fetch-error.ts
+var import_provider2 = __nccwpck_require__(8091);
+
+// src/is-abort-error.ts
+function isAbortError(error) {
+  return (error instanceof Error || error instanceof DOMException) && (error.name === "AbortError" || error.name === "ResponseAborted" || // Next.js
+  error.name === "TimeoutError");
+}
+
+// src/handle-fetch-error.ts
+var FETCH_FAILED_ERROR_MESSAGES = ["fetch failed", "failed to fetch"];
+function handleFetchError({
+  error,
+  url,
+  requestBodyValues
+}) {
+  if (isAbortError(error)) {
+    return error;
+  }
+  if (error instanceof TypeError && FETCH_FAILED_ERROR_MESSAGES.includes(error.message.toLowerCase())) {
+    const cause = error.cause;
+    if (cause != null) {
+      return new import_provider2.APICallError({
+        message: `Cannot connect to API: ${cause.message}`,
+        cause,
+        url,
+        requestBodyValues,
+        isRetryable: true
+        // retry when network error
+      });
+    }
+  }
+  return error;
+}
+
+// src/remove-undefined-entries.ts
+function removeUndefinedEntries(record) {
+  return Object.fromEntries(
+    Object.entries(record).filter(([_key, value]) => value != null)
+  );
+}
+
+// src/get-from-api.ts
+var getOriginalFetch = () => globalThis.fetch;
+var getFromApi = async ({
+  url,
+  headers = {},
+  successfulResponseHandler,
+  failedResponseHandler,
+  abortSignal,
+  fetch = getOriginalFetch()
+}) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: removeUndefinedEntries(headers),
+      signal: abortSignal
+    });
+    const responseHeaders = extractResponseHeaders(response);
+    if (!response.ok) {
+      let errorInformation;
+      try {
+        errorInformation = await failedResponseHandler({
+          response,
+          url,
+          requestBodyValues: {}
+        });
+      } catch (error) {
+        if (isAbortError(error) || import_provider3.APICallError.isInstance(error)) {
+          throw error;
+        }
+        throw new import_provider3.APICallError({
+          message: "Failed to process error response",
+          cause: error,
+          statusCode: response.status,
+          url,
+          responseHeaders,
+          requestBodyValues: {}
+        });
+      }
+      throw errorInformation.value;
+    }
+    try {
+      return await successfulResponseHandler({
+        response,
+        url,
+        requestBodyValues: {}
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (isAbortError(error) || import_provider3.APICallError.isInstance(error)) {
+          throw error;
+        }
+      }
+      throw new import_provider3.APICallError({
+        message: "Failed to process successful response",
+        cause: error,
+        statusCode: response.status,
+        url,
+        responseHeaders,
+        requestBodyValues: {}
+      });
+    }
+  } catch (error) {
+    throw handleFetchError({ error, url, requestBodyValues: {} });
+  }
+};
+
+// src/inject-json-instruction.ts
+var DEFAULT_SCHEMA_PREFIX = "JSON schema:";
+var DEFAULT_SCHEMA_SUFFIX = "You MUST answer with a JSON object that matches the JSON schema above.";
+var DEFAULT_GENERIC_SUFFIX = "You MUST answer with JSON.";
+function injectJsonInstruction({
+  prompt,
+  schema,
+  schemaPrefix = schema != null ? DEFAULT_SCHEMA_PREFIX : void 0,
+  schemaSuffix = schema != null ? DEFAULT_SCHEMA_SUFFIX : DEFAULT_GENERIC_SUFFIX
+}) {
+  return [
+    prompt != null && prompt.length > 0 ? prompt : void 0,
+    prompt != null && prompt.length > 0 ? "" : void 0,
+    // add a newline if prompt is not null
+    schemaPrefix,
+    schema != null ? JSON.stringify(schema) : void 0,
+    schemaSuffix
+  ].filter((line) => line != null).join("\n");
+}
+function injectJsonInstructionIntoMessages({
+  messages,
+  schema,
+  schemaPrefix,
+  schemaSuffix
+}) {
+  var _a, _b;
+  const systemMessage = ((_a = messages[0]) == null ? void 0 : _a.role) === "system" ? { ...messages[0] } : { role: "system", content: "" };
+  systemMessage.content = injectJsonInstruction({
+    prompt: systemMessage.content,
+    schema,
+    schemaPrefix,
+    schemaSuffix
+  });
+  return [
+    systemMessage,
+    ...((_b = messages[0]) == null ? void 0 : _b.role) === "system" ? messages.slice(1) : messages
+  ];
+}
+
+// src/is-url-supported.ts
+function isUrlSupported({
+  mediaType,
+  url,
+  supportedUrls
+}) {
+  url = url.toLowerCase();
+  mediaType = mediaType.toLowerCase();
+  return Object.entries(supportedUrls).map(([key, value]) => {
+    const mediaType2 = key.toLowerCase();
+    return mediaType2 === "*" || mediaType2 === "*/*" ? { mediaTypePrefix: "", regexes: value } : { mediaTypePrefix: mediaType2.replace(/\*/, ""), regexes: value };
+  }).filter(({ mediaTypePrefix }) => mediaType.startsWith(mediaTypePrefix)).flatMap(({ regexes }) => regexes).some((pattern) => pattern.test(url));
+}
+
+// src/load-api-key.ts
+var import_provider4 = __nccwpck_require__(8091);
+function loadApiKey({
+  apiKey,
+  environmentVariableName,
+  apiKeyParameterName = "apiKey",
+  description
+}) {
+  if (typeof apiKey === "string") {
+    return apiKey;
+  }
+  if (apiKey != null) {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key must be a string.`
+    });
+  }
+  if (typeof process === "undefined") {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter. Environment variables is not supported in this environment.`
+    });
+  }
+  apiKey = process.env[environmentVariableName];
+  if (apiKey == null) {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter or the ${environmentVariableName} environment variable.`
+    });
+  }
+  if (typeof apiKey !== "string") {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key must be a string. The value of the ${environmentVariableName} environment variable is not a string.`
+    });
+  }
+  return apiKey;
+}
+
+// src/load-optional-setting.ts
+function loadOptionalSetting({
+  settingValue,
+  environmentVariableName
+}) {
+  if (typeof settingValue === "string") {
+    return settingValue;
+  }
+  if (settingValue != null || typeof process === "undefined") {
+    return void 0;
+  }
+  settingValue = process.env[environmentVariableName];
+  if (settingValue == null || typeof settingValue !== "string") {
+    return void 0;
+  }
+  return settingValue;
+}
+
+// src/load-setting.ts
+var import_provider5 = __nccwpck_require__(8091);
+function loadSetting({
+  settingValue,
+  environmentVariableName,
+  settingName,
+  description
+}) {
+  if (typeof settingValue === "string") {
+    return settingValue;
+  }
+  if (settingValue != null) {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting must be a string.`
+    });
+  }
+  if (typeof process === "undefined") {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting is missing. Pass it using the '${settingName}' parameter. Environment variables is not supported in this environment.`
+    });
+  }
+  settingValue = process.env[environmentVariableName];
+  if (settingValue == null) {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting is missing. Pass it using the '${settingName}' parameter or the ${environmentVariableName} environment variable.`
+    });
+  }
+  if (typeof settingValue !== "string") {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting must be a string. The value of the ${environmentVariableName} environment variable is not a string.`
+    });
+  }
+  return settingValue;
+}
+
+// src/media-type-to-extension.ts
+function mediaTypeToExtension(mediaType) {
+  var _a;
+  const [_type, subtype = ""] = mediaType.toLowerCase().split("/");
+  return (_a = {
+    mpeg: "mp3",
+    "x-wav": "wav",
+    opus: "ogg",
+    mp4: "m4a",
+    "x-m4a": "m4a"
+  }[subtype]) != null ? _a : subtype;
+}
+
+// src/parse-json.ts
+var import_provider8 = __nccwpck_require__(8091);
+
+// src/secure-json-parse.ts
+var suspectProtoRx = /"__proto__"\s*:/;
+var suspectConstructorRx = /"constructor"\s*:/;
+function _parse(text) {
+  const obj = JSON.parse(text);
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  if (suspectProtoRx.test(text) === false && suspectConstructorRx.test(text) === false) {
+    return obj;
+  }
+  return filter(obj);
+}
+function filter(obj) {
+  let next = [obj];
+  while (next.length) {
+    const nodes = next;
+    next = [];
+    for (const node of nodes) {
+      if (Object.prototype.hasOwnProperty.call(node, "__proto__")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      if (Object.prototype.hasOwnProperty.call(node, "constructor") && Object.prototype.hasOwnProperty.call(node.constructor, "prototype")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      for (const key in node) {
+        const value = node[key];
+        if (value && typeof value === "object") {
+          next.push(value);
+        }
+      }
+    }
+  }
+  return obj;
+}
+function secureJsonParse(text) {
+  const { stackTraceLimit } = Error;
+  Error.stackTraceLimit = 0;
+  try {
+    return _parse(text);
+  } finally {
+    Error.stackTraceLimit = stackTraceLimit;
+  }
+}
+
+// src/validate-types.ts
+var import_provider7 = __nccwpck_require__(8091);
+
+// src/validator.ts
+var import_provider6 = __nccwpck_require__(8091);
+var validatorSymbol = Symbol.for("vercel.ai.validator");
+function validator(validate) {
+  return { [validatorSymbol]: true, validate };
+}
+function isValidator(value) {
+  return typeof value === "object" && value !== null && validatorSymbol in value && value[validatorSymbol] === true && "validate" in value;
+}
+function asValidator(value) {
+  return isValidator(value) ? value : standardSchemaValidator(value);
+}
+function standardSchemaValidator(standardSchema) {
+  return validator(async (value) => {
+    const result = await standardSchema["~standard"].validate(value);
+    return result.issues == null ? { success: true, value: result.value } : {
+      success: false,
+      error: new import_provider6.TypeValidationError({
+        value,
+        cause: result.issues
+      })
+    };
+  });
+}
+
+// src/validate-types.ts
+async function validateTypes({
+  value,
+  schema
+}) {
+  const result = await safeValidateTypes({ value, schema });
+  if (!result.success) {
+    throw import_provider7.TypeValidationError.wrap({ value, cause: result.error });
+  }
+  return result.value;
+}
+async function safeValidateTypes({
+  value,
+  schema
+}) {
+  const validator2 = asValidator(schema);
+  try {
+    if (validator2.validate == null) {
+      return { success: true, value, rawValue: value };
+    }
+    const result = await validator2.validate(value);
+    if (result.success) {
+      return { success: true, value: result.value, rawValue: value };
+    }
+    return {
+      success: false,
+      error: import_provider7.TypeValidationError.wrap({ value, cause: result.error }),
+      rawValue: value
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: import_provider7.TypeValidationError.wrap({ value, cause: error }),
+      rawValue: value
+    };
+  }
+}
+
+// src/parse-json.ts
+async function parseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return value;
+    }
+    return validateTypes({ value, schema });
+  } catch (error) {
+    if (import_provider8.JSONParseError.isInstance(error) || import_provider8.TypeValidationError.isInstance(error)) {
+      throw error;
+    }
+    throw new import_provider8.JSONParseError({ text, cause: error });
+  }
+}
+async function safeParseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return { success: true, value, rawValue: value };
+    }
+    return await safeValidateTypes({ value, schema });
+  } catch (error) {
+    return {
+      success: false,
+      error: import_provider8.JSONParseError.isInstance(error) ? error : new import_provider8.JSONParseError({ text, cause: error }),
+      rawValue: void 0
+    };
+  }
+}
+function isParsableJson(input) {
+  try {
+    secureJsonParse(input);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// src/parse-json-event-stream.ts
+var import_stream = __nccwpck_require__(3832);
+function parseJsonEventStream({
+  stream,
+  schema
+}) {
+  return stream.pipeThrough(new TextDecoderStream()).pipeThrough(new import_stream.EventSourceParserStream()).pipeThrough(
+    new TransformStream({
+      async transform({ data }, controller) {
+        if (data === "[DONE]") {
+          return;
+        }
+        controller.enqueue(await safeParseJSON({ text: data, schema }));
+      }
+    })
+  );
+}
+
+// src/parse-provider-options.ts
+var import_provider9 = __nccwpck_require__(8091);
+async function parseProviderOptions({
+  provider,
+  providerOptions,
+  schema
+}) {
+  if ((providerOptions == null ? void 0 : providerOptions[provider]) == null) {
+    return void 0;
+  }
+  const parsedProviderOptions = await safeValidateTypes({
+    value: providerOptions[provider],
+    schema
+  });
+  if (!parsedProviderOptions.success) {
+    throw new import_provider9.InvalidArgumentError({
+      argument: "providerOptions",
+      message: `invalid ${provider} provider options`,
+      cause: parsedProviderOptions.error
+    });
+  }
+  return parsedProviderOptions.value;
+}
+
+// src/post-to-api.ts
+var import_provider10 = __nccwpck_require__(8091);
+var getOriginalFetch2 = () => globalThis.fetch;
+var postJsonToApi = async ({
+  url,
+  headers,
+  body,
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+}) => postToApi({
+  url,
+  headers: {
+    "Content-Type": "application/json",
+    ...headers
+  },
+  body: {
+    content: JSON.stringify(body),
+    values: body
+  },
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+});
+var postFormDataToApi = async ({
+  url,
+  headers,
+  formData,
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+}) => postToApi({
+  url,
+  headers,
+  body: {
+    content: formData,
+    values: Object.fromEntries(formData.entries())
+  },
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+});
+var postToApi = async ({
+  url,
+  headers = {},
+  body,
+  successfulResponseHandler,
+  failedResponseHandler,
+  abortSignal,
+  fetch = getOriginalFetch2()
+}) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: removeUndefinedEntries(headers),
+      body: body.content,
+      signal: abortSignal
+    });
+    const responseHeaders = extractResponseHeaders(response);
+    if (!response.ok) {
+      let errorInformation;
+      try {
+        errorInformation = await failedResponseHandler({
+          response,
+          url,
+          requestBodyValues: body.values
+        });
+      } catch (error) {
+        if (isAbortError(error) || import_provider10.APICallError.isInstance(error)) {
+          throw error;
+        }
+        throw new import_provider10.APICallError({
+          message: "Failed to process error response",
+          cause: error,
+          statusCode: response.status,
+          url,
+          responseHeaders,
+          requestBodyValues: body.values
+        });
+      }
+      throw errorInformation.value;
+    }
+    try {
+      return await successfulResponseHandler({
+        response,
+        url,
+        requestBodyValues: body.values
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (isAbortError(error) || import_provider10.APICallError.isInstance(error)) {
+          throw error;
+        }
+      }
+      throw new import_provider10.APICallError({
+        message: "Failed to process successful response",
+        cause: error,
+        statusCode: response.status,
+        url,
+        responseHeaders,
+        requestBodyValues: body.values
+      });
+    }
+  } catch (error) {
+    throw handleFetchError({ error, url, requestBodyValues: body.values });
+  }
+};
+
+// src/types/tool.ts
+function tool(tool2) {
+  return tool2;
+}
+function dynamicTool(tool2) {
+  return { ...tool2, type: "dynamic" };
+}
+
+// src/provider-defined-tool-factory.ts
+function createProviderDefinedToolFactory({
+  id,
+  name,
+  inputSchema
+}) {
+  return ({
+    execute,
+    outputSchema,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable,
+    ...args
+  }) => tool({
+    type: "provider-defined",
+    id,
+    name,
+    args,
+    inputSchema,
+    outputSchema,
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable
+  });
+}
+function createProviderDefinedToolFactoryWithOutputSchema({
+  id,
+  name,
+  inputSchema,
+  outputSchema
+}) {
+  return ({
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable,
+    ...args
+  }) => tool({
+    type: "provider-defined",
+    id,
+    name,
+    args,
+    inputSchema,
+    outputSchema,
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable
+  });
+}
+
+// src/resolve.ts
+async function resolve(value) {
+  if (typeof value === "function") {
+    value = value();
+  }
+  return Promise.resolve(value);
+}
+
+// src/response-handler.ts
+var import_provider11 = __nccwpck_require__(8091);
+var createJsonErrorResponseHandler = ({
+  errorSchema,
+  errorToMessage,
+  isRetryable
+}) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const responseHeaders = extractResponseHeaders(response);
+  if (responseBody.trim() === "") {
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
+  }
+  try {
+    const parsedError = await parseJSON({
+      text: responseBody,
+      schema: errorSchema
+    });
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: errorToMessage(parsedError),
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        data: parsedError,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response, parsedError)
+      })
+    };
+  } catch (parseError) {
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
+  }
+};
+var createEventSourceResponseHandler = (chunkSchema) => async ({ response }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (response.body == null) {
+    throw new import_provider11.EmptyResponseBodyError({});
+  }
+  return {
+    responseHeaders,
+    value: parseJsonEventStream({
+      stream: response.body,
+      schema: chunkSchema
+    })
+  };
+};
+var createJsonStreamResponseHandler = (chunkSchema) => async ({ response }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (response.body == null) {
+    throw new import_provider11.EmptyResponseBodyError({});
+  }
+  let buffer = "";
+  return {
+    responseHeaders,
+    value: response.body.pipeThrough(new TextDecoderStream()).pipeThrough(
+      new TransformStream({
+        async transform(chunkText, controller) {
+          if (chunkText.endsWith("\n")) {
+            controller.enqueue(
+              await safeParseJSON({
+                text: buffer + chunkText,
+                schema: chunkSchema
+              })
+            );
+            buffer = "";
+          } else {
+            buffer += chunkText;
+          }
+        }
+      })
+    )
+  };
+};
+var createJsonResponseHandler = (responseSchema) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const parsedResult = await safeParseJSON({
+    text: responseBody,
+    schema: responseSchema
+  });
+  const responseHeaders = extractResponseHeaders(response);
+  if (!parsedResult.success) {
+    throw new import_provider11.APICallError({
+      message: "Invalid JSON response",
+      cause: parsedResult.error,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody,
+      url,
+      requestBodyValues
+    });
+  }
+  return {
+    responseHeaders,
+    value: parsedResult.value,
+    rawValue: parsedResult.rawValue
+  };
+};
+var createBinaryResponseHandler = () => async ({ response, url, requestBodyValues }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (!response.body) {
+    throw new import_provider11.APICallError({
+      message: "Response body is empty",
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody: void 0
+    });
+  }
+  try {
+    const buffer = await response.arrayBuffer();
+    return {
+      responseHeaders,
+      value: new Uint8Array(buffer)
+    };
+  } catch (error) {
+    throw new import_provider11.APICallError({
+      message: "Failed to read response as array buffer",
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody: void 0,
+      cause: error
+    });
+  }
+};
+var createStatusCodeErrorResponseHandler = () => async ({ response, url, requestBodyValues }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  const responseBody = await response.text();
+  return {
+    responseHeaders,
+    value: new import_provider11.APICallError({
+      message: response.statusText,
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody
+    })
+  };
+};
+
+// src/zod-schema.ts
+var z4 = __toESM(__nccwpck_require__(5350));
+var import_zod_to_json_schema = __toESM(__nccwpck_require__(2708));
+function zod3Schema(zodSchema2, options) {
+  var _a;
+  const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
+  return jsonSchema(
+    (0, import_zod_to_json_schema.default)(zodSchema2, {
+      $refStrategy: useReferences ? "root" : "none",
+      target: "jsonSchema7"
+      // note: openai mode breaks various gemini conversions
+    }),
+    {
+      validate: async (value) => {
+        const result = await zodSchema2.safeParseAsync(value);
+        return result.success ? { success: true, value: result.data } : { success: false, error: result.error };
+      }
+    }
+  );
+}
+function zod4Schema(zodSchema2, options) {
+  var _a;
+  const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
+  const z4JSONSchema = z4.toJSONSchema(zodSchema2, {
+    target: "draft-7",
+    io: "output",
+    reused: useReferences ? "ref" : "inline"
+  });
+  return jsonSchema(z4JSONSchema, {
+    validate: async (value) => {
+      const result = await z4.safeParseAsync(zodSchema2, value);
+      return result.success ? { success: true, value: result.data } : { success: false, error: result.error };
+    }
+  });
+}
+function isZod4Schema(zodSchema2) {
+  return "_zod" in zodSchema2;
+}
+function zodSchema(zodSchema2, options) {
+  if (isZod4Schema(zodSchema2)) {
+    return zod4Schema(zodSchema2, options);
+  } else {
+    return zod3Schema(zodSchema2, options);
+  }
+}
+
+// src/schema.ts
+var schemaSymbol = Symbol.for("vercel.ai.schema");
+function jsonSchema(jsonSchema2, {
+  validate
+} = {}) {
+  return {
+    [schemaSymbol]: true,
+    _type: void 0,
+    // should never be used directly
+    [validatorSymbol]: true,
+    jsonSchema: jsonSchema2,
+    validate
+  };
+}
+function isSchema(value) {
+  return typeof value === "object" && value !== null && schemaSymbol in value && value[schemaSymbol] === true && "jsonSchema" in value && "validate" in value;
+}
+function asSchema(schema) {
+  return schema == null ? jsonSchema({
+    properties: {},
+    additionalProperties: false
+  }) : isSchema(schema) ? schema : zodSchema(schema);
+}
+
+// src/uint8-utils.ts
+var { btoa, atob } = globalThis;
+function convertBase64ToUint8Array(base64String) {
+  const base64Url = base64String.replace(/-/g, "+").replace(/_/g, "/");
+  const latin1string = atob(base64Url);
+  return Uint8Array.from(latin1string, (byte) => byte.codePointAt(0));
+}
+function convertUint8ArrayToBase64(array) {
+  let latin1string = "";
+  for (let i = 0; i < array.length; i++) {
+    latin1string += String.fromCodePoint(array[i]);
+  }
+  return btoa(latin1string);
+}
+function convertToBase64(value) {
+  return value instanceof Uint8Array ? convertUint8ArrayToBase64(value) : value;
+}
+
+// src/without-trailing-slash.ts
+function withoutTrailingSlash(url) {
+  return url == null ? void 0 : url.replace(/\/$/, "");
+}
+
+// src/is-async-iterable.ts
+function isAsyncIterable(obj) {
+  return obj != null && typeof obj[Symbol.asyncIterator] === "function";
+}
+
+// src/types/execute-tool.ts
+async function* executeTool({
+  execute,
+  input,
+  options
+}) {
+  const result = execute(input, options);
+  if (isAsyncIterable(result)) {
+    let lastOutput;
+    for await (const output of result) {
+      lastOutput = output;
+      yield { type: "preliminary", output };
+    }
+    yield { type: "final", output: lastOutput };
+  } else {
+    yield { type: "final", output: await result };
+  }
+}
+
+// src/index.ts
+__reExport(src_exports, __nccwpck_require__(4302), module.exports);
+var import_stream2 = __nccwpck_require__(3832);
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 8091:
 /***/ ((module) => {
 
 "use strict";
@@ -9854,7 +12231,7 @@ var createStatusCodeErrorResponseHandler = () => async ({ response, url, request
 
 // src/zod-schema.ts
 var z4 = __toESM(__nccwpck_require__(5350));
-var import_zod_to_json_schema = __toESM(__nccwpck_require__(9));
+var import_zod_to_json_schema = __toESM(__nccwpck_require__(2708));
 function zod3Schema(zodSchema2, options) {
   var _a;
   const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
@@ -13671,1196 +16048,6 @@ var UnsupportedJSONSchemaError = class extends Error {
 
 /***/ }),
 
-/***/ 7170:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  callChatApi: () => callChatApi,
-  callCompletionApi: () => callCompletionApi,
-  createChunkDecoder: () => createChunkDecoder,
-  formatStreamPart: () => formatStreamPart,
-  generateId: () => import_provider_utils2.generateId,
-  isDeepEqualData: () => isDeepEqualData,
-  parseComplexResponse: () => parseComplexResponse,
-  parsePartialJson: () => parsePartialJson,
-  parseStreamPart: () => parseStreamPart,
-  processChatStream: () => processChatStream,
-  readDataStream: () => readDataStream
-});
-module.exports = __toCommonJS(src_exports);
-var import_provider_utils2 = __nccwpck_require__(9711);
-
-// src/parse-complex-response.ts
-var import_provider_utils = __nccwpck_require__(9711);
-
-// src/stream-parts.ts
-var textStreamPart = {
-  code: "0",
-  name: "text",
-  parse: (value) => {
-    if (typeof value !== "string") {
-      throw new Error('"text" parts expect a string value.');
-    }
-    return { type: "text", value };
-  }
-};
-var functionCallStreamPart = {
-  code: "1",
-  name: "function_call",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("function_call" in value) || typeof value.function_call !== "object" || value.function_call == null || !("name" in value.function_call) || !("arguments" in value.function_call) || typeof value.function_call.name !== "string" || typeof value.function_call.arguments !== "string") {
-      throw new Error(
-        '"function_call" parts expect an object with a "function_call" property.'
-      );
-    }
-    return {
-      type: "function_call",
-      value
-    };
-  }
-};
-var dataStreamPart = {
-  code: "2",
-  name: "data",
-  parse: (value) => {
-    if (!Array.isArray(value)) {
-      throw new Error('"data" parts expect an array value.');
-    }
-    return { type: "data", value };
-  }
-};
-var errorStreamPart = {
-  code: "3",
-  name: "error",
-  parse: (value) => {
-    if (typeof value !== "string") {
-      throw new Error('"error" parts expect a string value.');
-    }
-    return { type: "error", value };
-  }
-};
-var assistantMessageStreamPart = {
-  code: "4",
-  name: "assistant_message",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("id" in value) || !("role" in value) || !("content" in value) || typeof value.id !== "string" || typeof value.role !== "string" || value.role !== "assistant" || !Array.isArray(value.content) || !value.content.every(
-      (item) => item != null && typeof item === "object" && "type" in item && item.type === "text" && "text" in item && item.text != null && typeof item.text === "object" && "value" in item.text && typeof item.text.value === "string"
-    )) {
-      throw new Error(
-        '"assistant_message" parts expect an object with an "id", "role", and "content" property.'
-      );
-    }
-    return {
-      type: "assistant_message",
-      value
-    };
-  }
-};
-var assistantControlDataStreamPart = {
-  code: "5",
-  name: "assistant_control_data",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("threadId" in value) || !("messageId" in value) || typeof value.threadId !== "string" || typeof value.messageId !== "string") {
-      throw new Error(
-        '"assistant_control_data" parts expect an object with a "threadId" and "messageId" property.'
-      );
-    }
-    return {
-      type: "assistant_control_data",
-      value: {
-        threadId: value.threadId,
-        messageId: value.messageId
-      }
-    };
-  }
-};
-var dataMessageStreamPart = {
-  code: "6",
-  name: "data_message",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("role" in value) || !("data" in value) || typeof value.role !== "string" || value.role !== "data") {
-      throw new Error(
-        '"data_message" parts expect an object with a "role" and "data" property.'
-      );
-    }
-    return {
-      type: "data_message",
-      value
-    };
-  }
-};
-var toolCallsStreamPart = {
-  code: "7",
-  name: "tool_calls",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("tool_calls" in value) || typeof value.tool_calls !== "object" || value.tool_calls == null || !Array.isArray(value.tool_calls) || value.tool_calls.some(
-      (tc) => tc == null || typeof tc !== "object" || !("id" in tc) || typeof tc.id !== "string" || !("type" in tc) || typeof tc.type !== "string" || !("function" in tc) || tc.function == null || typeof tc.function !== "object" || !("arguments" in tc.function) || typeof tc.function.name !== "string" || typeof tc.function.arguments !== "string"
-    )) {
-      throw new Error(
-        '"tool_calls" parts expect an object with a ToolCallPayload.'
-      );
-    }
-    return {
-      type: "tool_calls",
-      value
-    };
-  }
-};
-var messageAnnotationsStreamPart = {
-  code: "8",
-  name: "message_annotations",
-  parse: (value) => {
-    if (!Array.isArray(value)) {
-      throw new Error('"message_annotations" parts expect an array value.');
-    }
-    return { type: "message_annotations", value };
-  }
-};
-var toolCallStreamPart = {
-  code: "9",
-  name: "tool_call",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("toolCallId" in value) || typeof value.toolCallId !== "string" || !("toolName" in value) || typeof value.toolName !== "string" || !("args" in value) || typeof value.args !== "object") {
-      throw new Error(
-        '"tool_call" parts expect an object with a "toolCallId", "toolName", and "args" property.'
-      );
-    }
-    return {
-      type: "tool_call",
-      value
-    };
-  }
-};
-var toolResultStreamPart = {
-  code: "a",
-  name: "tool_result",
-  parse: (value) => {
-    if (value == null || typeof value !== "object" || !("toolCallId" in value) || typeof value.toolCallId !== "string" || !("toolName" in value) || typeof value.toolName !== "string" || !("args" in value) || typeof value.args !== "object" || !("result" in value)) {
-      throw new Error(
-        '"tool_result" parts expect an object with a "toolCallId", "toolName", "args", and "result" property.'
-      );
-    }
-    return {
-      type: "tool_result",
-      value
-    };
-  }
-};
-var streamParts = [
-  textStreamPart,
-  functionCallStreamPart,
-  dataStreamPart,
-  errorStreamPart,
-  assistantMessageStreamPart,
-  assistantControlDataStreamPart,
-  dataMessageStreamPart,
-  toolCallsStreamPart,
-  messageAnnotationsStreamPart,
-  toolCallStreamPart,
-  toolResultStreamPart
-];
-var streamPartsByCode = {
-  [textStreamPart.code]: textStreamPart,
-  [functionCallStreamPart.code]: functionCallStreamPart,
-  [dataStreamPart.code]: dataStreamPart,
-  [errorStreamPart.code]: errorStreamPart,
-  [assistantMessageStreamPart.code]: assistantMessageStreamPart,
-  [assistantControlDataStreamPart.code]: assistantControlDataStreamPart,
-  [dataMessageStreamPart.code]: dataMessageStreamPart,
-  [toolCallsStreamPart.code]: toolCallsStreamPart,
-  [messageAnnotationsStreamPart.code]: messageAnnotationsStreamPart,
-  [toolCallStreamPart.code]: toolCallStreamPart,
-  [toolResultStreamPart.code]: toolResultStreamPart
-};
-var StreamStringPrefixes = {
-  [textStreamPart.name]: textStreamPart.code,
-  [functionCallStreamPart.name]: functionCallStreamPart.code,
-  [dataStreamPart.name]: dataStreamPart.code,
-  [errorStreamPart.name]: errorStreamPart.code,
-  [assistantMessageStreamPart.name]: assistantMessageStreamPart.code,
-  [assistantControlDataStreamPart.name]: assistantControlDataStreamPart.code,
-  [dataMessageStreamPart.name]: dataMessageStreamPart.code,
-  [toolCallsStreamPart.name]: toolCallsStreamPart.code,
-  [messageAnnotationsStreamPart.name]: messageAnnotationsStreamPart.code,
-  [toolCallStreamPart.name]: toolCallStreamPart.code,
-  [toolResultStreamPart.name]: toolResultStreamPart.code
-};
-var validCodes = streamParts.map((part) => part.code);
-var parseStreamPart = (line) => {
-  const firstSeparatorIndex = line.indexOf(":");
-  if (firstSeparatorIndex === -1) {
-    throw new Error("Failed to parse stream string. No separator found.");
-  }
-  const prefix = line.slice(0, firstSeparatorIndex);
-  if (!validCodes.includes(prefix)) {
-    throw new Error(`Failed to parse stream string. Invalid code ${prefix}.`);
-  }
-  const code = prefix;
-  const textValue = line.slice(firstSeparatorIndex + 1);
-  const jsonValue = JSON.parse(textValue);
-  return streamPartsByCode[code].parse(jsonValue);
-};
-function formatStreamPart(type, value) {
-  const streamPart = streamParts.find((part) => part.name === type);
-  if (!streamPart) {
-    throw new Error(`Invalid stream part type: ${type}`);
-  }
-  return `${streamPart.code}:${JSON.stringify(value)}
-`;
-}
-
-// src/read-data-stream.ts
-var NEWLINE = "\n".charCodeAt(0);
-function concatChunks(chunks, totalLength) {
-  const concatenatedChunks = new Uint8Array(totalLength);
-  let offset = 0;
-  for (const chunk of chunks) {
-    concatenatedChunks.set(chunk, offset);
-    offset += chunk.length;
-  }
-  chunks.length = 0;
-  return concatenatedChunks;
-}
-async function* readDataStream(reader, {
-  isAborted
-} = {}) {
-  const decoder = new TextDecoder();
-  const chunks = [];
-  let totalLength = 0;
-  while (true) {
-    const { value } = await reader.read();
-    if (value) {
-      chunks.push(value);
-      totalLength += value.length;
-      if (value[value.length - 1] !== NEWLINE) {
-        continue;
-      }
-    }
-    if (chunks.length === 0) {
-      break;
-    }
-    const concatenatedChunks = concatChunks(chunks, totalLength);
-    totalLength = 0;
-    const streamParts2 = decoder.decode(concatenatedChunks, { stream: true }).split("\n").filter((line) => line !== "").map(parseStreamPart);
-    for (const streamPart of streamParts2) {
-      yield streamPart;
-    }
-    if (isAborted == null ? void 0 : isAborted()) {
-      reader.cancel();
-      break;
-    }
-  }
-}
-
-// src/parse-complex-response.ts
-function assignAnnotationsToMessage(message, annotations) {
-  if (!message || !annotations || !annotations.length)
-    return message;
-  return { ...message, annotations: [...annotations] };
-}
-async function parseComplexResponse({
-  reader,
-  abortControllerRef,
-  update,
-  onToolCall,
-  onFinish,
-  generateId: generateId2 = import_provider_utils.generateId,
-  getCurrentDate = () => /* @__PURE__ */ new Date()
-}) {
-  const createdAt = getCurrentDate();
-  const prefixMap = {
-    data: []
-  };
-  let message_annotations = void 0;
-  for await (const { type, value } of readDataStream(reader, {
-    isAborted: () => (abortControllerRef == null ? void 0 : abortControllerRef.current) === null
-  })) {
-    if (type === "text") {
-      if (prefixMap["text"]) {
-        prefixMap["text"] = {
-          ...prefixMap["text"],
-          content: (prefixMap["text"].content || "") + value
-        };
-      } else {
-        prefixMap["text"] = {
-          id: generateId2(),
-          role: "assistant",
-          content: value,
-          createdAt
-        };
-      }
-    }
-    if (type === "tool_call") {
-      if (prefixMap.text == null) {
-        prefixMap.text = {
-          id: generateId2(),
-          role: "assistant",
-          content: "",
-          createdAt
-        };
-      }
-      if (prefixMap.text.toolInvocations == null) {
-        prefixMap.text.toolInvocations = [];
-      }
-      prefixMap.text.toolInvocations.push(value);
-      if (onToolCall) {
-        const result = await onToolCall({ toolCall: value });
-        if (result != null) {
-          prefixMap.text.toolInvocations[prefixMap.text.toolInvocations.length - 1] = { ...value, result };
-        }
-      }
-    } else if (type === "tool_result") {
-      if (prefixMap.text == null) {
-        prefixMap.text = {
-          id: generateId2(),
-          role: "assistant",
-          content: "",
-          createdAt
-        };
-      }
-      if (prefixMap.text.toolInvocations == null) {
-        prefixMap.text.toolInvocations = [];
-      }
-      const toolInvocationIndex = prefixMap.text.toolInvocations.findIndex(
-        (invocation) => invocation.toolCallId === value.toolCallId
-      );
-      if (toolInvocationIndex !== -1) {
-        prefixMap.text.toolInvocations[toolInvocationIndex] = value;
-      } else {
-        prefixMap.text.toolInvocations.push(value);
-      }
-    }
-    let functionCallMessage = null;
-    if (type === "function_call") {
-      prefixMap["function_call"] = {
-        id: generateId2(),
-        role: "assistant",
-        content: "",
-        function_call: value.function_call,
-        name: value.function_call.name,
-        createdAt
-      };
-      functionCallMessage = prefixMap["function_call"];
-    }
-    let toolCallMessage = null;
-    if (type === "tool_calls") {
-      prefixMap["tool_calls"] = {
-        id: generateId2(),
-        role: "assistant",
-        content: "",
-        tool_calls: value.tool_calls,
-        createdAt
-      };
-      toolCallMessage = prefixMap["tool_calls"];
-    }
-    if (type === "data") {
-      prefixMap["data"].push(...value);
-    }
-    let responseMessage = prefixMap["text"];
-    if (type === "message_annotations") {
-      if (!message_annotations) {
-        message_annotations = [...value];
-      } else {
-        message_annotations.push(...value);
-      }
-      functionCallMessage = assignAnnotationsToMessage(
-        prefixMap["function_call"],
-        message_annotations
-      );
-      toolCallMessage = assignAnnotationsToMessage(
-        prefixMap["tool_calls"],
-        message_annotations
-      );
-      responseMessage = assignAnnotationsToMessage(
-        prefixMap["text"],
-        message_annotations
-      );
-    }
-    if (message_annotations == null ? void 0 : message_annotations.length) {
-      const messagePrefixKeys = [
-        "text",
-        "function_call",
-        "tool_calls"
-      ];
-      messagePrefixKeys.forEach((key) => {
-        if (prefixMap[key]) {
-          prefixMap[key].annotations = [...message_annotations];
-        }
-      });
-    }
-    const merged = [functionCallMessage, toolCallMessage, responseMessage].filter(Boolean).map((message) => ({
-      ...assignAnnotationsToMessage(message, message_annotations)
-    }));
-    update(merged, [...prefixMap["data"]]);
-  }
-  onFinish == null ? void 0 : onFinish(prefixMap);
-  return {
-    messages: [
-      prefixMap.text,
-      prefixMap.function_call,
-      prefixMap.tool_calls
-    ].filter(Boolean),
-    data: prefixMap.data
-  };
-}
-
-// src/call-chat-api.ts
-var getOriginalFetch = () => fetch;
-async function callChatApi({
-  api,
-  body,
-  streamMode = "stream-data",
-  credentials,
-  headers,
-  abortController,
-  restoreMessagesOnFailure,
-  onResponse,
-  onUpdate,
-  onFinish,
-  onToolCall,
-  generateId: generateId2,
-  fetch: fetch2 = getOriginalFetch()
-}) {
-  var _a, _b;
-  const response = await fetch2(api, {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-      ...headers
-    },
-    signal: (_a = abortController == null ? void 0 : abortController()) == null ? void 0 : _a.signal,
-    credentials
-  }).catch((err) => {
-    restoreMessagesOnFailure();
-    throw err;
-  });
-  if (onResponse) {
-    try {
-      await onResponse(response);
-    } catch (err) {
-      throw err;
-    }
-  }
-  if (!response.ok) {
-    restoreMessagesOnFailure();
-    throw new Error(
-      (_b = await response.text()) != null ? _b : "Failed to fetch the chat response."
-    );
-  }
-  if (!response.body) {
-    throw new Error("The response body is empty.");
-  }
-  const reader = response.body.getReader();
-  switch (streamMode) {
-    case "text": {
-      const decoder = createChunkDecoder();
-      const resultMessage = {
-        id: generateId2(),
-        createdAt: /* @__PURE__ */ new Date(),
-        role: "assistant",
-        content: ""
-      };
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        resultMessage.content += decoder(value);
-        resultMessage.id = generateId2();
-        onUpdate([{ ...resultMessage }], []);
-        if ((abortController == null ? void 0 : abortController()) === null) {
-          reader.cancel();
-          break;
-        }
-      }
-      onFinish == null ? void 0 : onFinish(resultMessage);
-      return {
-        messages: [resultMessage],
-        data: []
-      };
-    }
-    case "stream-data": {
-      return await parseComplexResponse({
-        reader,
-        abortControllerRef: abortController != null ? { current: abortController() } : void 0,
-        update: onUpdate,
-        onToolCall,
-        onFinish(prefixMap) {
-          if (onFinish && prefixMap.text != null) {
-            onFinish(prefixMap.text);
-          }
-        },
-        generateId: generateId2
-      });
-    }
-    default: {
-      const exhaustiveCheck = streamMode;
-      throw new Error(`Unknown stream mode: ${exhaustiveCheck}`);
-    }
-  }
-}
-
-// src/call-completion-api.ts
-var getOriginalFetch2 = () => fetch;
-async function callCompletionApi({
-  api,
-  prompt,
-  credentials,
-  headers,
-  body,
-  streamMode = "stream-data",
-  setCompletion,
-  setLoading,
-  setError,
-  setAbortController,
-  onResponse,
-  onFinish,
-  onError,
-  onData,
-  fetch: fetch2 = getOriginalFetch2()
-}) {
-  try {
-    setLoading(true);
-    setError(void 0);
-    const abortController = new AbortController();
-    setAbortController(abortController);
-    setCompletion("");
-    const res = await fetch2(api, {
-      method: "POST",
-      body: JSON.stringify({
-        prompt,
-        ...body
-      }),
-      credentials,
-      headers: {
-        "Content-Type": "application/json",
-        ...headers
-      },
-      signal: abortController.signal
-    }).catch((err) => {
-      throw err;
-    });
-    if (onResponse) {
-      try {
-        await onResponse(res);
-      } catch (err) {
-        throw err;
-      }
-    }
-    if (!res.ok) {
-      throw new Error(
-        await res.text() || "Failed to fetch the chat response."
-      );
-    }
-    if (!res.body) {
-      throw new Error("The response body is empty.");
-    }
-    let result = "";
-    const reader = res.body.getReader();
-    switch (streamMode) {
-      case "text": {
-        const decoder = createChunkDecoder();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          result += decoder(value);
-          setCompletion(result);
-          if (abortController === null) {
-            reader.cancel();
-            break;
-          }
-        }
-        break;
-      }
-      case "stream-data": {
-        for await (const { type, value } of readDataStream(reader, {
-          isAborted: () => abortController === null
-        })) {
-          switch (type) {
-            case "text": {
-              result += value;
-              setCompletion(result);
-              break;
-            }
-            case "data": {
-              onData == null ? void 0 : onData(value);
-              break;
-            }
-          }
-        }
-        break;
-      }
-      default: {
-        const exhaustiveCheck = streamMode;
-        throw new Error(`Unknown stream mode: ${exhaustiveCheck}`);
-      }
-    }
-    if (onFinish) {
-      onFinish(prompt, result);
-    }
-    setAbortController(null);
-    return result;
-  } catch (err) {
-    if (err.name === "AbortError") {
-      setAbortController(null);
-      return null;
-    }
-    if (err instanceof Error) {
-      if (onError) {
-        onError(err);
-      }
-    }
-    setError(err);
-  } finally {
-    setLoading(false);
-  }
-}
-
-// src/create-chunk-decoder.ts
-function createChunkDecoder(complex) {
-  const decoder = new TextDecoder();
-  if (!complex) {
-    return function(chunk) {
-      if (!chunk)
-        return "";
-      return decoder.decode(chunk, { stream: true });
-    };
-  }
-  return function(chunk) {
-    const decoded = decoder.decode(chunk, { stream: true }).split("\n").filter((line) => line !== "");
-    return decoded.map(parseStreamPart).filter(Boolean);
-  };
-}
-
-// src/is-deep-equal-data.ts
-function isDeepEqualData(obj1, obj2) {
-  if (obj1 === obj2)
-    return true;
-  if (obj1 == null || obj2 == null)
-    return false;
-  if (typeof obj1 !== "object" && typeof obj2 !== "object")
-    return obj1 === obj2;
-  if (obj1.constructor !== obj2.constructor)
-    return false;
-  if (obj1 instanceof Date && obj2 instanceof Date) {
-    return obj1.getTime() === obj2.getTime();
-  }
-  if (Array.isArray(obj1)) {
-    if (obj1.length !== obj2.length)
-      return false;
-    for (let i = 0; i < obj1.length; i++) {
-      if (!isDeepEqualData(obj1[i], obj2[i]))
-        return false;
-    }
-    return true;
-  }
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-  if (keys1.length !== keys2.length)
-    return false;
-  for (const key of keys1) {
-    if (!keys2.includes(key))
-      return false;
-    if (!isDeepEqualData(obj1[key], obj2[key]))
-      return false;
-  }
-  return true;
-}
-
-// src/parse-partial-json.ts
-var import_secure_json_parse = __toESM(__nccwpck_require__(4113));
-
-// src/fix-json.ts
-function fixJson(input) {
-  const stack = ["ROOT"];
-  let lastValidIndex = -1;
-  let literalStart = null;
-  function processValueStart(char, i, swapState) {
-    {
-      switch (char) {
-        case '"': {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_STRING");
-          break;
-        }
-        case "f":
-        case "t":
-        case "n": {
-          lastValidIndex = i;
-          literalStart = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_LITERAL");
-          break;
-        }
-        case "-": {
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_NUMBER");
-          break;
-        }
-        case "0":
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-        case "6":
-        case "7":
-        case "8":
-        case "9": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_NUMBER");
-          break;
-        }
-        case "{": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_OBJECT_START");
-          break;
-        }
-        case "[": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_ARRAY_START");
-          break;
-        }
-      }
-    }
-  }
-  function processAfterObjectValue(char, i) {
-    switch (char) {
-      case ",": {
-        stack.pop();
-        stack.push("INSIDE_OBJECT_AFTER_COMMA");
-        break;
-      }
-      case "}": {
-        lastValidIndex = i;
-        stack.pop();
-        break;
-      }
-    }
-  }
-  function processAfterArrayValue(char, i) {
-    switch (char) {
-      case ",": {
-        stack.pop();
-        stack.push("INSIDE_ARRAY_AFTER_COMMA");
-        break;
-      }
-      case "]": {
-        lastValidIndex = i;
-        stack.pop();
-        break;
-      }
-    }
-  }
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-    const currentState = stack[stack.length - 1];
-    switch (currentState) {
-      case "ROOT":
-        processValueStart(char, i, "FINISH");
-        break;
-      case "INSIDE_OBJECT_START": {
-        switch (char) {
-          case '"': {
-            stack.pop();
-            stack.push("INSIDE_OBJECT_KEY");
-            break;
-          }
-          case "}": {
-            lastValidIndex = i;
-            stack.pop();
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_OBJECT_AFTER_COMMA": {
-        switch (char) {
-          case '"': {
-            stack.pop();
-            stack.push("INSIDE_OBJECT_KEY");
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_OBJECT_KEY": {
-        switch (char) {
-          case '"': {
-            stack.pop();
-            stack.push("INSIDE_OBJECT_AFTER_KEY");
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_OBJECT_AFTER_KEY": {
-        switch (char) {
-          case ":": {
-            stack.pop();
-            stack.push("INSIDE_OBJECT_BEFORE_VALUE");
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_OBJECT_BEFORE_VALUE": {
-        processValueStart(char, i, "INSIDE_OBJECT_AFTER_VALUE");
-        break;
-      }
-      case "INSIDE_OBJECT_AFTER_VALUE": {
-        processAfterObjectValue(char, i);
-        break;
-      }
-      case "INSIDE_STRING": {
-        switch (char) {
-          case '"': {
-            stack.pop();
-            lastValidIndex = i;
-            break;
-          }
-          case "\\": {
-            stack.push("INSIDE_STRING_ESCAPE");
-            break;
-          }
-          default: {
-            lastValidIndex = i;
-          }
-        }
-        break;
-      }
-      case "INSIDE_ARRAY_START": {
-        switch (char) {
-          case "]": {
-            lastValidIndex = i;
-            stack.pop();
-            break;
-          }
-          default: {
-            lastValidIndex = i;
-            processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_ARRAY_AFTER_VALUE": {
-        switch (char) {
-          case ",": {
-            stack.pop();
-            stack.push("INSIDE_ARRAY_AFTER_COMMA");
-            break;
-          }
-          case "]": {
-            lastValidIndex = i;
-            stack.pop();
-            break;
-          }
-          default: {
-            lastValidIndex = i;
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_ARRAY_AFTER_COMMA": {
-        processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
-        break;
-      }
-      case "INSIDE_STRING_ESCAPE": {
-        stack.pop();
-        lastValidIndex = i;
-        break;
-      }
-      case "INSIDE_NUMBER": {
-        switch (char) {
-          case "0":
-          case "1":
-          case "2":
-          case "3":
-          case "4":
-          case "5":
-          case "6":
-          case "7":
-          case "8":
-          case "9": {
-            lastValidIndex = i;
-            break;
-          }
-          case "e":
-          case "E":
-          case "-":
-          case ".": {
-            break;
-          }
-          case ",": {
-            stack.pop();
-            if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
-              processAfterArrayValue(char, i);
-            }
-            if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
-              processAfterObjectValue(char, i);
-            }
-            break;
-          }
-          case "}": {
-            stack.pop();
-            if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
-              processAfterObjectValue(char, i);
-            }
-            break;
-          }
-          case "]": {
-            stack.pop();
-            if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
-              processAfterArrayValue(char, i);
-            }
-            break;
-          }
-          default: {
-            stack.pop();
-            break;
-          }
-        }
-        break;
-      }
-      case "INSIDE_LITERAL": {
-        const partialLiteral = input.substring(literalStart, i + 1);
-        if (!"false".startsWith(partialLiteral) && !"true".startsWith(partialLiteral) && !"null".startsWith(partialLiteral)) {
-          stack.pop();
-          if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
-            processAfterObjectValue(char, i);
-          } else if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
-            processAfterArrayValue(char, i);
-          }
-        } else {
-          lastValidIndex = i;
-        }
-        break;
-      }
-    }
-  }
-  let result = input.slice(0, lastValidIndex + 1);
-  for (let i = stack.length - 1; i >= 0; i--) {
-    const state = stack[i];
-    switch (state) {
-      case "INSIDE_STRING": {
-        result += '"';
-        break;
-      }
-      case "INSIDE_OBJECT_KEY":
-      case "INSIDE_OBJECT_AFTER_KEY":
-      case "INSIDE_OBJECT_AFTER_COMMA":
-      case "INSIDE_OBJECT_START":
-      case "INSIDE_OBJECT_BEFORE_VALUE":
-      case "INSIDE_OBJECT_AFTER_VALUE": {
-        result += "}";
-        break;
-      }
-      case "INSIDE_ARRAY_START":
-      case "INSIDE_ARRAY_AFTER_COMMA":
-      case "INSIDE_ARRAY_AFTER_VALUE": {
-        result += "]";
-        break;
-      }
-      case "INSIDE_LITERAL": {
-        const partialLiteral = input.substring(literalStart, input.length);
-        if ("true".startsWith(partialLiteral)) {
-          result += "true".slice(partialLiteral.length);
-        } else if ("false".startsWith(partialLiteral)) {
-          result += "false".slice(partialLiteral.length);
-        } else if ("null".startsWith(partialLiteral)) {
-          result += "null".slice(partialLiteral.length);
-        }
-      }
-    }
-  }
-  return result;
-}
-
-// src/parse-partial-json.ts
-function parsePartialJson(jsonText) {
-  if (jsonText == null) {
-    return void 0;
-  }
-  try {
-    return import_secure_json_parse.default.parse(jsonText);
-  } catch (ignored) {
-    try {
-      const fixedJsonText = fixJson(jsonText);
-      return import_secure_json_parse.default.parse(fixedJsonText);
-    } catch (ignored2) {
-    }
-  }
-  return void 0;
-}
-
-// src/process-chat-stream.ts
-async function processChatStream({
-  getStreamedResponse,
-  experimental_onFunctionCall,
-  experimental_onToolCall,
-  updateChatRequest,
-  getCurrentMessages
-}) {
-  while (true) {
-    const messagesAndDataOrJustMessage = await getStreamedResponse();
-    if ("messages" in messagesAndDataOrJustMessage) {
-      let hasFollowingResponse = false;
-      for (const message of messagesAndDataOrJustMessage.messages) {
-        if ((message.function_call === void 0 || typeof message.function_call === "string") && (message.tool_calls === void 0 || typeof message.tool_calls === "string")) {
-          continue;
-        }
-        hasFollowingResponse = true;
-        if (experimental_onFunctionCall) {
-          const functionCall = message.function_call;
-          if (typeof functionCall !== "object") {
-            console.warn(
-              "experimental_onFunctionCall should not be defined when using tools"
-            );
-            continue;
-          }
-          const functionCallResponse = await experimental_onFunctionCall(
-            getCurrentMessages(),
-            functionCall
-          );
-          if (functionCallResponse === void 0) {
-            hasFollowingResponse = false;
-            break;
-          }
-          updateChatRequest(functionCallResponse);
-        }
-        if (experimental_onToolCall) {
-          const toolCalls = message.tool_calls;
-          if (!Array.isArray(toolCalls) || toolCalls.some((toolCall) => typeof toolCall !== "object")) {
-            console.warn(
-              "experimental_onToolCall should not be defined when using tools"
-            );
-            continue;
-          }
-          const toolCallResponse = await experimental_onToolCall(getCurrentMessages(), toolCalls);
-          if (toolCallResponse === void 0) {
-            hasFollowingResponse = false;
-            break;
-          }
-          updateChatRequest(toolCallResponse);
-        }
-      }
-      if (!hasFollowingResponse) {
-        break;
-      }
-    } else {
-      let fixFunctionCallArguments2 = function(response) {
-        for (const message of response.messages) {
-          if (message.tool_calls !== void 0) {
-            for (const toolCall of message.tool_calls) {
-              if (typeof toolCall === "object") {
-                if (toolCall.function.arguments && typeof toolCall.function.arguments !== "string") {
-                  toolCall.function.arguments = JSON.stringify(
-                    toolCall.function.arguments
-                  );
-                }
-              }
-            }
-          }
-          if (message.function_call !== void 0) {
-            if (typeof message.function_call === "object") {
-              if (message.function_call.arguments && typeof message.function_call.arguments !== "string") {
-                message.function_call.arguments = JSON.stringify(
-                  message.function_call.arguments
-                );
-              }
-            }
-          }
-        }
-      };
-      var fixFunctionCallArguments = fixFunctionCallArguments2;
-      const streamedResponseMessage = messagesAndDataOrJustMessage;
-      if ((streamedResponseMessage.function_call === void 0 || typeof streamedResponseMessage.function_call === "string") && (streamedResponseMessage.tool_calls === void 0 || typeof streamedResponseMessage.tool_calls === "string")) {
-        break;
-      }
-      if (experimental_onFunctionCall) {
-        const functionCall = streamedResponseMessage.function_call;
-        if (!(typeof functionCall === "object")) {
-          console.warn(
-            "experimental_onFunctionCall should not be defined when using tools"
-          );
-          continue;
-        }
-        const functionCallResponse = await experimental_onFunctionCall(getCurrentMessages(), functionCall);
-        if (functionCallResponse === void 0)
-          break;
-        fixFunctionCallArguments2(functionCallResponse);
-        updateChatRequest(functionCallResponse);
-      }
-      if (experimental_onToolCall) {
-        const toolCalls = streamedResponseMessage.tool_calls;
-        if (!(typeof toolCalls === "object")) {
-          console.warn(
-            "experimental_onToolCall should not be defined when using functions"
-          );
-          continue;
-        }
-        const toolCallResponse = await experimental_onToolCall(getCurrentMessages(), toolCalls);
-        if (toolCallResponse === void 0)
-          break;
-        fixFunctionCallArguments2(toolCallResponse);
-        updateChatRequest(toolCallResponse);
-      }
-    }
-  }
-}
-// Annotate the CommonJS export names for ESM import in node:
-0 && (0);
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
 /***/ 933:
 /***/ ((module) => {
 
@@ -18556,20 +19743,37 @@ var request = withDefaults(import_endpoint.endpoint, {
 
 /***/ }),
 
-/***/ 3474:
+/***/ 2105:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
+  for (var name14 in all)
+    __defProp(target, name14, { get: all[name14], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -18589,258 +19793,5845 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// streams/index.ts
-var streams_exports = {};
-__export(streams_exports, {
-  AIStream: () => AIStream,
-  APICallError: () => import_provider8.APICallError,
-  AWSBedrockAnthropicMessagesStream: () => AWSBedrockAnthropicMessagesStream,
-  AWSBedrockAnthropicStream: () => AWSBedrockAnthropicStream,
-  AWSBedrockCohereStream: () => AWSBedrockCohereStream,
-  AWSBedrockLlama2Stream: () => AWSBedrockLlama2Stream,
-  AWSBedrockStream: () => AWSBedrockStream,
-  AnthropicStream: () => AnthropicStream,
-  AssistantResponse: () => AssistantResponse,
-  CohereStream: () => CohereStream,
-  EmbedManyResult: () => EmbedManyResult,
-  EmbedResult: () => EmbedResult,
-  EmptyResponseBodyError: () => import_provider8.EmptyResponseBodyError,
-  GenerateObjectResult: () => GenerateObjectResult,
-  GenerateTextResult: () => GenerateTextResult,
-  GoogleGenerativeAIStream: () => GoogleGenerativeAIStream,
-  HuggingFaceStream: () => HuggingFaceStream,
-  InkeepStream: () => InkeepStream,
-  InvalidArgumentError: () => import_provider8.InvalidArgumentError,
-  InvalidDataContentError: () => import_provider8.InvalidDataContentError,
-  InvalidMessageRoleError: () => InvalidMessageRoleError,
-  InvalidModelIdError: () => InvalidModelIdError,
-  InvalidPromptError: () => import_provider8.InvalidPromptError,
-  InvalidResponseDataError: () => import_provider8.InvalidResponseDataError,
-  InvalidToolArgumentsError: () => import_provider8.InvalidToolArgumentsError,
-  JSONParseError: () => import_provider8.JSONParseError,
-  LangChainAdapter: () => langchain_adapter_exports,
-  LangChainStream: () => LangChainStream,
-  LoadAPIKeyError: () => import_provider8.LoadAPIKeyError,
-  MistralStream: () => MistralStream,
-  NoObjectGeneratedError: () => import_provider8.NoObjectGeneratedError,
-  NoSuchModelError: () => NoSuchModelError,
-  NoSuchProviderError: () => NoSuchProviderError,
-  NoSuchToolError: () => import_provider8.NoSuchToolError,
-  OpenAIStream: () => OpenAIStream,
-  ReplicateStream: () => ReplicateStream,
-  RetryError: () => import_provider8.RetryError,
-  StreamData: () => StreamData,
-  StreamObjectResult: () => StreamObjectResult,
-  StreamTextResult: () => StreamTextResult,
-  StreamingTextResponse: () => StreamingTextResponse,
-  ToolCallParseError: () => import_provider8.ToolCallParseError,
-  TypeValidationError: () => import_provider8.TypeValidationError,
-  UnsupportedFunctionalityError: () => import_provider8.UnsupportedFunctionalityError,
-  UnsupportedJSONSchemaError: () => import_provider8.UnsupportedJSONSchemaError,
-  convertDataContentToBase64String: () => convertDataContentToBase64String,
-  convertDataContentToUint8Array: () => convertDataContentToUint8Array,
-  convertToCoreMessages: () => convertToCoreMessages,
-  cosineSimilarity: () => cosineSimilarity,
-  createCallbacksTransformer: () => createCallbacksTransformer,
-  createEventStreamTransformer: () => createEventStreamTransformer,
-  createStreamDataTransformer: () => createStreamDataTransformer,
-  embed: () => embed,
-  embedMany: () => embedMany,
-  experimental_AssistantResponse: () => experimental_AssistantResponse,
-  experimental_StreamData: () => experimental_StreamData,
-  experimental_createModelRegistry: () => experimental_createModelRegistry,
-  experimental_createProviderRegistry: () => experimental_createProviderRegistry,
-  experimental_generateObject: () => experimental_generateObject,
-  experimental_generateText: () => experimental_generateText,
-  experimental_streamObject: () => experimental_streamObject,
-  experimental_streamText: () => experimental_streamText,
-  formatStreamPart: () => import_ui_utils6.formatStreamPart,
-  generateId: () => generateId2,
-  generateObject: () => generateObject,
-  generateText: () => generateText,
-  nanoid: () => nanoid,
-  parseComplexResponse: () => import_ui_utils6.parseComplexResponse,
-  parseStreamPart: () => import_ui_utils6.parseStreamPart,
-  readDataStream: () => import_ui_utils6.readDataStream,
-  readableFromAsyncIterable: () => readableFromAsyncIterable,
-  streamObject: () => streamObject,
-  streamText: () => streamText,
-  streamToResponse: () => streamToResponse,
-  tool: () => tool,
-  trimStartOfStreamHelper: () => trimStartOfStreamHelper
+// src/index.ts
+var index_exports = {};
+__export(index_exports, {
+  OpenRouter: () => OpenRouter,
+  createOpenRouter: () => createOpenRouter,
+  openrouter: () => openrouter
 });
-module.exports = __toCommonJS(streams_exports);
-var import_ui_utils6 = __nccwpck_require__(7170);
-var import_provider_utils7 = __nccwpck_require__(9711);
+module.exports = __toCommonJS(index_exports);
 
-// core/util/retry-with-exponential-backoff.ts
-var import_provider = __nccwpck_require__(131);
-var import_provider_utils = __nccwpck_require__(9711);
+// node_modules/.pnpm/@ai-sdk+provider@2.0.0/node_modules/@ai-sdk/provider/dist/index.mjs
+var marker = "vercel.ai.error";
+var symbol = Symbol.for(marker);
+var _a;
+var _AISDKError = class _AISDKError2 extends Error {
+  /**
+   * Creates an AI SDK Error.
+   *
+   * @param {Object} params - The parameters for creating the error.
+   * @param {string} params.name - The name of the error.
+   * @param {string} params.message - The error message.
+   * @param {unknown} [params.cause] - The underlying cause of the error.
+   */
+  constructor({
+    name: name14,
+    message,
+    cause
+  }) {
+    super(message);
+    this[_a] = true;
+    this.name = name14;
+    this.cause = cause;
+  }
+  /**
+   * Checks if the given error is an AI SDK Error.
+   * @param {unknown} error - The error to check.
+   * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
+   */
+  static isInstance(error) {
+    return _AISDKError2.hasMarker(error, marker);
+  }
+  static hasMarker(error, marker15) {
+    const markerSymbol = Symbol.for(marker15);
+    return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
+  }
+};
+_a = symbol;
+var AISDKError = _AISDKError;
+var name = "AI_APICallError";
+var marker2 = `vercel.ai.error.${name}`;
+var symbol2 = Symbol.for(marker2);
+var _a2;
+var APICallError = class extends AISDKError {
+  constructor({
+    message,
+    url,
+    requestBodyValues,
+    statusCode,
+    responseHeaders,
+    responseBody,
+    cause,
+    isRetryable = statusCode != null && (statusCode === 408 || // request timeout
+    statusCode === 409 || // conflict
+    statusCode === 429 || // too many requests
+    statusCode >= 500),
+    // server error
+    data
+  }) {
+    super({ name, message, cause });
+    this[_a2] = true;
+    this.url = url;
+    this.requestBodyValues = requestBodyValues;
+    this.statusCode = statusCode;
+    this.responseHeaders = responseHeaders;
+    this.responseBody = responseBody;
+    this.isRetryable = isRetryable;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker2);
+  }
+};
+_a2 = symbol2;
+var name2 = "AI_EmptyResponseBodyError";
+var marker3 = `vercel.ai.error.${name2}`;
+var symbol3 = Symbol.for(marker3);
+var _a3;
+var EmptyResponseBodyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message = "Empty response body" } = {}) {
+    super({ name: name2, message });
+    this[_a3] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker3);
+  }
+};
+_a3 = symbol3;
+function getErrorMessage(error) {
+  if (error == null) {
+    return "unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+var name3 = "AI_InvalidArgumentError";
+var marker4 = `vercel.ai.error.${name3}`;
+var symbol4 = Symbol.for(marker4);
+var _a4;
+var InvalidArgumentError = class extends AISDKError {
+  constructor({
+    message,
+    cause,
+    argument
+  }) {
+    super({ name: name3, message, cause });
+    this[_a4] = true;
+    this.argument = argument;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker4);
+  }
+};
+_a4 = symbol4;
+var name4 = "AI_InvalidPromptError";
+var marker5 = `vercel.ai.error.${name4}`;
+var symbol5 = Symbol.for(marker5);
+var _a5;
+var InvalidPromptError = class extends AISDKError {
+  constructor({
+    prompt,
+    message,
+    cause
+  }) {
+    super({ name: name4, message: `Invalid prompt: ${message}`, cause });
+    this[_a5] = true;
+    this.prompt = prompt;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker5);
+  }
+};
+_a5 = symbol5;
+var name5 = "AI_InvalidResponseDataError";
+var marker6 = `vercel.ai.error.${name5}`;
+var symbol6 = Symbol.for(marker6);
+var _a6;
+var InvalidResponseDataError = class extends AISDKError {
+  constructor({
+    data,
+    message = `Invalid response data: ${JSON.stringify(data)}.`
+  }) {
+    super({ name: name5, message });
+    this[_a6] = true;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker6);
+  }
+};
+_a6 = symbol6;
+var name6 = "AI_JSONParseError";
+var marker7 = `vercel.ai.error.${name6}`;
+var symbol7 = Symbol.for(marker7);
+var _a7;
+var JSONParseError = class extends AISDKError {
+  constructor({ text, cause }) {
+    super({
+      name: name6,
+      message: `JSON parsing failed: Text: ${text}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a7] = true;
+    this.text = text;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker7);
+  }
+};
+_a7 = symbol7;
+var name7 = "AI_LoadAPIKeyError";
+var marker8 = `vercel.ai.error.${name7}`;
+var symbol8 = Symbol.for(marker8);
+var _a8;
+var LoadAPIKeyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message }) {
+    super({ name: name7, message });
+    this[_a8] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker8);
+  }
+};
+_a8 = symbol8;
+var name8 = "AI_LoadSettingError";
+var marker9 = `vercel.ai.error.${name8}`;
+var symbol9 = Symbol.for(marker9);
+var _a9;
+_a9 = symbol9;
+var name9 = "AI_NoContentGeneratedError";
+var marker10 = `vercel.ai.error.${name9}`;
+var symbol10 = Symbol.for(marker10);
+var _a10;
+_a10 = symbol10;
+var name10 = "AI_NoSuchModelError";
+var marker11 = `vercel.ai.error.${name10}`;
+var symbol11 = Symbol.for(marker11);
+var _a11;
+_a11 = symbol11;
+var name11 = "AI_TooManyEmbeddingValuesForCallError";
+var marker12 = `vercel.ai.error.${name11}`;
+var symbol12 = Symbol.for(marker12);
+var _a12;
+_a12 = symbol12;
+var name12 = "AI_TypeValidationError";
+var marker13 = `vercel.ai.error.${name12}`;
+var symbol13 = Symbol.for(marker13);
+var _a13;
+var _TypeValidationError = class _TypeValidationError2 extends AISDKError {
+  constructor({ value, cause }) {
+    super({
+      name: name12,
+      message: `Type validation failed: Value: ${JSON.stringify(value)}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a13] = true;
+    this.value = value;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker13);
+  }
+  /**
+   * Wraps an error into a TypeValidationError.
+   * If the cause is already a TypeValidationError with the same value, it returns the cause.
+   * Otherwise, it creates a new TypeValidationError.
+   *
+   * @param {Object} params - The parameters for wrapping the error.
+   * @param {unknown} params.value - The value that failed validation.
+   * @param {unknown} params.cause - The original error or cause of the validation failure.
+   * @returns {TypeValidationError} A TypeValidationError instance.
+   */
+  static wrap({
+    value,
+    cause
+  }) {
+    return _TypeValidationError2.isInstance(cause) && cause.value === value ? cause : new _TypeValidationError2({ value, cause });
+  }
+};
+_a13 = symbol13;
+var TypeValidationError = _TypeValidationError;
+var name13 = "AI_UnsupportedFunctionalityError";
+var marker14 = `vercel.ai.error.${name13}`;
+var symbol14 = Symbol.for(marker14);
+var _a14;
+var UnsupportedFunctionalityError = class extends AISDKError {
+  constructor({
+    functionality,
+    message = `'${functionality}' functionality not supported.`
+  }) {
+    super({ name: name13, message });
+    this[_a14] = true;
+    this.functionality = functionality;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker14);
+  }
+};
+_a14 = symbol14;
 
-// core/util/delay.ts
-async function delay(delayInMs) {
-  return new Promise((resolve) => setTimeout(resolve, delayInMs));
+// node_modules/.pnpm/eventsource-parser@3.0.3/node_modules/eventsource-parser/dist/index.js
+var ParseError = class extends Error {
+  constructor(message, options) {
+    super(message), this.name = "ParseError", this.type = options.type, this.field = options.field, this.value = options.value, this.line = options.line;
+  }
+};
+function noop(_arg) {
+}
+function createParser(callbacks) {
+  if (typeof callbacks == "function")
+    throw new TypeError(
+      "`callbacks` must be an object, got a function instead. Did you mean `{onEvent: fn}`?"
+    );
+  const { onEvent = noop, onError = noop, onRetry = noop, onComment } = callbacks;
+  let incompleteLine = "", isFirstChunk = true, id, data = "", eventType = "";
+  function feed(newChunk) {
+    const chunk = isFirstChunk ? newChunk.replace(/^\xEF\xBB\xBF/, "") : newChunk, [complete, incomplete] = splitLines(`${incompleteLine}${chunk}`);
+    for (const line of complete)
+      parseLine(line);
+    incompleteLine = incomplete, isFirstChunk = false;
+  }
+  function parseLine(line) {
+    if (line === "") {
+      dispatchEvent();
+      return;
+    }
+    if (line.startsWith(":")) {
+      onComment && onComment(line.slice(line.startsWith(": ") ? 2 : 1));
+      return;
+    }
+    const fieldSeparatorIndex = line.indexOf(":");
+    if (fieldSeparatorIndex !== -1) {
+      const field = line.slice(0, fieldSeparatorIndex), offset = line[fieldSeparatorIndex + 1] === " " ? 2 : 1, value = line.slice(fieldSeparatorIndex + offset);
+      processField(field, value, line);
+      return;
+    }
+    processField(line, "", line);
+  }
+  function processField(field, value, line) {
+    switch (field) {
+      case "event":
+        eventType = value;
+        break;
+      case "data":
+        data = `${data}${value}
+`;
+        break;
+      case "id":
+        id = value.includes("\0") ? void 0 : value;
+        break;
+      case "retry":
+        /^\d+$/.test(value) ? onRetry(parseInt(value, 10)) : onError(
+          new ParseError(`Invalid \`retry\` value: "${value}"`, {
+            type: "invalid-retry",
+            value,
+            line
+          })
+        );
+        break;
+      default:
+        onError(
+          new ParseError(
+            `Unknown field "${field.length > 20 ? `${field.slice(0, 20)}\u2026` : field}"`,
+            { type: "unknown-field", field, value, line }
+          )
+        );
+        break;
+    }
+  }
+  function dispatchEvent() {
+    data.length > 0 && onEvent({
+      id,
+      event: eventType || void 0,
+      // If the data buffer's last character is a U+000A LINE FEED (LF) character,
+      // then remove the last character from the data buffer.
+      data: data.endsWith(`
+`) ? data.slice(0, -1) : data
+    }), id = void 0, data = "", eventType = "";
+  }
+  function reset(options = {}) {
+    incompleteLine && options.consume && parseLine(incompleteLine), isFirstChunk = true, id = void 0, data = "", eventType = "", incompleteLine = "";
+  }
+  return { feed, reset };
+}
+function splitLines(chunk) {
+  const lines = [];
+  let incompleteLine = "", searchIndex = 0;
+  for (; searchIndex < chunk.length; ) {
+    const crIndex = chunk.indexOf("\r", searchIndex), lfIndex = chunk.indexOf(`
+`, searchIndex);
+    let lineEnd = -1;
+    if (crIndex !== -1 && lfIndex !== -1 ? lineEnd = Math.min(crIndex, lfIndex) : crIndex !== -1 ? lineEnd = crIndex : lfIndex !== -1 && (lineEnd = lfIndex), lineEnd === -1) {
+      incompleteLine = chunk.slice(searchIndex);
+      break;
+    } else {
+      const line = chunk.slice(searchIndex, lineEnd);
+      lines.push(line), searchIndex = lineEnd + 1, chunk[searchIndex - 1] === "\r" && chunk[searchIndex] === `
+` && searchIndex++;
+    }
+  }
+  return [lines, incompleteLine];
 }
 
-// core/util/retry-with-exponential-backoff.ts
-var retryWithExponentialBackoff = ({
-  maxRetries = 2,
-  initialDelayInMs = 2e3,
-  backoffFactor = 2
-} = {}) => async (f) => _retryWithExponentialBackoff(f, {
-  maxRetries,
-  delayInMs: initialDelayInMs,
-  backoffFactor
-});
-async function _retryWithExponentialBackoff(f, {
-  maxRetries,
-  delayInMs,
-  backoffFactor
-}, errors = []) {
-  try {
-    return await f();
-  } catch (error) {
-    if ((0, import_provider_utils.isAbortError)(error)) {
-      throw error;
+// node_modules/.pnpm/eventsource-parser@3.0.3/node_modules/eventsource-parser/dist/stream.js
+var EventSourceParserStream = class extends TransformStream {
+  constructor({ onError, onRetry, onComment } = {}) {
+    let parser;
+    super({
+      start(controller) {
+        parser = createParser({
+          onEvent: (event) => {
+            controller.enqueue(event);
+          },
+          onError(error) {
+            onError === "terminate" ? controller.error(error) : typeof onError == "function" && onError(error);
+          },
+          onRetry,
+          onComment
+        });
+      },
+      transform(chunk) {
+        parser.feed(chunk);
+      }
+    });
+  }
+};
+
+// node_modules/.pnpm/@ai-sdk+provider-utils@3.0.1_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs
+var z4 = __toESM(__nccwpck_require__(5350), 1);
+
+// node_modules/.pnpm/zod-to-json-schema@3.24.6_zod@3.25.76/node_modules/zod-to-json-schema/dist/esm/Options.js
+var ignoreOverride = Symbol("Let zodToJsonSchema decide on which parser to use");
+
+// node_modules/.pnpm/zod-to-json-schema@3.24.6_zod@3.25.76/node_modules/zod-to-json-schema/dist/esm/selectParser.js
+var import_zod3 = __nccwpck_require__(8975);
+
+// node_modules/.pnpm/zod-to-json-schema@3.24.6_zod@3.25.76/node_modules/zod-to-json-schema/dist/esm/parsers/array.js
+var import_zod = __nccwpck_require__(8975);
+
+// node_modules/.pnpm/zod-to-json-schema@3.24.6_zod@3.25.76/node_modules/zod-to-json-schema/dist/esm/parsers/record.js
+var import_zod2 = __nccwpck_require__(8975);
+
+// node_modules/.pnpm/zod-to-json-schema@3.24.6_zod@3.25.76/node_modules/zod-to-json-schema/dist/esm/parsers/string.js
+var ALPHA_NUMERIC = new Set("ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789");
+
+// node_modules/.pnpm/@ai-sdk+provider-utils@3.0.1_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs
+function combineHeaders(...headers) {
+  return headers.reduce(
+    (combinedHeaders, currentHeaders) => __spreadValues(__spreadValues({}, combinedHeaders), currentHeaders != null ? currentHeaders : {}),
+    {}
+  );
+}
+function extractResponseHeaders(response) {
+  return Object.fromEntries([...response.headers]);
+}
+var createIdGenerator = ({
+  prefix,
+  size = 16,
+  alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  separator = "-"
+} = {}) => {
+  const generator = () => {
+    const alphabetLength = alphabet.length;
+    const chars = new Array(size);
+    for (let i = 0; i < size; i++) {
+      chars[i] = alphabet[Math.random() * alphabetLength | 0];
     }
-    if (maxRetries === 0) {
-      throw error;
-    }
-    const errorMessage = (0, import_provider_utils.getErrorMessage)(error);
-    const newErrors = [...errors, error];
-    const tryNumber = newErrors.length;
-    if (tryNumber > maxRetries) {
-      throw new import_provider.RetryError({
-        message: `Failed after ${tryNumber} attempts. Last error: ${errorMessage}`,
-        reason: "maxRetriesExceeded",
-        errors: newErrors
+    return chars.join("");
+  };
+  if (prefix == null) {
+    return generator;
+  }
+  if (alphabet.includes(separator)) {
+    throw new InvalidArgumentError({
+      argument: "separator",
+      message: `The separator "${separator}" must not be part of the alphabet "${alphabet}".`
+    });
+  }
+  return () => `${prefix}${separator}${generator()}`;
+};
+var generateId = createIdGenerator();
+function isAbortError(error) {
+  return (error instanceof Error || error instanceof DOMException) && (error.name === "AbortError" || error.name === "ResponseAborted" || // Next.js
+  error.name === "TimeoutError");
+}
+var FETCH_FAILED_ERROR_MESSAGES = ["fetch failed", "failed to fetch"];
+function handleFetchError({
+  error,
+  url,
+  requestBodyValues
+}) {
+  if (isAbortError(error)) {
+    return error;
+  }
+  if (error instanceof TypeError && FETCH_FAILED_ERROR_MESSAGES.includes(error.message.toLowerCase())) {
+    const cause = error.cause;
+    if (cause != null) {
+      return new APICallError({
+        message: `Cannot connect to API: ${cause.message}`,
+        cause,
+        url,
+        requestBodyValues,
+        isRetryable: true
+        // retry when network error
       });
     }
-    if (error instanceof Error && import_provider.APICallError.isAPICallError(error) && error.isRetryable === true && tryNumber <= maxRetries) {
-      await delay(delayInMs);
-      return _retryWithExponentialBackoff(
-        f,
-        { maxRetries, delayInMs: backoffFactor * delayInMs, backoffFactor },
-        newErrors
-      );
-    }
-    if (tryNumber === 1) {
-      throw error;
-    }
-    throw new import_provider.RetryError({
-      message: `Failed after ${tryNumber} attempts with non-retryable error: '${errorMessage}'`,
-      reason: "errorNotRetryable",
-      errors: newErrors
+  }
+  return error;
+}
+function removeUndefinedEntries(record) {
+  return Object.fromEntries(
+    Object.entries(record).filter(([_key, value]) => value != null)
+  );
+}
+function loadApiKey({
+  apiKey,
+  environmentVariableName,
+  apiKeyParameterName = "apiKey",
+  description
+}) {
+  if (typeof apiKey === "string") {
+    return apiKey;
+  }
+  if (apiKey != null) {
+    throw new LoadAPIKeyError({
+      message: `${description} API key must be a string.`
     });
   }
+  if (typeof process === "undefined") {
+    throw new LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter. Environment variables is not supported in this environment.`
+    });
+  }
+  apiKey = process.env[environmentVariableName];
+  if (apiKey == null) {
+    throw new LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter or the ${environmentVariableName} environment variable.`
+    });
+  }
+  if (typeof apiKey !== "string") {
+    throw new LoadAPIKeyError({
+      message: `${description} API key must be a string. The value of the ${environmentVariableName} environment variable is not a string.`
+    });
+  }
+  return apiKey;
 }
-
-// core/embed/embed.ts
-async function embed({
-  model,
-  value,
-  maxRetries,
-  abortSignal,
-  headers
-}) {
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const modelResponse = await retry(
-    () => model.doEmbed({ values: [value], abortSignal, headers })
-  );
-  return new EmbedResult({
-    value,
-    embedding: modelResponse.embeddings[0],
-    rawResponse: modelResponse.rawResponse
+var suspectProtoRx = /"__proto__"\s*:/;
+var suspectConstructorRx = /"constructor"\s*:/;
+function _parse(text) {
+  const obj = JSON.parse(text);
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  if (suspectProtoRx.test(text) === false && suspectConstructorRx.test(text) === false) {
+    return obj;
+  }
+  return filter(obj);
+}
+function filter(obj) {
+  let next = [obj];
+  while (next.length) {
+    const nodes = next;
+    next = [];
+    for (const node of nodes) {
+      if (Object.prototype.hasOwnProperty.call(node, "__proto__")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      if (Object.prototype.hasOwnProperty.call(node, "constructor") && Object.prototype.hasOwnProperty.call(node.constructor, "prototype")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      for (const key in node) {
+        const value = node[key];
+        if (value && typeof value === "object") {
+          next.push(value);
+        }
+      }
+    }
+  }
+  return obj;
+}
+function secureJsonParse(text) {
+  const { stackTraceLimit } = Error;
+  Error.stackTraceLimit = 0;
+  try {
+    return _parse(text);
+  } finally {
+    Error.stackTraceLimit = stackTraceLimit;
+  }
+}
+var validatorSymbol = Symbol.for("vercel.ai.validator");
+function validator(validate) {
+  return { [validatorSymbol]: true, validate };
+}
+function isValidator(value) {
+  return typeof value === "object" && value !== null && validatorSymbol in value && value[validatorSymbol] === true && "validate" in value;
+}
+function asValidator(value) {
+  return isValidator(value) ? value : standardSchemaValidator(value);
+}
+function standardSchemaValidator(standardSchema) {
+  return validator(async (value) => {
+    const result = await standardSchema["~standard"].validate(value);
+    return result.issues == null ? { success: true, value: result.value } : {
+      success: false,
+      error: new TypeValidationError({
+        value,
+        cause: result.issues
+      })
+    };
   });
 }
-var EmbedResult = class {
-  constructor(options) {
-    this.value = options.value;
-    this.embedding = options.embedding;
-    this.rawResponse = options.rawResponse;
+async function validateTypes({
+  value,
+  schema
+}) {
+  const result = await safeValidateTypes({ value, schema });
+  if (!result.success) {
+    throw TypeValidationError.wrap({ value, cause: result.error });
+  }
+  return result.value;
+}
+async function safeValidateTypes({
+  value,
+  schema
+}) {
+  const validator2 = asValidator(schema);
+  try {
+    if (validator2.validate == null) {
+      return { success: true, value, rawValue: value };
+    }
+    const result = await validator2.validate(value);
+    if (result.success) {
+      return { success: true, value: result.value, rawValue: value };
+    }
+    return {
+      success: false,
+      error: TypeValidationError.wrap({ value, cause: result.error }),
+      rawValue: value
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: TypeValidationError.wrap({ value, cause: error }),
+      rawValue: value
+    };
+  }
+}
+async function parseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return value;
+    }
+    return validateTypes({ value, schema });
+  } catch (error) {
+    if (JSONParseError.isInstance(error) || TypeValidationError.isInstance(error)) {
+      throw error;
+    }
+    throw new JSONParseError({ text, cause: error });
+  }
+}
+async function safeParseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return { success: true, value, rawValue: value };
+    }
+    return await safeValidateTypes({ value, schema });
+  } catch (error) {
+    return {
+      success: false,
+      error: JSONParseError.isInstance(error) ? error : new JSONParseError({ text, cause: error }),
+      rawValue: void 0
+    };
+  }
+}
+function isParsableJson(input) {
+  try {
+    secureJsonParse(input);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function parseJsonEventStream({
+  stream,
+  schema
+}) {
+  return stream.pipeThrough(new TextDecoderStream()).pipeThrough(new EventSourceParserStream()).pipeThrough(
+    new TransformStream({
+      async transform({ data }, controller) {
+        if (data === "[DONE]") {
+          return;
+        }
+        controller.enqueue(await safeParseJSON({ text: data, schema }));
+      }
+    })
+  );
+}
+var getOriginalFetch2 = () => globalThis.fetch;
+var postJsonToApi = async ({
+  url,
+  headers,
+  body,
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+}) => postToApi({
+  url,
+  headers: __spreadValues({
+    "Content-Type": "application/json"
+  }, headers),
+  body: {
+    content: JSON.stringify(body),
+    values: body
+  },
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+});
+var postToApi = async ({
+  url,
+  headers = {},
+  body,
+  successfulResponseHandler,
+  failedResponseHandler,
+  abortSignal,
+  fetch = getOriginalFetch2()
+}) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: removeUndefinedEntries(headers),
+      body: body.content,
+      signal: abortSignal
+    });
+    const responseHeaders = extractResponseHeaders(response);
+    if (!response.ok) {
+      let errorInformation;
+      try {
+        errorInformation = await failedResponseHandler({
+          response,
+          url,
+          requestBodyValues: body.values
+        });
+      } catch (error) {
+        if (isAbortError(error) || APICallError.isInstance(error)) {
+          throw error;
+        }
+        throw new APICallError({
+          message: "Failed to process error response",
+          cause: error,
+          statusCode: response.status,
+          url,
+          responseHeaders,
+          requestBodyValues: body.values
+        });
+      }
+      throw errorInformation.value;
+    }
+    try {
+      return await successfulResponseHandler({
+        response,
+        url,
+        requestBodyValues: body.values
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (isAbortError(error) || APICallError.isInstance(error)) {
+          throw error;
+        }
+      }
+      throw new APICallError({
+        message: "Failed to process successful response",
+        cause: error,
+        statusCode: response.status,
+        url,
+        responseHeaders,
+        requestBodyValues: body.values
+      });
+    }
+  } catch (error) {
+    throw handleFetchError({ error, url, requestBodyValues: body.values });
   }
 };
-
-// core/util/split-array.ts
-function splitArray(array, chunkSize) {
-  if (chunkSize <= 0) {
-    throw new Error("chunkSize must be greater than 0");
+var createJsonErrorResponseHandler = ({
+  errorSchema,
+  errorToMessage,
+  isRetryable
+}) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const responseHeaders = extractResponseHeaders(response);
+  if (responseBody.trim() === "") {
+    return {
+      responseHeaders,
+      value: new APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
   }
-  const result = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    result.push(array.slice(i, i + chunkSize));
+  try {
+    const parsedError = await parseJSON({
+      text: responseBody,
+      schema: errorSchema
+    });
+    return {
+      responseHeaders,
+      value: new APICallError({
+        message: errorToMessage(parsedError),
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        data: parsedError,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response, parsedError)
+      })
+    };
+  } catch (parseError) {
+    return {
+      responseHeaders,
+      value: new APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
   }
-  return result;
-}
-
-// core/embed/embed-many.ts
-async function embedMany({
-  model,
-  values,
-  maxRetries,
-  abortSignal,
-  headers
-}) {
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const maxEmbeddingsPerCall = model.maxEmbeddingsPerCall;
-  if (maxEmbeddingsPerCall == null) {
-    const modelResponse = await retry(
-      () => model.doEmbed({ values, abortSignal, headers })
-    );
-    return new EmbedManyResult({
-      values,
-      embeddings: modelResponse.embeddings
+};
+var createEventSourceResponseHandler = (chunkSchema) => async ({ response }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (response.body == null) {
+    throw new EmptyResponseBodyError({});
+  }
+  return {
+    responseHeaders,
+    value: parseJsonEventStream({
+      stream: response.body,
+      schema: chunkSchema
+    })
+  };
+};
+var createJsonResponseHandler = (responseSchema) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const parsedResult = await safeParseJSON({
+    text: responseBody,
+    schema: responseSchema
+  });
+  const responseHeaders = extractResponseHeaders(response);
+  if (!parsedResult.success) {
+    throw new APICallError({
+      message: "Invalid JSON response",
+      cause: parsedResult.error,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody,
+      url,
+      requestBodyValues
     });
   }
-  const valueChunks = splitArray(values, maxEmbeddingsPerCall);
-  const embeddings = [];
-  for (const chunk of valueChunks) {
-    const modelResponse = await retry(
-      () => model.doEmbed({ values: chunk, abortSignal, headers })
-    );
-    embeddings.push(...modelResponse.embeddings);
+  return {
+    responseHeaders,
+    value: parsedResult.value,
+    rawValue: parsedResult.rawValue
+  };
+};
+var schemaSymbol = Symbol.for("vercel.ai.schema");
+var { btoa, atob } = globalThis;
+function convertUint8ArrayToBase64(array) {
+  let latin1string = "";
+  for (let i = 0; i < array.length; i++) {
+    latin1string += String.fromCodePoint(array[i]);
   }
-  return new EmbedManyResult({ values, embeddings });
+  return btoa(latin1string);
 }
-var EmbedManyResult = class {
-  constructor(options) {
-    this.values = options.values;
-    this.embeddings = options.embeddings;
+function withoutTrailingSlash(url) {
+  return url == null ? void 0 : url.replace(/\/$/, "");
+}
+
+// src/schemas/reasoning-details.ts
+var import_v4 = __nccwpck_require__(5350);
+var ReasoningDetailSummarySchema = import_v4.z.object({
+  type: import_v4.z.literal("reasoning.summary" /* Summary */),
+  summary: import_v4.z.string()
+});
+var ReasoningDetailEncryptedSchema = import_v4.z.object({
+  type: import_v4.z.literal("reasoning.encrypted" /* Encrypted */),
+  data: import_v4.z.string()
+});
+var ReasoningDetailTextSchema = import_v4.z.object({
+  type: import_v4.z.literal("reasoning.text" /* Text */),
+  text: import_v4.z.string().nullish(),
+  signature: import_v4.z.string().nullish()
+});
+var ReasoningDetailUnionSchema = import_v4.z.union([
+  ReasoningDetailSummarySchema,
+  ReasoningDetailEncryptedSchema,
+  ReasoningDetailTextSchema
+]);
+var ReasoningDetailsWithUnknownSchema = import_v4.z.union([
+  ReasoningDetailUnionSchema,
+  import_v4.z.unknown().transform(() => null)
+]);
+var ReasoningDetailArraySchema = import_v4.z.array(ReasoningDetailsWithUnknownSchema).transform((d) => d.filter((d2) => !!d2));
+
+// src/schemas/error-response.ts
+var import_v42 = __nccwpck_require__(5350);
+var OpenRouterErrorResponseSchema = import_v42.z.object({
+  error: import_v42.z.object({
+    code: import_v42.z.union([import_v42.z.string(), import_v42.z.number()]).nullable().optional().default(null),
+    message: import_v42.z.string(),
+    type: import_v42.z.string().nullable().optional().default(null),
+    param: import_v42.z.any().nullable().optional().default(null)
+  })
+});
+var openrouterFailedResponseHandler = createJsonErrorResponseHandler({
+  errorSchema: OpenRouterErrorResponseSchema,
+  errorToMessage: (data) => data.error.message
+});
+
+// src/utils/map-finish-reason.ts
+function mapOpenRouterFinishReason(finishReason) {
+  switch (finishReason) {
+    case "stop":
+      return "stop";
+    case "length":
+      return "length";
+    case "content_filter":
+      return "content-filter";
+    case "function_call":
+    case "tool_calls":
+      return "tool-calls";
+    default:
+      return "unknown";
+  }
+}
+
+// src/chat/is-url.ts
+function isUrl({
+  url,
+  protocols
+}) {
+  try {
+    const urlObj = new URL(url);
+    return protocols.has(urlObj.protocol);
+  } catch (_) {
+    return false;
+  }
+}
+
+// src/chat/file-url-utils.ts
+function getFileUrl({
+  part,
+  defaultMediaType
+}) {
+  var _a15, _b;
+  if (part.data instanceof Uint8Array) {
+    const base64 = convertUint8ArrayToBase64(part.data);
+    return `data:${(_a15 = part.mediaType) != null ? _a15 : defaultMediaType};base64,${base64}`;
+  }
+  const stringUrl = part.data.toString();
+  if (isUrl({
+    url: stringUrl,
+    protocols: /* @__PURE__ */ new Set(["http:", "https:"])
+  })) {
+    return stringUrl;
+  }
+  return stringUrl.startsWith("data:") ? stringUrl : `data:${(_b = part.mediaType) != null ? _b : defaultMediaType};base64,${stringUrl}`;
+}
+
+// src/chat/convert-to-openrouter-chat-messages.ts
+function getCacheControl(providerMetadata) {
+  var _a15, _b, _c;
+  const anthropic = providerMetadata == null ? void 0 : providerMetadata.anthropic;
+  const openrouter2 = providerMetadata == null ? void 0 : providerMetadata.openrouter;
+  return (_c = (_b = (_a15 = openrouter2 == null ? void 0 : openrouter2.cacheControl) != null ? _a15 : openrouter2 == null ? void 0 : openrouter2.cache_control) != null ? _b : anthropic == null ? void 0 : anthropic.cacheControl) != null ? _c : anthropic == null ? void 0 : anthropic.cache_control;
+}
+function convertToOpenRouterChatMessages(prompt) {
+  var _a15, _b, _c;
+  const messages = [];
+  for (const { role, content, providerOptions } of prompt) {
+    switch (role) {
+      case "system": {
+        messages.push({
+          role: "system",
+          content,
+          cache_control: getCacheControl(providerOptions)
+        });
+        break;
+      }
+      case "user": {
+        if (content.length === 1 && ((_a15 = content[0]) == null ? void 0 : _a15.type) === "text") {
+          const cacheControl = (_b = getCacheControl(providerOptions)) != null ? _b : getCacheControl(content[0].providerOptions);
+          const contentWithCacheControl = cacheControl ? [
+            {
+              type: "text",
+              text: content[0].text,
+              cache_control: cacheControl
+            }
+          ] : content[0].text;
+          messages.push({
+            role: "user",
+            content: contentWithCacheControl
+          });
+          break;
+        }
+        const messageCacheControl = getCacheControl(providerOptions);
+        const contentParts = content.map(
+          (part) => {
+            var _a16, _b2, _c2, _d, _e, _f;
+            const cacheControl = (_a16 = getCacheControl(part.providerOptions)) != null ? _a16 : messageCacheControl;
+            switch (part.type) {
+              case "text":
+                return {
+                  type: "text",
+                  text: part.text,
+                  // For text parts, only use part-specific cache control
+                  cache_control: cacheControl
+                };
+              case "file": {
+                if ((_b2 = part.mediaType) == null ? void 0 : _b2.startsWith("image/")) {
+                  const url = getFileUrl({
+                    part,
+                    defaultMediaType: "image/jpeg"
+                  });
+                  return {
+                    type: "image_url",
+                    image_url: {
+                      url
+                    },
+                    // For image parts, use part-specific or message-level cache control
+                    cache_control: cacheControl
+                  };
+                }
+                const fileName = String(
+                  (_f = (_e = (_d = (_c2 = part.providerOptions) == null ? void 0 : _c2.openrouter) == null ? void 0 : _d.filename) != null ? _e : part.filename) != null ? _f : ""
+                );
+                const fileData = getFileUrl({
+                  part,
+                  defaultMediaType: "application/pdf"
+                });
+                if (isUrl({
+                  url: fileData,
+                  protocols: /* @__PURE__ */ new Set(["http:", "https:"])
+                })) {
+                  return {
+                    type: "file",
+                    file: {
+                      filename: fileName,
+                      file_data: fileData
+                    }
+                  };
+                }
+                return {
+                  type: "file",
+                  file: {
+                    filename: fileName,
+                    file_data: fileData
+                  },
+                  cache_control: cacheControl
+                };
+              }
+              default: {
+                return {
+                  type: "text",
+                  text: "",
+                  cache_control: cacheControl
+                };
+              }
+            }
+          }
+        );
+        messages.push({
+          role: "user",
+          content: contentParts
+        });
+        break;
+      }
+      case "assistant": {
+        let text = "";
+        let reasoning = "";
+        const reasoningDetails = [];
+        const toolCalls = [];
+        for (const part of content) {
+          switch (part.type) {
+            case "text": {
+              text += part.text;
+              break;
+            }
+            case "tool-call": {
+              toolCalls.push({
+                id: part.toolCallId,
+                type: "function",
+                function: {
+                  name: part.toolName,
+                  arguments: JSON.stringify(part.input)
+                }
+              });
+              break;
+            }
+            case "reasoning": {
+              reasoning += part.text;
+              reasoningDetails.push({
+                type: "reasoning.text" /* Text */,
+                text: part.text
+              });
+              break;
+            }
+            case "file":
+              break;
+            default: {
+              break;
+            }
+          }
+        }
+        messages.push({
+          role: "assistant",
+          content: text,
+          tool_calls: toolCalls.length > 0 ? toolCalls : void 0,
+          reasoning: reasoning || void 0,
+          reasoning_details: reasoningDetails.length > 0 ? reasoningDetails : void 0,
+          cache_control: getCacheControl(providerOptions)
+        });
+        break;
+      }
+      case "tool": {
+        for (const toolResponse of content) {
+          const content2 = getToolResultContent(toolResponse);
+          messages.push({
+            role: "tool",
+            tool_call_id: toolResponse.toolCallId,
+            content: content2,
+            cache_control: (_c = getCacheControl(providerOptions)) != null ? _c : getCacheControl(toolResponse.providerOptions)
+          });
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+  return messages;
+}
+function getToolResultContent(input) {
+  return input.output.type === "text" ? input.output.value : JSON.stringify(input.output.value);
+}
+
+// src/chat/get-tool-choice.ts
+var import_v43 = __nccwpck_require__(5350);
+var ChatCompletionToolChoiceSchema = import_v43.z.union([
+  import_v43.z.literal("auto"),
+  import_v43.z.literal("none"),
+  import_v43.z.literal("required"),
+  import_v43.z.object({
+    type: import_v43.z.literal("function"),
+    function: import_v43.z.object({
+      name: import_v43.z.string()
+    })
+  })
+]);
+function getChatCompletionToolChoice(toolChoice) {
+  switch (toolChoice.type) {
+    case "auto":
+    case "none":
+    case "required":
+      return toolChoice.type;
+    case "tool": {
+      return {
+        type: "function",
+        function: { name: toolChoice.toolName }
+      };
+    }
+    default: {
+      toolChoice;
+      throw new Error(`Invalid tool choice type: ${toolChoice}`);
+    }
+  }
+}
+
+// src/chat/schemas.ts
+var import_v44 = __nccwpck_require__(5350);
+var OpenRouterChatCompletionBaseResponseSchema = import_v44.z.object({
+  id: import_v44.z.string().optional(),
+  model: import_v44.z.string().optional(),
+  provider: import_v44.z.string().optional(),
+  usage: import_v44.z.object({
+    prompt_tokens: import_v44.z.number(),
+    prompt_tokens_details: import_v44.z.object({
+      cached_tokens: import_v44.z.number()
+    }).nullish(),
+    completion_tokens: import_v44.z.number(),
+    completion_tokens_details: import_v44.z.object({
+      reasoning_tokens: import_v44.z.number()
+    }).nullish(),
+    total_tokens: import_v44.z.number(),
+    cost: import_v44.z.number().optional(),
+    cost_details: import_v44.z.object({
+      upstream_inference_cost: import_v44.z.number().nullish()
+    }).nullish()
+  }).nullish()
+});
+var OpenRouterNonStreamChatCompletionResponseSchema = OpenRouterChatCompletionBaseResponseSchema.extend({
+  choices: import_v44.z.array(
+    import_v44.z.object({
+      message: import_v44.z.object({
+        role: import_v44.z.literal("assistant"),
+        content: import_v44.z.string().nullable().optional(),
+        reasoning: import_v44.z.string().nullable().optional(),
+        reasoning_details: ReasoningDetailArraySchema.nullish(),
+        tool_calls: import_v44.z.array(
+          import_v44.z.object({
+            id: import_v44.z.string().optional().nullable(),
+            type: import_v44.z.literal("function"),
+            function: import_v44.z.object({
+              name: import_v44.z.string(),
+              arguments: import_v44.z.string()
+            })
+          })
+        ).optional(),
+        annotations: import_v44.z.array(
+          import_v44.z.object({
+            type: import_v44.z.enum(["url_citation"]),
+            url_citation: import_v44.z.object({
+              end_index: import_v44.z.number(),
+              start_index: import_v44.z.number(),
+              title: import_v44.z.string(),
+              url: import_v44.z.string(),
+              content: import_v44.z.string().optional()
+            })
+          })
+        ).nullish()
+      }),
+      index: import_v44.z.number().nullish(),
+      logprobs: import_v44.z.object({
+        content: import_v44.z.array(
+          import_v44.z.object({
+            token: import_v44.z.string(),
+            logprob: import_v44.z.number(),
+            top_logprobs: import_v44.z.array(
+              import_v44.z.object({
+                token: import_v44.z.string(),
+                logprob: import_v44.z.number()
+              })
+            )
+          })
+        ).nullable()
+      }).nullable().optional(),
+      finish_reason: import_v44.z.string().optional().nullable()
+    })
+  )
+});
+var OpenRouterStreamChatCompletionChunkSchema = import_v44.z.union([
+  OpenRouterChatCompletionBaseResponseSchema.extend({
+    choices: import_v44.z.array(
+      import_v44.z.object({
+        delta: import_v44.z.object({
+          role: import_v44.z.enum(["assistant"]).optional(),
+          content: import_v44.z.string().nullish(),
+          reasoning: import_v44.z.string().nullish().optional(),
+          reasoning_details: ReasoningDetailArraySchema.nullish(),
+          tool_calls: import_v44.z.array(
+            import_v44.z.object({
+              index: import_v44.z.number().nullish(),
+              id: import_v44.z.string().nullish(),
+              type: import_v44.z.literal("function").optional(),
+              function: import_v44.z.object({
+                name: import_v44.z.string().nullish(),
+                arguments: import_v44.z.string().nullish()
+              })
+            })
+          ).nullish(),
+          annotations: import_v44.z.array(
+            import_v44.z.object({
+              type: import_v44.z.enum(["url_citation"]),
+              url_citation: import_v44.z.object({
+                end_index: import_v44.z.number(),
+                start_index: import_v44.z.number(),
+                title: import_v44.z.string(),
+                url: import_v44.z.string(),
+                content: import_v44.z.string().optional()
+              })
+            })
+          ).nullish()
+        }).nullish(),
+        logprobs: import_v44.z.object({
+          content: import_v44.z.array(
+            import_v44.z.object({
+              token: import_v44.z.string(),
+              logprob: import_v44.z.number(),
+              top_logprobs: import_v44.z.array(
+                import_v44.z.object({
+                  token: import_v44.z.string(),
+                  logprob: import_v44.z.number()
+                })
+              )
+            })
+          ).nullable()
+        }).nullish(),
+        finish_reason: import_v44.z.string().nullable().optional(),
+        index: import_v44.z.number().nullish()
+      })
+    )
+  }),
+  OpenRouterErrorResponseSchema
+]);
+
+// src/chat/index.ts
+var OpenRouterChatLanguageModel = class {
+  constructor(modelId, settings, config) {
+    this.specificationVersion = "v2";
+    this.provider = "openrouter";
+    this.defaultObjectGenerationMode = "tool";
+    this.supportedUrls = {
+      "image/*": [
+        /^data:image\/[a-zA-Z]+;base64,/,
+        /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i
+      ],
+      // 'text/*': [/^data:text\//, /^https?:\/\/.+$/],
+      "application/*": [/^data:application\//, /^https?:\/\/.+$/]
+    };
+    this.modelId = modelId;
+    this.settings = settings;
+    this.config = config;
+  }
+  getArgs({
+    prompt,
+    maxOutputTokens,
+    temperature,
+    topP,
+    frequencyPenalty,
+    presencePenalty,
+    seed,
+    stopSequences,
+    responseFormat,
+    topK,
+    tools,
+    toolChoice
+  }) {
+    var _a15;
+    const baseArgs = __spreadValues(__spreadValues({
+      // model id:
+      model: this.modelId,
+      models: this.settings.models,
+      // model specific settings:
+      logit_bias: this.settings.logitBias,
+      logprobs: this.settings.logprobs === true || typeof this.settings.logprobs === "number" ? true : void 0,
+      top_logprobs: typeof this.settings.logprobs === "number" ? this.settings.logprobs : typeof this.settings.logprobs === "boolean" ? this.settings.logprobs ? 0 : void 0 : void 0,
+      user: this.settings.user,
+      parallel_tool_calls: this.settings.parallelToolCalls,
+      // standardized settings:
+      max_tokens: maxOutputTokens,
+      temperature,
+      top_p: topP,
+      frequency_penalty: frequencyPenalty,
+      presence_penalty: presencePenalty,
+      seed,
+      stop: stopSequences,
+      response_format: responseFormat,
+      top_k: topK,
+      // messages:
+      messages: convertToOpenRouterChatMessages(prompt),
+      // OpenRouter specific settings:
+      include_reasoning: this.settings.includeReasoning,
+      reasoning: this.settings.reasoning,
+      usage: this.settings.usage,
+      // Web search settings:
+      plugins: this.settings.plugins,
+      web_search_options: this.settings.web_search_options,
+      // Provider routing settings:
+      provider: this.settings.provider
+    }, this.config.extraBody), this.settings.extraBody);
+    if ((responseFormat == null ? void 0 : responseFormat.type) === "json" && responseFormat.schema != null) {
+      return __spreadProps(__spreadValues({}, baseArgs), {
+        response_format: {
+          type: "json_schema",
+          json_schema: __spreadValues({
+            schema: responseFormat.schema,
+            strict: true,
+            name: (_a15 = responseFormat.name) != null ? _a15 : "response"
+          }, responseFormat.description && {
+            description: responseFormat.description
+          })
+        }
+      });
+    }
+    if (tools && tools.length > 0) {
+      const mappedTools = tools.filter((tool) => tool.type === "function").map((tool) => ({
+        type: "function",
+        function: {
+          name: tool.name,
+          description: tool.description,
+          parameters: tool.inputSchema
+        }
+      }));
+      return __spreadProps(__spreadValues({}, baseArgs), {
+        tools: mappedTools,
+        tool_choice: toolChoice ? getChatCompletionToolChoice(toolChoice) : void 0
+      });
+    }
+    return baseArgs;
+  }
+  async doGenerate(options) {
+    var _a15, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+    const providerOptions = options.providerOptions || {};
+    const openrouterOptions = providerOptions.openrouter || {};
+    const args = __spreadValues(__spreadValues({}, this.getArgs(options)), openrouterOptions);
+    const { value: response, responseHeaders } = await postJsonToApi({
+      url: this.config.url({
+        path: "/chat/completions",
+        modelId: this.modelId
+      }),
+      headers: combineHeaders(this.config.headers(), options.headers),
+      body: args,
+      failedResponseHandler: openrouterFailedResponseHandler,
+      successfulResponseHandler: createJsonResponseHandler(
+        OpenRouterNonStreamChatCompletionResponseSchema
+      ),
+      abortSignal: options.abortSignal,
+      fetch: this.config.fetch
+    });
+    const choice = response.choices[0];
+    if (!choice) {
+      throw new Error("No choice in response");
+    }
+    const usageInfo = response.usage ? {
+      inputTokens: (_a15 = response.usage.prompt_tokens) != null ? _a15 : 0,
+      outputTokens: (_b = response.usage.completion_tokens) != null ? _b : 0,
+      totalTokens: ((_c = response.usage.prompt_tokens) != null ? _c : 0) + ((_d = response.usage.completion_tokens) != null ? _d : 0),
+      reasoningTokens: (_f = (_e = response.usage.completion_tokens_details) == null ? void 0 : _e.reasoning_tokens) != null ? _f : 0,
+      cachedInputTokens: (_h = (_g = response.usage.prompt_tokens_details) == null ? void 0 : _g.cached_tokens) != null ? _h : 0
+    } : {
+      inputTokens: 0,
+      outputTokens: 0,
+      totalTokens: 0,
+      reasoningTokens: 0,
+      cachedInputTokens: 0
+    };
+    const reasoningDetails = (_i = choice.message.reasoning_details) != null ? _i : [];
+    const reasoning = reasoningDetails.length > 0 ? reasoningDetails.map((detail) => {
+      switch (detail.type) {
+        case "reasoning.text" /* Text */: {
+          if (detail.text) {
+            return {
+              type: "reasoning",
+              text: detail.text
+            };
+          }
+          break;
+        }
+        case "reasoning.summary" /* Summary */: {
+          if (detail.summary) {
+            return {
+              type: "reasoning",
+              text: detail.summary
+            };
+          }
+          break;
+        }
+        case "reasoning.encrypted" /* Encrypted */: {
+          if (detail.data) {
+            return {
+              type: "reasoning",
+              text: "[REDACTED]"
+            };
+          }
+          break;
+        }
+        default: {
+          detail;
+        }
+      }
+      return null;
+    }).filter((p) => p !== null) : choice.message.reasoning ? [
+      {
+        type: "reasoning",
+        text: choice.message.reasoning
+      }
+    ] : [];
+    const content = [];
+    content.push(...reasoning);
+    if (choice.message.content) {
+      content.push({
+        type: "text",
+        text: choice.message.content
+      });
+    }
+    if (choice.message.tool_calls) {
+      for (const toolCall of choice.message.tool_calls) {
+        content.push({
+          type: "tool-call",
+          toolCallId: (_j = toolCall.id) != null ? _j : generateId(),
+          toolName: toolCall.function.name,
+          input: toolCall.function.arguments
+        });
+      }
+    }
+    if (choice.message.annotations) {
+      for (const annotation of choice.message.annotations) {
+        if (annotation.type === "url_citation") {
+          content.push({
+            type: "source",
+            sourceType: "url",
+            id: annotation.url_citation.url,
+            url: annotation.url_citation.url,
+            title: annotation.url_citation.title,
+            providerMetadata: {
+              openrouter: {
+                content: annotation.url_citation.content || ""
+              }
+            }
+          });
+        }
+      }
+    }
+    return {
+      content,
+      finishReason: mapOpenRouterFinishReason(choice.finish_reason),
+      usage: usageInfo,
+      warnings: [],
+      providerMetadata: {
+        openrouter: {
+          provider: (_k = response.provider) != null ? _k : "",
+          usage: {
+            promptTokens: (_l = usageInfo.inputTokens) != null ? _l : 0,
+            completionTokens: (_m = usageInfo.outputTokens) != null ? _m : 0,
+            totalTokens: (_n = usageInfo.totalTokens) != null ? _n : 0,
+            cost: (_o = response.usage) == null ? void 0 : _o.cost,
+            promptTokensDetails: {
+              cachedTokens: (_r = (_q = (_p = response.usage) == null ? void 0 : _p.prompt_tokens_details) == null ? void 0 : _q.cached_tokens) != null ? _r : 0
+            },
+            completionTokensDetails: {
+              reasoningTokens: (_u = (_t = (_s = response.usage) == null ? void 0 : _s.completion_tokens_details) == null ? void 0 : _t.reasoning_tokens) != null ? _u : 0
+            },
+            costDetails: {
+              upstreamInferenceCost: (_x = (_w = (_v = response.usage) == null ? void 0 : _v.cost_details) == null ? void 0 : _w.upstream_inference_cost) != null ? _x : 0
+            }
+          }
+        }
+      },
+      request: { body: args },
+      response: {
+        id: response.id,
+        modelId: response.model,
+        headers: responseHeaders
+      }
+    };
+  }
+  async doStream(options) {
+    var _a15;
+    const providerOptions = options.providerOptions || {};
+    const openrouterOptions = providerOptions.openrouter || {};
+    const args = __spreadValues(__spreadValues({}, this.getArgs(options)), openrouterOptions);
+    const { value: response, responseHeaders } = await postJsonToApi({
+      url: this.config.url({
+        path: "/chat/completions",
+        modelId: this.modelId
+      }),
+      headers: combineHeaders(this.config.headers(), options.headers),
+      body: __spreadProps(__spreadValues({}, args), {
+        stream: true,
+        // only include stream_options when in strict compatibility mode:
+        stream_options: this.config.compatibility === "strict" ? __spreadValues({
+          include_usage: true
+        }, ((_a15 = this.settings.usage) == null ? void 0 : _a15.include) ? { include_usage: true } : {}) : void 0
+      }),
+      failedResponseHandler: openrouterFailedResponseHandler,
+      successfulResponseHandler: createEventSourceResponseHandler(
+        OpenRouterStreamChatCompletionChunkSchema
+      ),
+      abortSignal: options.abortSignal,
+      fetch: this.config.fetch
+    });
+    const toolCalls = [];
+    let finishReason = "other";
+    const usage = {
+      inputTokens: Number.NaN,
+      outputTokens: Number.NaN,
+      totalTokens: Number.NaN,
+      reasoningTokens: Number.NaN,
+      cachedInputTokens: Number.NaN
+    };
+    const openrouterUsage = {};
+    let textStarted = false;
+    let reasoningStarted = false;
+    let textId;
+    let reasoningId;
+    let openrouterResponseId;
+    let provider;
+    return {
+      stream: response.pipeThrough(
+        new TransformStream({
+          transform(chunk, controller) {
+            var _a16, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+            if (!chunk.success) {
+              finishReason = "error";
+              controller.enqueue({ type: "error", error: chunk.error });
+              return;
+            }
+            const value = chunk.value;
+            if ("error" in value) {
+              finishReason = "error";
+              controller.enqueue({ type: "error", error: value.error });
+              return;
+            }
+            if (value.provider) {
+              provider = value.provider;
+            }
+            if (value.id) {
+              openrouterResponseId = value.id;
+              controller.enqueue({
+                type: "response-metadata",
+                id: value.id
+              });
+            }
+            if (value.model) {
+              controller.enqueue({
+                type: "response-metadata",
+                modelId: value.model
+              });
+            }
+            if (value.usage != null) {
+              usage.inputTokens = value.usage.prompt_tokens;
+              usage.outputTokens = value.usage.completion_tokens;
+              usage.totalTokens = value.usage.prompt_tokens + value.usage.completion_tokens;
+              openrouterUsage.promptTokens = value.usage.prompt_tokens;
+              if (value.usage.prompt_tokens_details) {
+                const cachedInputTokens = (_a16 = value.usage.prompt_tokens_details.cached_tokens) != null ? _a16 : 0;
+                usage.cachedInputTokens = cachedInputTokens;
+                openrouterUsage.promptTokensDetails = {
+                  cachedTokens: cachedInputTokens
+                };
+              }
+              openrouterUsage.completionTokens = value.usage.completion_tokens;
+              if (value.usage.completion_tokens_details) {
+                const reasoningTokens = (_b = value.usage.completion_tokens_details.reasoning_tokens) != null ? _b : 0;
+                usage.reasoningTokens = reasoningTokens;
+                openrouterUsage.completionTokensDetails = {
+                  reasoningTokens
+                };
+              }
+              openrouterUsage.cost = value.usage.cost;
+              openrouterUsage.totalTokens = value.usage.total_tokens;
+            }
+            const choice = value.choices[0];
+            if ((choice == null ? void 0 : choice.finish_reason) != null) {
+              finishReason = mapOpenRouterFinishReason(choice.finish_reason);
+            }
+            if ((choice == null ? void 0 : choice.delta) == null) {
+              return;
+            }
+            const delta = choice.delta;
+            const emitReasoningChunk = (chunkText) => {
+              if (!reasoningStarted) {
+                reasoningId = openrouterResponseId || generateId();
+                controller.enqueue({
+                  type: "reasoning-start",
+                  id: reasoningId
+                });
+                reasoningStarted = true;
+              }
+              controller.enqueue({
+                type: "reasoning-delta",
+                delta: chunkText,
+                id: reasoningId || generateId()
+              });
+            };
+            if (delta.reasoning_details && delta.reasoning_details.length > 0) {
+              for (const detail of delta.reasoning_details) {
+                switch (detail.type) {
+                  case "reasoning.text" /* Text */: {
+                    if (detail.text) {
+                      emitReasoningChunk(detail.text);
+                    }
+                    break;
+                  }
+                  case "reasoning.encrypted" /* Encrypted */: {
+                    if (detail.data) {
+                      emitReasoningChunk("[REDACTED]");
+                    }
+                    break;
+                  }
+                  case "reasoning.summary" /* Summary */: {
+                    if (detail.summary) {
+                      emitReasoningChunk(detail.summary);
+                    }
+                    break;
+                  }
+                  default: {
+                    detail;
+                    break;
+                  }
+                }
+              }
+            } else if (delta.reasoning) {
+              emitReasoningChunk(delta.reasoning);
+            }
+            if (delta.content) {
+              if (reasoningStarted && !textStarted) {
+                controller.enqueue({
+                  type: "reasoning-end",
+                  id: reasoningId || generateId()
+                });
+                reasoningStarted = false;
+              }
+              if (!textStarted) {
+                textId = openrouterResponseId || generateId();
+                controller.enqueue({
+                  type: "text-start",
+                  id: textId
+                });
+                textStarted = true;
+              }
+              controller.enqueue({
+                type: "text-delta",
+                delta: delta.content,
+                id: textId || generateId()
+              });
+            }
+            if (delta.annotations) {
+              for (const annotation of delta.annotations) {
+                if (annotation.type === "url_citation") {
+                  controller.enqueue({
+                    type: "source",
+                    sourceType: "url",
+                    id: annotation.url_citation.url,
+                    url: annotation.url_citation.url,
+                    title: annotation.url_citation.title,
+                    providerMetadata: {
+                      openrouter: {
+                        content: annotation.url_citation.content || ""
+                      }
+                    }
+                  });
+                }
+              }
+            }
+            if (delta.tool_calls != null) {
+              for (const toolCallDelta of delta.tool_calls) {
+                const index = (_c = toolCallDelta.index) != null ? _c : toolCalls.length - 1;
+                if (toolCalls[index] == null) {
+                  if (toolCallDelta.type !== "function") {
+                    throw new InvalidResponseDataError({
+                      data: toolCallDelta,
+                      message: `Expected 'function' type.`
+                    });
+                  }
+                  if (toolCallDelta.id == null) {
+                    throw new InvalidResponseDataError({
+                      data: toolCallDelta,
+                      message: `Expected 'id' to be a string.`
+                    });
+                  }
+                  if (((_d = toolCallDelta.function) == null ? void 0 : _d.name) == null) {
+                    throw new InvalidResponseDataError({
+                      data: toolCallDelta,
+                      message: `Expected 'function.name' to be a string.`
+                    });
+                  }
+                  toolCalls[index] = {
+                    id: toolCallDelta.id,
+                    type: "function",
+                    function: {
+                      name: toolCallDelta.function.name,
+                      arguments: (_e = toolCallDelta.function.arguments) != null ? _e : ""
+                    },
+                    inputStarted: false,
+                    sent: false
+                  };
+                  const toolCall2 = toolCalls[index];
+                  if (toolCall2 == null) {
+                    throw new Error("Tool call is missing");
+                  }
+                  if (((_f = toolCall2.function) == null ? void 0 : _f.name) != null && ((_g = toolCall2.function) == null ? void 0 : _g.arguments) != null && isParsableJson(toolCall2.function.arguments)) {
+                    toolCall2.inputStarted = true;
+                    controller.enqueue({
+                      type: "tool-input-start",
+                      id: toolCall2.id,
+                      toolName: toolCall2.function.name
+                    });
+                    controller.enqueue({
+                      type: "tool-input-delta",
+                      id: toolCall2.id,
+                      delta: toolCall2.function.arguments
+                    });
+                    controller.enqueue({
+                      type: "tool-input-end",
+                      id: toolCall2.id
+                    });
+                    controller.enqueue({
+                      type: "tool-call",
+                      toolCallId: toolCall2.id,
+                      toolName: toolCall2.function.name,
+                      input: toolCall2.function.arguments
+                    });
+                    toolCall2.sent = true;
+                  }
+                  continue;
+                }
+                const toolCall = toolCalls[index];
+                if (toolCall == null) {
+                  throw new Error("Tool call is missing");
+                }
+                if (!toolCall.inputStarted) {
+                  toolCall.inputStarted = true;
+                  controller.enqueue({
+                    type: "tool-input-start",
+                    id: toolCall.id,
+                    toolName: toolCall.function.name
+                  });
+                }
+                if (((_h = toolCallDelta.function) == null ? void 0 : _h.arguments) != null) {
+                  toolCall.function.arguments += (_j = (_i = toolCallDelta.function) == null ? void 0 : _i.arguments) != null ? _j : "";
+                }
+                controller.enqueue({
+                  type: "tool-input-delta",
+                  id: toolCall.id,
+                  delta: (_k = toolCallDelta.function.arguments) != null ? _k : ""
+                });
+                if (((_l = toolCall.function) == null ? void 0 : _l.name) != null && ((_m = toolCall.function) == null ? void 0 : _m.arguments) != null && isParsableJson(toolCall.function.arguments)) {
+                  controller.enqueue({
+                    type: "tool-call",
+                    toolCallId: (_n = toolCall.id) != null ? _n : generateId(),
+                    toolName: toolCall.function.name,
+                    input: toolCall.function.arguments
+                  });
+                  toolCall.sent = true;
+                }
+              }
+            }
+          },
+          flush(controller) {
+            var _a16;
+            if (finishReason === "tool-calls") {
+              for (const toolCall of toolCalls) {
+                if (toolCall && !toolCall.sent) {
+                  controller.enqueue({
+                    type: "tool-call",
+                    toolCallId: (_a16 = toolCall.id) != null ? _a16 : generateId(),
+                    toolName: toolCall.function.name,
+                    // Coerce invalid arguments to an empty JSON object
+                    input: isParsableJson(toolCall.function.arguments) ? toolCall.function.arguments : "{}"
+                  });
+                  toolCall.sent = true;
+                }
+              }
+            }
+            if (reasoningStarted) {
+              controller.enqueue({
+                type: "reasoning-end",
+                id: reasoningId || generateId()
+              });
+            }
+            if (textStarted) {
+              controller.enqueue({
+                type: "text-end",
+                id: textId || generateId()
+              });
+            }
+            const openrouterMetadata = {
+              usage: openrouterUsage
+            };
+            if (provider !== void 0) {
+              openrouterMetadata.provider = provider;
+            }
+            controller.enqueue({
+              type: "finish",
+              finishReason,
+              usage,
+              providerMetadata: {
+                openrouter: openrouterMetadata
+              }
+            });
+          }
+        })
+      ),
+      warnings: [],
+      request: { body: args },
+      response: { headers: responseHeaders }
+    };
   }
 };
 
-// core/generate-object/generate-object.ts
-var import_provider5 = __nccwpck_require__(131);
-var import_provider_utils4 = __nccwpck_require__(9711);
+// src/completion/convert-to-openrouter-completion-prompt.ts
+function convertToOpenRouterCompletionPrompt({
+  prompt,
+  inputFormat,
+  user = "user",
+  assistant = "assistant"
+}) {
+  if (inputFormat === "prompt" && prompt.length === 1 && prompt[0] && prompt[0].role === "user" && prompt[0].content.length === 1 && prompt[0].content[0] && prompt[0].content[0].type === "text") {
+    return { prompt: prompt[0].content[0].text };
+  }
+  let text = "";
+  if (prompt[0] && prompt[0].role === "system") {
+    text += `${prompt[0].content}
 
-// core/generate-text/token-usage.ts
-function calculateTokenUsage(usage) {
+`;
+    prompt = prompt.slice(1);
+  }
+  for (const { role, content } of prompt) {
+    switch (role) {
+      case "system": {
+        throw new InvalidPromptError({
+          message: `Unexpected system message in prompt: ${content}`,
+          prompt
+        });
+      }
+      case "user": {
+        const userMessage = content.map((part) => {
+          switch (part.type) {
+            case "text": {
+              return part.text;
+            }
+            case "file": {
+              throw new UnsupportedFunctionalityError({
+                functionality: "file attachments"
+              });
+            }
+            default: {
+              return "";
+            }
+          }
+        }).join("");
+        text += `${user}:
+${userMessage}
+
+`;
+        break;
+      }
+      case "assistant": {
+        const assistantMessage = content.map(
+          (part) => {
+            switch (part.type) {
+              case "text": {
+                return part.text;
+              }
+              case "tool-call": {
+                throw new UnsupportedFunctionalityError({
+                  functionality: "tool-call messages"
+                });
+              }
+              case "tool-result": {
+                throw new UnsupportedFunctionalityError({
+                  functionality: "tool-result messages"
+                });
+              }
+              case "reasoning": {
+                throw new UnsupportedFunctionalityError({
+                  functionality: "reasoning messages"
+                });
+              }
+              case "file": {
+                throw new UnsupportedFunctionalityError({
+                  functionality: "file attachments"
+                });
+              }
+              default: {
+                return "";
+              }
+            }
+          }
+        ).join("");
+        text += `${assistant}:
+${assistantMessage}
+
+`;
+        break;
+      }
+      case "tool": {
+        throw new UnsupportedFunctionalityError({
+          functionality: "tool messages"
+        });
+      }
+      default: {
+        break;
+      }
+    }
+  }
+  text += `${assistant}:
+`;
   return {
-    promptTokens: usage.promptTokens,
-    completionTokens: usage.completionTokens,
-    totalTokens: usage.promptTokens + usage.completionTokens
+    prompt: text
   };
 }
 
-// core/util/detect-image-mimetype.ts
-var mimeTypeSignatures = [
-  { mimeType: "image/gif", bytes: [71, 73, 70] },
-  { mimeType: "image/png", bytes: [137, 80, 78, 71] },
-  { mimeType: "image/jpeg", bytes: [255, 216] },
-  { mimeType: "image/webp", bytes: [82, 73, 70, 70] }
+// src/completion/schemas.ts
+var import_v45 = __nccwpck_require__(5350);
+var OpenRouterCompletionChunkSchema = import_v45.z.union([
+  import_v45.z.object({
+    id: import_v45.z.string().optional(),
+    model: import_v45.z.string().optional(),
+    choices: import_v45.z.array(
+      import_v45.z.object({
+        text: import_v45.z.string(),
+        reasoning: import_v45.z.string().nullish().optional(),
+        reasoning_details: ReasoningDetailArraySchema.nullish(),
+        finish_reason: import_v45.z.string().nullish(),
+        index: import_v45.z.number().nullish(),
+        logprobs: import_v45.z.object({
+          tokens: import_v45.z.array(import_v45.z.string()),
+          token_logprobs: import_v45.z.array(import_v45.z.number()),
+          top_logprobs: import_v45.z.array(import_v45.z.record(import_v45.z.string(), import_v45.z.number())).nullable()
+        }).nullable().optional()
+      })
+    ),
+    usage: import_v45.z.object({
+      prompt_tokens: import_v45.z.number(),
+      prompt_tokens_details: import_v45.z.object({
+        cached_tokens: import_v45.z.number()
+      }).nullish(),
+      completion_tokens: import_v45.z.number(),
+      completion_tokens_details: import_v45.z.object({
+        reasoning_tokens: import_v45.z.number()
+      }).nullish(),
+      total_tokens: import_v45.z.number(),
+      cost: import_v45.z.number().optional()
+    }).nullish()
+  }),
+  OpenRouterErrorResponseSchema
+]);
+
+// src/completion/index.ts
+var OpenRouterCompletionLanguageModel = class {
+  constructor(modelId, settings, config) {
+    this.specificationVersion = "v2";
+    this.provider = "openrouter";
+    this.supportedUrls = {
+      "image/*": [
+        /^data:image\/[a-zA-Z]+;base64,/,
+        /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i
+      ],
+      "text/*": [/^data:text\//, /^https?:\/\/.+$/],
+      "application/*": [/^data:application\//, /^https?:\/\/.+$/]
+    };
+    this.defaultObjectGenerationMode = void 0;
+    this.modelId = modelId;
+    this.settings = settings;
+    this.config = config;
+  }
+  getArgs({
+    prompt,
+    maxOutputTokens,
+    temperature,
+    topP,
+    frequencyPenalty,
+    presencePenalty,
+    seed,
+    responseFormat,
+    topK,
+    stopSequences,
+    tools,
+    toolChoice
+  }) {
+    const { prompt: completionPrompt } = convertToOpenRouterCompletionPrompt({
+      prompt,
+      inputFormat: "prompt"
+    });
+    if (tools == null ? void 0 : tools.length) {
+      throw new UnsupportedFunctionalityError({
+        functionality: "tools"
+      });
+    }
+    if (toolChoice) {
+      throw new UnsupportedFunctionalityError({
+        functionality: "toolChoice"
+      });
+    }
+    return __spreadValues(__spreadValues({
+      // model id:
+      model: this.modelId,
+      models: this.settings.models,
+      // model specific settings:
+      logit_bias: this.settings.logitBias,
+      logprobs: typeof this.settings.logprobs === "number" ? this.settings.logprobs : typeof this.settings.logprobs === "boolean" ? this.settings.logprobs ? 0 : void 0 : void 0,
+      suffix: this.settings.suffix,
+      user: this.settings.user,
+      // standardized settings:
+      max_tokens: maxOutputTokens,
+      temperature,
+      top_p: topP,
+      frequency_penalty: frequencyPenalty,
+      presence_penalty: presencePenalty,
+      seed,
+      stop: stopSequences,
+      response_format: responseFormat,
+      top_k: topK,
+      // prompt:
+      prompt: completionPrompt,
+      // OpenRouter specific settings:
+      include_reasoning: this.settings.includeReasoning,
+      reasoning: this.settings.reasoning
+    }, this.config.extraBody), this.settings.extraBody);
+  }
+  async doGenerate(options) {
+    var _a15, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
+    const providerOptions = options.providerOptions || {};
+    const openrouterOptions = providerOptions.openrouter || {};
+    const args = __spreadValues(__spreadValues({}, this.getArgs(options)), openrouterOptions);
+    const { value: response, responseHeaders } = await postJsonToApi({
+      url: this.config.url({
+        path: "/completions",
+        modelId: this.modelId
+      }),
+      headers: combineHeaders(this.config.headers(), options.headers),
+      body: args,
+      failedResponseHandler: openrouterFailedResponseHandler,
+      successfulResponseHandler: createJsonResponseHandler(
+        OpenRouterCompletionChunkSchema
+      ),
+      abortSignal: options.abortSignal,
+      fetch: this.config.fetch
+    });
+    if ("error" in response) {
+      throw new Error(`${response.error.message}`);
+    }
+    const choice = response.choices[0];
+    if (!choice) {
+      throw new Error("No choice in OpenRouter completion response");
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: (_a15 = choice.text) != null ? _a15 : ""
+        }
+      ],
+      finishReason: mapOpenRouterFinishReason(choice.finish_reason),
+      usage: {
+        inputTokens: (_c = (_b = response.usage) == null ? void 0 : _b.prompt_tokens) != null ? _c : 0,
+        outputTokens: (_e = (_d = response.usage) == null ? void 0 : _d.completion_tokens) != null ? _e : 0,
+        totalTokens: ((_g = (_f = response.usage) == null ? void 0 : _f.prompt_tokens) != null ? _g : 0) + ((_i = (_h = response.usage) == null ? void 0 : _h.completion_tokens) != null ? _i : 0),
+        reasoningTokens: (_l = (_k = (_j = response.usage) == null ? void 0 : _j.completion_tokens_details) == null ? void 0 : _k.reasoning_tokens) != null ? _l : 0,
+        cachedInputTokens: (_o = (_n = (_m = response.usage) == null ? void 0 : _m.prompt_tokens_details) == null ? void 0 : _n.cached_tokens) != null ? _o : 0
+      },
+      warnings: [],
+      response: {
+        headers: responseHeaders
+      }
+    };
+  }
+  async doStream(options) {
+    const providerOptions = options.providerOptions || {};
+    const openrouterOptions = providerOptions.openrouter || {};
+    const args = __spreadValues(__spreadValues({}, this.getArgs(options)), openrouterOptions);
+    const { value: response, responseHeaders } = await postJsonToApi({
+      url: this.config.url({
+        path: "/completions",
+        modelId: this.modelId
+      }),
+      headers: combineHeaders(this.config.headers(), options.headers),
+      body: __spreadProps(__spreadValues({}, args), {
+        stream: true,
+        // only include stream_options when in strict compatibility mode:
+        stream_options: this.config.compatibility === "strict" ? { include_usage: true } : void 0
+      }),
+      failedResponseHandler: openrouterFailedResponseHandler,
+      successfulResponseHandler: createEventSourceResponseHandler(
+        OpenRouterCompletionChunkSchema
+      ),
+      abortSignal: options.abortSignal,
+      fetch: this.config.fetch
+    });
+    let finishReason = "other";
+    const usage = {
+      inputTokens: Number.NaN,
+      outputTokens: Number.NaN,
+      totalTokens: Number.NaN,
+      reasoningTokens: Number.NaN,
+      cachedInputTokens: Number.NaN
+    };
+    const openrouterUsage = {};
+    return {
+      stream: response.pipeThrough(
+        new TransformStream({
+          transform(chunk, controller) {
+            var _a15, _b;
+            if (!chunk.success) {
+              finishReason = "error";
+              controller.enqueue({ type: "error", error: chunk.error });
+              return;
+            }
+            const value = chunk.value;
+            if ("error" in value) {
+              finishReason = "error";
+              controller.enqueue({ type: "error", error: value.error });
+              return;
+            }
+            if (value.usage != null) {
+              usage.inputTokens = value.usage.prompt_tokens;
+              usage.outputTokens = value.usage.completion_tokens;
+              usage.totalTokens = value.usage.prompt_tokens + value.usage.completion_tokens;
+              openrouterUsage.promptTokens = value.usage.prompt_tokens;
+              if (value.usage.prompt_tokens_details) {
+                const cachedInputTokens = (_a15 = value.usage.prompt_tokens_details.cached_tokens) != null ? _a15 : 0;
+                usage.cachedInputTokens = cachedInputTokens;
+                openrouterUsage.promptTokensDetails = {
+                  cachedTokens: cachedInputTokens
+                };
+              }
+              openrouterUsage.completionTokens = value.usage.completion_tokens;
+              if (value.usage.completion_tokens_details) {
+                const reasoningTokens = (_b = value.usage.completion_tokens_details.reasoning_tokens) != null ? _b : 0;
+                usage.reasoningTokens = reasoningTokens;
+                openrouterUsage.completionTokensDetails = {
+                  reasoningTokens
+                };
+              }
+              openrouterUsage.cost = value.usage.cost;
+              openrouterUsage.totalTokens = value.usage.total_tokens;
+            }
+            const choice = value.choices[0];
+            if ((choice == null ? void 0 : choice.finish_reason) != null) {
+              finishReason = mapOpenRouterFinishReason(choice.finish_reason);
+            }
+            if ((choice == null ? void 0 : choice.text) != null) {
+              controller.enqueue({
+                type: "text-delta",
+                delta: choice.text,
+                id: generateId()
+              });
+            }
+          },
+          flush(controller) {
+            controller.enqueue({
+              type: "finish",
+              finishReason,
+              usage,
+              providerMetadata: {
+                openrouter: {
+                  usage: openrouterUsage
+                }
+              }
+            });
+          }
+        })
+      ),
+      response: {
+        headers: responseHeaders
+      }
+    };
+  }
+};
+
+// src/facade.ts
+var OpenRouter = class {
+  /**
+   * Creates a new OpenRouter provider instance.
+   */
+  constructor(options = {}) {
+    var _a15, _b;
+    this.baseURL = (_b = withoutTrailingSlash((_a15 = options.baseURL) != null ? _a15 : options.baseUrl)) != null ? _b : "https://openrouter.ai/api/v1";
+    this.apiKey = options.apiKey;
+    this.headers = options.headers;
+  }
+  get baseConfig() {
+    return {
+      baseURL: this.baseURL,
+      headers: () => __spreadValues({
+        Authorization: `Bearer ${loadApiKey({
+          apiKey: this.apiKey,
+          environmentVariableName: "OPENROUTER_API_KEY",
+          description: "OpenRouter"
+        })}`
+      }, this.headers)
+    };
+  }
+  chat(modelId, settings = {}) {
+    return new OpenRouterChatLanguageModel(modelId, settings, __spreadProps(__spreadValues({
+      provider: "openrouter.chat"
+    }, this.baseConfig), {
+      compatibility: "strict",
+      url: ({ path }) => `${this.baseURL}${path}`
+    }));
+  }
+  completion(modelId, settings = {}) {
+    return new OpenRouterCompletionLanguageModel(modelId, settings, __spreadProps(__spreadValues({
+      provider: "openrouter.completion"
+    }, this.baseConfig), {
+      compatibility: "strict",
+      url: ({ path }) => `${this.baseURL}${path}`
+    }));
+  }
+};
+
+// src/provider.ts
+function createOpenRouter(options = {}) {
+  var _a15, _b, _c;
+  const baseURL = (_b = withoutTrailingSlash((_a15 = options.baseURL) != null ? _a15 : options.baseUrl)) != null ? _b : "https://openrouter.ai/api/v1";
+  const compatibility = (_c = options.compatibility) != null ? _c : "compatible";
+  const getHeaders = () => __spreadValues({
+    Authorization: `Bearer ${loadApiKey({
+      apiKey: options.apiKey,
+      environmentVariableName: "OPENROUTER_API_KEY",
+      description: "OpenRouter"
+    })}`
+  }, options.headers);
+  const createChatModel = (modelId, settings = {}) => new OpenRouterChatLanguageModel(modelId, settings, {
+    provider: "openrouter.chat",
+    url: ({ path }) => `${baseURL}${path}`,
+    headers: getHeaders,
+    compatibility,
+    fetch: options.fetch,
+    extraBody: options.extraBody
+  });
+  const createCompletionModel = (modelId, settings = {}) => new OpenRouterCompletionLanguageModel(modelId, settings, {
+    provider: "openrouter.completion",
+    url: ({ path }) => `${baseURL}${path}`,
+    headers: getHeaders,
+    compatibility,
+    fetch: options.fetch,
+    extraBody: options.extraBody
+  });
+  const createLanguageModel = (modelId, settings) => {
+    if (new.target) {
+      throw new Error(
+        "The OpenRouter model function cannot be called with the new keyword."
+      );
+    }
+    if (modelId === "openai/gpt-3.5-turbo-instruct") {
+      return createCompletionModel(
+        modelId,
+        settings
+      );
+    }
+    return createChatModel(modelId, settings);
+  };
+  const provider = (modelId, settings) => createLanguageModel(modelId, settings);
+  provider.languageModel = createLanguageModel;
+  provider.chat = createChatModel;
+  provider.completion = createCompletionModel;
+  return provider;
+}
+var openrouter = createOpenRouter({
+  compatibility: "strict"
+  // strict for OpenRouter API
+});
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 5529:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ContextAPI = void 0;
+const NoopContextManager_1 = __nccwpck_require__(7847);
+const global_utils_1 = __nccwpck_require__(7892);
+const diag_1 = __nccwpck_require__(4387);
+const API_NAME = 'context';
+const NOOP_CONTEXT_MANAGER = new NoopContextManager_1.NoopContextManager();
+/**
+ * Singleton object which represents the entry point to the OpenTelemetry Context API
+ */
+class ContextAPI {
+    /** Empty private constructor prevents end users from constructing a new instance of the API */
+    constructor() { }
+    /** Get the singleton instance of the Context API */
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new ContextAPI();
+        }
+        return this._instance;
+    }
+    /**
+     * Set the current context manager.
+     *
+     * @returns true if the context manager was successfully registered, else false
+     */
+    setGlobalContextManager(contextManager) {
+        return (0, global_utils_1.registerGlobal)(API_NAME, contextManager, diag_1.DiagAPI.instance());
+    }
+    /**
+     * Get the currently active context
+     */
+    active() {
+        return this._getContextManager().active();
+    }
+    /**
+     * Execute a function with an active context
+     *
+     * @param context context to be active during function execution
+     * @param fn function to execute in a context
+     * @param thisArg optional receiver to be used for calling fn
+     * @param args optional arguments forwarded to fn
+     */
+    with(context, fn, thisArg, ...args) {
+        return this._getContextManager().with(context, fn, thisArg, ...args);
+    }
+    /**
+     * Bind a context to a target function or event emitter
+     *
+     * @param context context to bind to the event emitter or function. Defaults to the currently active context
+     * @param target function or event emitter to bind
+     */
+    bind(context, target) {
+        return this._getContextManager().bind(context, target);
+    }
+    _getContextManager() {
+        return (0, global_utils_1.getGlobal)(API_NAME) || NOOP_CONTEXT_MANAGER;
+    }
+    /** Disable and remove the global context manager */
+    disable() {
+        this._getContextManager().disable();
+        (0, global_utils_1.unregisterGlobal)(API_NAME, diag_1.DiagAPI.instance());
+    }
+}
+exports.ContextAPI = ContextAPI;
+//# sourceMappingURL=context.js.map
+
+/***/ }),
+
+/***/ 4387:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiagAPI = void 0;
+const ComponentLogger_1 = __nccwpck_require__(2466);
+const logLevelLogger_1 = __nccwpck_require__(2195);
+const types_1 = __nccwpck_require__(5912);
+const global_utils_1 = __nccwpck_require__(7892);
+const API_NAME = 'diag';
+/**
+ * Singleton object which represents the entry point to the OpenTelemetry internal
+ * diagnostic API
+ */
+class DiagAPI {
+    /**
+     * Private internal constructor
+     * @private
+     */
+    constructor() {
+        function _logProxy(funcName) {
+            return function (...args) {
+                const logger = (0, global_utils_1.getGlobal)('diag');
+                // shortcut if logger not set
+                if (!logger)
+                    return;
+                return logger[funcName](...args);
+            };
+        }
+        // Using self local variable for minification purposes as 'this' cannot be minified
+        const self = this;
+        // DiagAPI specific functions
+        const setLogger = (logger, optionsOrLogLevel = { logLevel: types_1.DiagLogLevel.INFO }) => {
+            var _a, _b, _c;
+            if (logger === self) {
+                // There isn't much we can do here.
+                // Logging to the console might break the user application.
+                // Try to log to self. If a logger was previously registered it will receive the log.
+                const err = new Error('Cannot use diag as the logger for itself. Please use a DiagLogger implementation like ConsoleDiagLogger or a custom implementation');
+                self.error((_a = err.stack) !== null && _a !== void 0 ? _a : err.message);
+                return false;
+            }
+            if (typeof optionsOrLogLevel === 'number') {
+                optionsOrLogLevel = {
+                    logLevel: optionsOrLogLevel,
+                };
+            }
+            const oldLogger = (0, global_utils_1.getGlobal)('diag');
+            const newLogger = (0, logLevelLogger_1.createLogLevelDiagLogger)((_b = optionsOrLogLevel.logLevel) !== null && _b !== void 0 ? _b : types_1.DiagLogLevel.INFO, logger);
+            // There already is an logger registered. We'll let it know before overwriting it.
+            if (oldLogger && !optionsOrLogLevel.suppressOverrideMessage) {
+                const stack = (_c = new Error().stack) !== null && _c !== void 0 ? _c : '<failed to generate stacktrace>';
+                oldLogger.warn(`Current logger will be overwritten from ${stack}`);
+                newLogger.warn(`Current logger will overwrite one already registered from ${stack}`);
+            }
+            return (0, global_utils_1.registerGlobal)('diag', newLogger, self, true);
+        };
+        self.setLogger = setLogger;
+        self.disable = () => {
+            (0, global_utils_1.unregisterGlobal)(API_NAME, self);
+        };
+        self.createComponentLogger = (options) => {
+            return new ComponentLogger_1.DiagComponentLogger(options);
+        };
+        self.verbose = _logProxy('verbose');
+        self.debug = _logProxy('debug');
+        self.info = _logProxy('info');
+        self.warn = _logProxy('warn');
+        self.error = _logProxy('error');
+    }
+    /** Get the singleton instance of the DiagAPI API */
+    static instance() {
+        if (!this._instance) {
+            this._instance = new DiagAPI();
+        }
+        return this._instance;
+    }
+}
+exports.DiagAPI = DiagAPI;
+//# sourceMappingURL=diag.js.map
+
+/***/ }),
+
+/***/ 935:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MetricsAPI = void 0;
+const NoopMeterProvider_1 = __nccwpck_require__(8235);
+const global_utils_1 = __nccwpck_require__(7892);
+const diag_1 = __nccwpck_require__(4387);
+const API_NAME = 'metrics';
+/**
+ * Singleton object which represents the entry point to the OpenTelemetry Metrics API
+ */
+class MetricsAPI {
+    /** Empty private constructor prevents end users from constructing a new instance of the API */
+    constructor() { }
+    /** Get the singleton instance of the Metrics API */
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new MetricsAPI();
+        }
+        return this._instance;
+    }
+    /**
+     * Set the current global meter provider.
+     * Returns true if the meter provider was successfully registered, else false.
+     */
+    setGlobalMeterProvider(provider) {
+        return (0, global_utils_1.registerGlobal)(API_NAME, provider, diag_1.DiagAPI.instance());
+    }
+    /**
+     * Returns the global meter provider.
+     */
+    getMeterProvider() {
+        return (0, global_utils_1.getGlobal)(API_NAME) || NoopMeterProvider_1.NOOP_METER_PROVIDER;
+    }
+    /**
+     * Returns a meter from the global meter provider.
+     */
+    getMeter(name, version, options) {
+        return this.getMeterProvider().getMeter(name, version, options);
+    }
+    /** Remove the global meter provider */
+    disable() {
+        (0, global_utils_1.unregisterGlobal)(API_NAME, diag_1.DiagAPI.instance());
+    }
+}
+exports.MetricsAPI = MetricsAPI;
+//# sourceMappingURL=metrics.js.map
+
+/***/ }),
+
+/***/ 9512:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PropagationAPI = void 0;
+const global_utils_1 = __nccwpck_require__(7892);
+const NoopTextMapPropagator_1 = __nccwpck_require__(9506);
+const TextMapPropagator_1 = __nccwpck_require__(6858);
+const context_helpers_1 = __nccwpck_require__(1823);
+const utils_1 = __nccwpck_require__(4261);
+const diag_1 = __nccwpck_require__(4387);
+const API_NAME = 'propagation';
+const NOOP_TEXT_MAP_PROPAGATOR = new NoopTextMapPropagator_1.NoopTextMapPropagator();
+/**
+ * Singleton object which represents the entry point to the OpenTelemetry Propagation API
+ */
+class PropagationAPI {
+    /** Empty private constructor prevents end users from constructing a new instance of the API */
+    constructor() {
+        this.createBaggage = utils_1.createBaggage;
+        this.getBaggage = context_helpers_1.getBaggage;
+        this.getActiveBaggage = context_helpers_1.getActiveBaggage;
+        this.setBaggage = context_helpers_1.setBaggage;
+        this.deleteBaggage = context_helpers_1.deleteBaggage;
+    }
+    /** Get the singleton instance of the Propagator API */
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new PropagationAPI();
+        }
+        return this._instance;
+    }
+    /**
+     * Set the current propagator.
+     *
+     * @returns true if the propagator was successfully registered, else false
+     */
+    setGlobalPropagator(propagator) {
+        return (0, global_utils_1.registerGlobal)(API_NAME, propagator, diag_1.DiagAPI.instance());
+    }
+    /**
+     * Inject context into a carrier to be propagated inter-process
+     *
+     * @param context Context carrying tracing data to inject
+     * @param carrier carrier to inject context into
+     * @param setter Function used to set values on the carrier
+     */
+    inject(context, carrier, setter = TextMapPropagator_1.defaultTextMapSetter) {
+        return this._getGlobalPropagator().inject(context, carrier, setter);
+    }
+    /**
+     * Extract context from a carrier
+     *
+     * @param context Context which the newly created context will inherit from
+     * @param carrier Carrier to extract context from
+     * @param getter Function used to extract keys from a carrier
+     */
+    extract(context, carrier, getter = TextMapPropagator_1.defaultTextMapGetter) {
+        return this._getGlobalPropagator().extract(context, carrier, getter);
+    }
+    /**
+     * Return a list of all fields which may be used by the propagator.
+     */
+    fields() {
+        return this._getGlobalPropagator().fields();
+    }
+    /** Remove the global propagator */
+    disable() {
+        (0, global_utils_1.unregisterGlobal)(API_NAME, diag_1.DiagAPI.instance());
+    }
+    _getGlobalPropagator() {
+        return (0, global_utils_1.getGlobal)(API_NAME) || NOOP_TEXT_MAP_PROPAGATOR;
+    }
+}
+exports.PropagationAPI = PropagationAPI;
+//# sourceMappingURL=propagation.js.map
+
+/***/ }),
+
+/***/ 9139:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TraceAPI = void 0;
+const global_utils_1 = __nccwpck_require__(7892);
+const ProxyTracerProvider_1 = __nccwpck_require__(9243);
+const spancontext_utils_1 = __nccwpck_require__(408);
+const context_utils_1 = __nccwpck_require__(1096);
+const diag_1 = __nccwpck_require__(4387);
+const API_NAME = 'trace';
+/**
+ * Singleton object which represents the entry point to the OpenTelemetry Tracing API
+ */
+class TraceAPI {
+    /** Empty private constructor prevents end users from constructing a new instance of the API */
+    constructor() {
+        this._proxyTracerProvider = new ProxyTracerProvider_1.ProxyTracerProvider();
+        this.wrapSpanContext = spancontext_utils_1.wrapSpanContext;
+        this.isSpanContextValid = spancontext_utils_1.isSpanContextValid;
+        this.deleteSpan = context_utils_1.deleteSpan;
+        this.getSpan = context_utils_1.getSpan;
+        this.getActiveSpan = context_utils_1.getActiveSpan;
+        this.getSpanContext = context_utils_1.getSpanContext;
+        this.setSpan = context_utils_1.setSpan;
+        this.setSpanContext = context_utils_1.setSpanContext;
+    }
+    /** Get the singleton instance of the Trace API */
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new TraceAPI();
+        }
+        return this._instance;
+    }
+    /**
+     * Set the current global tracer.
+     *
+     * @returns true if the tracer provider was successfully registered, else false
+     */
+    setGlobalTracerProvider(provider) {
+        const success = (0, global_utils_1.registerGlobal)(API_NAME, this._proxyTracerProvider, diag_1.DiagAPI.instance());
+        if (success) {
+            this._proxyTracerProvider.setDelegate(provider);
+        }
+        return success;
+    }
+    /**
+     * Returns the global tracer provider.
+     */
+    getTracerProvider() {
+        return (0, global_utils_1.getGlobal)(API_NAME) || this._proxyTracerProvider;
+    }
+    /**
+     * Returns a tracer from the global tracer provider.
+     */
+    getTracer(name, version) {
+        return this.getTracerProvider().getTracer(name, version);
+    }
+    /** Remove the global tracer provider */
+    disable() {
+        (0, global_utils_1.unregisterGlobal)(API_NAME, diag_1.DiagAPI.instance());
+        this._proxyTracerProvider = new ProxyTracerProvider_1.ProxyTracerProvider();
+    }
+}
+exports.TraceAPI = TraceAPI;
+//# sourceMappingURL=trace.js.map
+
+/***/ }),
+
+/***/ 1823:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.deleteBaggage = exports.setBaggage = exports.getActiveBaggage = exports.getBaggage = void 0;
+const context_1 = __nccwpck_require__(5529);
+const context_2 = __nccwpck_require__(318);
+/**
+ * Baggage key
+ */
+const BAGGAGE_KEY = (0, context_2.createContextKey)('OpenTelemetry Baggage Key');
+/**
+ * Retrieve the current baggage from the given context
+ *
+ * @param {Context} Context that manage all context values
+ * @returns {Baggage} Extracted baggage from the context
+ */
+function getBaggage(context) {
+    return context.getValue(BAGGAGE_KEY) || undefined;
+}
+exports.getBaggage = getBaggage;
+/**
+ * Retrieve the current baggage from the active/current context
+ *
+ * @returns {Baggage} Extracted baggage from the context
+ */
+function getActiveBaggage() {
+    return getBaggage(context_1.ContextAPI.getInstance().active());
+}
+exports.getActiveBaggage = getActiveBaggage;
+/**
+ * Store a baggage in the given context
+ *
+ * @param {Context} Context that manage all context values
+ * @param {Baggage} baggage that will be set in the actual context
+ */
+function setBaggage(context, baggage) {
+    return context.setValue(BAGGAGE_KEY, baggage);
+}
+exports.setBaggage = setBaggage;
+/**
+ * Delete the baggage stored in the given context
+ *
+ * @param {Context} Context that manage all context values
+ */
+function deleteBaggage(context) {
+    return context.deleteValue(BAGGAGE_KEY);
+}
+exports.deleteBaggage = deleteBaggage;
+//# sourceMappingURL=context-helpers.js.map
+
+/***/ }),
+
+/***/ 2829:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BaggageImpl = void 0;
+class BaggageImpl {
+    constructor(entries) {
+        this._entries = entries ? new Map(entries) : new Map();
+    }
+    getEntry(key) {
+        const entry = this._entries.get(key);
+        if (!entry) {
+            return undefined;
+        }
+        return Object.assign({}, entry);
+    }
+    getAllEntries() {
+        return Array.from(this._entries.entries()).map(([k, v]) => [k, v]);
+    }
+    setEntry(key, entry) {
+        const newBaggage = new BaggageImpl(this._entries);
+        newBaggage._entries.set(key, entry);
+        return newBaggage;
+    }
+    removeEntry(key) {
+        const newBaggage = new BaggageImpl(this._entries);
+        newBaggage._entries.delete(key);
+        return newBaggage;
+    }
+    removeEntries(...keys) {
+        const newBaggage = new BaggageImpl(this._entries);
+        for (const key of keys) {
+            newBaggage._entries.delete(key);
+        }
+        return newBaggage;
+    }
+    clear() {
+        return new BaggageImpl();
+    }
+}
+exports.BaggageImpl = BaggageImpl;
+//# sourceMappingURL=baggage-impl.js.map
+
+/***/ }),
+
+/***/ 1342:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.baggageEntryMetadataSymbol = void 0;
+/**
+ * Symbol used to make BaggageEntryMetadata an opaque type
+ */
+exports.baggageEntryMetadataSymbol = Symbol('BaggageEntryMetadata');
+//# sourceMappingURL=symbol.js.map
+
+/***/ }),
+
+/***/ 4261:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.baggageEntryMetadataFromString = exports.createBaggage = void 0;
+const diag_1 = __nccwpck_require__(4387);
+const baggage_impl_1 = __nccwpck_require__(2829);
+const symbol_1 = __nccwpck_require__(1342);
+const diag = diag_1.DiagAPI.instance();
+/**
+ * Create a new Baggage with optional entries
+ *
+ * @param entries An array of baggage entries the new baggage should contain
+ */
+function createBaggage(entries = {}) {
+    return new baggage_impl_1.BaggageImpl(new Map(Object.entries(entries)));
+}
+exports.createBaggage = createBaggage;
+/**
+ * Create a serializable BaggageEntryMetadata object from a string.
+ *
+ * @param str string metadata. Format is currently not defined by the spec and has no special meaning.
+ *
+ */
+function baggageEntryMetadataFromString(str) {
+    if (typeof str !== 'string') {
+        diag.error(`Cannot create baggage metadata from unknown type: ${typeof str}`);
+        str = '';
+    }
+    return {
+        __TYPE__: symbol_1.baggageEntryMetadataSymbol,
+        toString() {
+            return str;
+        },
+    };
+}
+exports.baggageEntryMetadataFromString = baggageEntryMetadataFromString;
+//# sourceMappingURL=utils.js.map
+
+/***/ }),
+
+/***/ 6627:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.context = void 0;
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const context_1 = __nccwpck_require__(5529);
+/** Entrypoint for context API */
+exports.context = context_1.ContextAPI.getInstance();
+//# sourceMappingURL=context-api.js.map
+
+/***/ }),
+
+/***/ 7847:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoopContextManager = void 0;
+const context_1 = __nccwpck_require__(318);
+class NoopContextManager {
+    active() {
+        return context_1.ROOT_CONTEXT;
+    }
+    with(_context, fn, thisArg, ...args) {
+        return fn.call(thisArg, ...args);
+    }
+    bind(_context, target) {
+        return target;
+    }
+    enable() {
+        return this;
+    }
+    disable() {
+        return this;
+    }
+}
+exports.NoopContextManager = NoopContextManager;
+//# sourceMappingURL=NoopContextManager.js.map
+
+/***/ }),
+
+/***/ 318:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ROOT_CONTEXT = exports.createContextKey = void 0;
+/** Get a key to uniquely identify a context value */
+function createContextKey(description) {
+    // The specification states that for the same input, multiple calls should
+    // return different keys. Due to the nature of the JS dependency management
+    // system, this creates problems where multiple versions of some package
+    // could hold different keys for the same property.
+    //
+    // Therefore, we use Symbol.for which returns the same key for the same input.
+    return Symbol.for(description);
+}
+exports.createContextKey = createContextKey;
+class BaseContext {
+    /**
+     * Construct a new context which inherits values from an optional parent context.
+     *
+     * @param parentContext a context from which to inherit values
+     */
+    constructor(parentContext) {
+        // for minification
+        const self = this;
+        self._currentContext = parentContext ? new Map(parentContext) : new Map();
+        self.getValue = (key) => self._currentContext.get(key);
+        self.setValue = (key, value) => {
+            const context = new BaseContext(self._currentContext);
+            context._currentContext.set(key, value);
+            return context;
+        };
+        self.deleteValue = (key) => {
+            const context = new BaseContext(self._currentContext);
+            context._currentContext.delete(key);
+            return context;
+        };
+    }
+}
+/** The root context is used as the default parent context when there is no active context */
+exports.ROOT_CONTEXT = new BaseContext();
+//# sourceMappingURL=context.js.map
+
+/***/ }),
+
+/***/ 3867:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.diag = void 0;
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const diag_1 = __nccwpck_require__(4387);
+/**
+ * Entrypoint for Diag API.
+ * Defines Diagnostic handler used for internal diagnostic logging operations.
+ * The default provides a Noop DiagLogger implementation which may be changed via the
+ * diag.setLogger(logger: DiagLogger) function.
+ */
+exports.diag = diag_1.DiagAPI.instance();
+//# sourceMappingURL=diag-api.js.map
+
+/***/ }),
+
+/***/ 2466:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiagComponentLogger = void 0;
+const global_utils_1 = __nccwpck_require__(7892);
+/**
+ * Component Logger which is meant to be used as part of any component which
+ * will add automatically additional namespace in front of the log message.
+ * It will then forward all message to global diag logger
+ * @example
+ * const cLogger = diag.createComponentLogger({ namespace: '@opentelemetry/instrumentation-http' });
+ * cLogger.debug('test');
+ * // @opentelemetry/instrumentation-http test
+ */
+class DiagComponentLogger {
+    constructor(props) {
+        this._namespace = props.namespace || 'DiagComponentLogger';
+    }
+    debug(...args) {
+        return logProxy('debug', this._namespace, args);
+    }
+    error(...args) {
+        return logProxy('error', this._namespace, args);
+    }
+    info(...args) {
+        return logProxy('info', this._namespace, args);
+    }
+    warn(...args) {
+        return logProxy('warn', this._namespace, args);
+    }
+    verbose(...args) {
+        return logProxy('verbose', this._namespace, args);
+    }
+}
+exports.DiagComponentLogger = DiagComponentLogger;
+function logProxy(funcName, namespace, args) {
+    const logger = (0, global_utils_1.getGlobal)('diag');
+    // shortcut if logger not set
+    if (!logger) {
+        return;
+    }
+    args.unshift(namespace);
+    return logger[funcName](...args);
+}
+//# sourceMappingURL=ComponentLogger.js.map
+
+/***/ }),
+
+/***/ 9752:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiagConsoleLogger = void 0;
+const consoleMap = [
+    { n: 'error', c: 'error' },
+    { n: 'warn', c: 'warn' },
+    { n: 'info', c: 'info' },
+    { n: 'debug', c: 'debug' },
+    { n: 'verbose', c: 'trace' },
 ];
-function detectImageMimeType(image) {
-  for (const { bytes, mimeType } of mimeTypeSignatures) {
-    if (image.length >= bytes.length && bytes.every((byte, index) => image[index] === byte)) {
-      return mimeType;
+/**
+ * A simple Immutable Console based diagnostic logger which will output any messages to the Console.
+ * If you want to limit the amount of logging to a specific level or lower use the
+ * {@link createLogLevelDiagLogger}
+ */
+class DiagConsoleLogger {
+    constructor() {
+        function _consoleFunc(funcName) {
+            return function (...args) {
+                if (console) {
+                    // Some environments only expose the console when the F12 developer console is open
+                    // eslint-disable-next-line no-console
+                    let theFunc = console[funcName];
+                    if (typeof theFunc !== 'function') {
+                        // Not all environments support all functions
+                        // eslint-disable-next-line no-console
+                        theFunc = console.log;
+                    }
+                    // One last final check
+                    if (typeof theFunc === 'function') {
+                        return theFunc.apply(console, args);
+                    }
+                }
+            };
+        }
+        for (let i = 0; i < consoleMap.length; i++) {
+            this[consoleMap[i].n] = _consoleFunc(consoleMap[i].c);
+        }
+    }
+}
+exports.DiagConsoleLogger = DiagConsoleLogger;
+//# sourceMappingURL=consoleLogger.js.map
+
+/***/ }),
+
+/***/ 2195:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createLogLevelDiagLogger = void 0;
+const types_1 = __nccwpck_require__(5912);
+function createLogLevelDiagLogger(maxLevel, logger) {
+    if (maxLevel < types_1.DiagLogLevel.NONE) {
+        maxLevel = types_1.DiagLogLevel.NONE;
+    }
+    else if (maxLevel > types_1.DiagLogLevel.ALL) {
+        maxLevel = types_1.DiagLogLevel.ALL;
+    }
+    // In case the logger is null or undefined
+    logger = logger || {};
+    function _filterFunc(funcName, theLevel) {
+        const theFunc = logger[funcName];
+        if (typeof theFunc === 'function' && maxLevel >= theLevel) {
+            return theFunc.bind(logger);
+        }
+        return function () { };
+    }
+    return {
+        error: _filterFunc('error', types_1.DiagLogLevel.ERROR),
+        warn: _filterFunc('warn', types_1.DiagLogLevel.WARN),
+        info: _filterFunc('info', types_1.DiagLogLevel.INFO),
+        debug: _filterFunc('debug', types_1.DiagLogLevel.DEBUG),
+        verbose: _filterFunc('verbose', types_1.DiagLogLevel.VERBOSE),
+    };
+}
+exports.createLogLevelDiagLogger = createLogLevelDiagLogger;
+//# sourceMappingURL=logLevelLogger.js.map
+
+/***/ }),
+
+/***/ 5912:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiagLogLevel = void 0;
+/**
+ * Defines the available internal logging levels for the diagnostic logger, the numeric values
+ * of the levels are defined to match the original values from the initial LogLevel to avoid
+ * compatibility/migration issues for any implementation that assume the numeric ordering.
+ */
+var DiagLogLevel;
+(function (DiagLogLevel) {
+    /** Diagnostic Logging level setting to disable all logging (except and forced logs) */
+    DiagLogLevel[DiagLogLevel["NONE"] = 0] = "NONE";
+    /** Identifies an error scenario */
+    DiagLogLevel[DiagLogLevel["ERROR"] = 30] = "ERROR";
+    /** Identifies a warning scenario */
+    DiagLogLevel[DiagLogLevel["WARN"] = 50] = "WARN";
+    /** General informational log message */
+    DiagLogLevel[DiagLogLevel["INFO"] = 60] = "INFO";
+    /** General debug log message */
+    DiagLogLevel[DiagLogLevel["DEBUG"] = 70] = "DEBUG";
+    /**
+     * Detailed trace level logging should only be used for development, should only be set
+     * in a development environment.
+     */
+    DiagLogLevel[DiagLogLevel["VERBOSE"] = 80] = "VERBOSE";
+    /** Used to set the logging level to include all logging */
+    DiagLogLevel[DiagLogLevel["ALL"] = 9999] = "ALL";
+})(DiagLogLevel = exports.DiagLogLevel || (exports.DiagLogLevel = {}));
+//# sourceMappingURL=types.js.map
+
+/***/ }),
+
+/***/ 4581:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.trace = exports.propagation = exports.metrics = exports.diag = exports.context = exports.INVALID_SPAN_CONTEXT = exports.INVALID_TRACEID = exports.INVALID_SPANID = exports.isValidSpanId = exports.isValidTraceId = exports.isSpanContextValid = exports.createTraceState = exports.TraceFlags = exports.SpanStatusCode = exports.SpanKind = exports.SamplingDecision = exports.ProxyTracerProvider = exports.ProxyTracer = exports.defaultTextMapSetter = exports.defaultTextMapGetter = exports.ValueType = exports.createNoopMeter = exports.DiagLogLevel = exports.DiagConsoleLogger = exports.ROOT_CONTEXT = exports.createContextKey = exports.baggageEntryMetadataFromString = void 0;
+var utils_1 = __nccwpck_require__(4261);
+Object.defineProperty(exports, "baggageEntryMetadataFromString", ({ enumerable: true, get: function () { return utils_1.baggageEntryMetadataFromString; } }));
+// Context APIs
+var context_1 = __nccwpck_require__(318);
+Object.defineProperty(exports, "createContextKey", ({ enumerable: true, get: function () { return context_1.createContextKey; } }));
+Object.defineProperty(exports, "ROOT_CONTEXT", ({ enumerable: true, get: function () { return context_1.ROOT_CONTEXT; } }));
+// Diag APIs
+var consoleLogger_1 = __nccwpck_require__(9752);
+Object.defineProperty(exports, "DiagConsoleLogger", ({ enumerable: true, get: function () { return consoleLogger_1.DiagConsoleLogger; } }));
+var types_1 = __nccwpck_require__(5912);
+Object.defineProperty(exports, "DiagLogLevel", ({ enumerable: true, get: function () { return types_1.DiagLogLevel; } }));
+// Metrics APIs
+var NoopMeter_1 = __nccwpck_require__(4110);
+Object.defineProperty(exports, "createNoopMeter", ({ enumerable: true, get: function () { return NoopMeter_1.createNoopMeter; } }));
+var Metric_1 = __nccwpck_require__(2959);
+Object.defineProperty(exports, "ValueType", ({ enumerable: true, get: function () { return Metric_1.ValueType; } }));
+// Propagation APIs
+var TextMapPropagator_1 = __nccwpck_require__(6858);
+Object.defineProperty(exports, "defaultTextMapGetter", ({ enumerable: true, get: function () { return TextMapPropagator_1.defaultTextMapGetter; } }));
+Object.defineProperty(exports, "defaultTextMapSetter", ({ enumerable: true, get: function () { return TextMapPropagator_1.defaultTextMapSetter; } }));
+var ProxyTracer_1 = __nccwpck_require__(2206);
+Object.defineProperty(exports, "ProxyTracer", ({ enumerable: true, get: function () { return ProxyTracer_1.ProxyTracer; } }));
+var ProxyTracerProvider_1 = __nccwpck_require__(9243);
+Object.defineProperty(exports, "ProxyTracerProvider", ({ enumerable: true, get: function () { return ProxyTracerProvider_1.ProxyTracerProvider; } }));
+var SamplingResult_1 = __nccwpck_require__(2015);
+Object.defineProperty(exports, "SamplingDecision", ({ enumerable: true, get: function () { return SamplingResult_1.SamplingDecision; } }));
+var span_kind_1 = __nccwpck_require__(884);
+Object.defineProperty(exports, "SpanKind", ({ enumerable: true, get: function () { return span_kind_1.SpanKind; } }));
+var status_1 = __nccwpck_require__(8985);
+Object.defineProperty(exports, "SpanStatusCode", ({ enumerable: true, get: function () { return status_1.SpanStatusCode; } }));
+var trace_flags_1 = __nccwpck_require__(2594);
+Object.defineProperty(exports, "TraceFlags", ({ enumerable: true, get: function () { return trace_flags_1.TraceFlags; } }));
+var utils_2 = __nccwpck_require__(2008);
+Object.defineProperty(exports, "createTraceState", ({ enumerable: true, get: function () { return utils_2.createTraceState; } }));
+var spancontext_utils_1 = __nccwpck_require__(408);
+Object.defineProperty(exports, "isSpanContextValid", ({ enumerable: true, get: function () { return spancontext_utils_1.isSpanContextValid; } }));
+Object.defineProperty(exports, "isValidTraceId", ({ enumerable: true, get: function () { return spancontext_utils_1.isValidTraceId; } }));
+Object.defineProperty(exports, "isValidSpanId", ({ enumerable: true, get: function () { return spancontext_utils_1.isValidSpanId; } }));
+var invalid_span_constants_1 = __nccwpck_require__(1281);
+Object.defineProperty(exports, "INVALID_SPANID", ({ enumerable: true, get: function () { return invalid_span_constants_1.INVALID_SPANID; } }));
+Object.defineProperty(exports, "INVALID_TRACEID", ({ enumerable: true, get: function () { return invalid_span_constants_1.INVALID_TRACEID; } }));
+Object.defineProperty(exports, "INVALID_SPAN_CONTEXT", ({ enumerable: true, get: function () { return invalid_span_constants_1.INVALID_SPAN_CONTEXT; } }));
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const context_api_1 = __nccwpck_require__(6627);
+Object.defineProperty(exports, "context", ({ enumerable: true, get: function () { return context_api_1.context; } }));
+const diag_api_1 = __nccwpck_require__(3867);
+Object.defineProperty(exports, "diag", ({ enumerable: true, get: function () { return diag_api_1.diag; } }));
+const metrics_api_1 = __nccwpck_require__(3065);
+Object.defineProperty(exports, "metrics", ({ enumerable: true, get: function () { return metrics_api_1.metrics; } }));
+const propagation_api_1 = __nccwpck_require__(2930);
+Object.defineProperty(exports, "propagation", ({ enumerable: true, get: function () { return propagation_api_1.propagation; } }));
+const trace_api_1 = __nccwpck_require__(665);
+Object.defineProperty(exports, "trace", ({ enumerable: true, get: function () { return trace_api_1.trace; } }));
+// Default export.
+exports["default"] = {
+    context: context_api_1.context,
+    diag: diag_api_1.diag,
+    metrics: metrics_api_1.metrics,
+    propagation: propagation_api_1.propagation,
+    trace: trace_api_1.trace,
+};
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 7892:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.unregisterGlobal = exports.getGlobal = exports.registerGlobal = void 0;
+const platform_1 = __nccwpck_require__(8197);
+const version_1 = __nccwpck_require__(6861);
+const semver_1 = __nccwpck_require__(9815);
+const major = version_1.VERSION.split('.')[0];
+const GLOBAL_OPENTELEMETRY_API_KEY = Symbol.for(`opentelemetry.js.api.${major}`);
+const _global = platform_1._globalThis;
+function registerGlobal(type, instance, diag, allowOverride = false) {
+    var _a;
+    const api = (_global[GLOBAL_OPENTELEMETRY_API_KEY] = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) !== null && _a !== void 0 ? _a : {
+        version: version_1.VERSION,
+    });
+    if (!allowOverride && api[type]) {
+        // already registered an API of this type
+        const err = new Error(`@opentelemetry/api: Attempted duplicate registration of API: ${type}`);
+        diag.error(err.stack || err.message);
+        return false;
+    }
+    if (api.version !== version_1.VERSION) {
+        // All registered APIs must be of the same version exactly
+        const err = new Error(`@opentelemetry/api: Registration of version v${api.version} for ${type} does not match previously registered API v${version_1.VERSION}`);
+        diag.error(err.stack || err.message);
+        return false;
+    }
+    api[type] = instance;
+    diag.debug(`@opentelemetry/api: Registered a global for ${type} v${version_1.VERSION}.`);
+    return true;
+}
+exports.registerGlobal = registerGlobal;
+function getGlobal(type) {
+    var _a, _b;
+    const globalVersion = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _a === void 0 ? void 0 : _a.version;
+    if (!globalVersion || !(0, semver_1.isCompatible)(globalVersion)) {
+        return;
+    }
+    return (_b = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _b === void 0 ? void 0 : _b[type];
+}
+exports.getGlobal = getGlobal;
+function unregisterGlobal(type, diag) {
+    diag.debug(`@opentelemetry/api: Unregistering a global for ${type} v${version_1.VERSION}.`);
+    const api = _global[GLOBAL_OPENTELEMETRY_API_KEY];
+    if (api) {
+        delete api[type];
+    }
+}
+exports.unregisterGlobal = unregisterGlobal;
+//# sourceMappingURL=global-utils.js.map
+
+/***/ }),
+
+/***/ 9815:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isCompatible = exports._makeCompatibilityCheck = void 0;
+const version_1 = __nccwpck_require__(6861);
+const re = /^(\d+)\.(\d+)\.(\d+)(-(.+))?$/;
+/**
+ * Create a function to test an API version to see if it is compatible with the provided ownVersion.
+ *
+ * The returned function has the following semantics:
+ * - Exact match is always compatible
+ * - Major versions must match exactly
+ *    - 1.x package cannot use global 2.x package
+ *    - 2.x package cannot use global 1.x package
+ * - The minor version of the API module requesting access to the global API must be less than or equal to the minor version of this API
+ *    - 1.3 package may use 1.4 global because the later global contains all functions 1.3 expects
+ *    - 1.4 package may NOT use 1.3 global because it may try to call functions which don't exist on 1.3
+ * - If the major version is 0, the minor version is treated as the major and the patch is treated as the minor
+ * - Patch and build tag differences are not considered at this time
+ *
+ * @param ownVersion version which should be checked against
+ */
+function _makeCompatibilityCheck(ownVersion) {
+    const acceptedVersions = new Set([ownVersion]);
+    const rejectedVersions = new Set();
+    const myVersionMatch = ownVersion.match(re);
+    if (!myVersionMatch) {
+        // we cannot guarantee compatibility so we always return noop
+        return () => false;
+    }
+    const ownVersionParsed = {
+        major: +myVersionMatch[1],
+        minor: +myVersionMatch[2],
+        patch: +myVersionMatch[3],
+        prerelease: myVersionMatch[4],
+    };
+    // if ownVersion has a prerelease tag, versions must match exactly
+    if (ownVersionParsed.prerelease != null) {
+        return function isExactmatch(globalVersion) {
+            return globalVersion === ownVersion;
+        };
+    }
+    function _reject(v) {
+        rejectedVersions.add(v);
+        return false;
+    }
+    function _accept(v) {
+        acceptedVersions.add(v);
+        return true;
+    }
+    return function isCompatible(globalVersion) {
+        if (acceptedVersions.has(globalVersion)) {
+            return true;
+        }
+        if (rejectedVersions.has(globalVersion)) {
+            return false;
+        }
+        const globalVersionMatch = globalVersion.match(re);
+        if (!globalVersionMatch) {
+            // cannot parse other version
+            // we cannot guarantee compatibility so we always noop
+            return _reject(globalVersion);
+        }
+        const globalVersionParsed = {
+            major: +globalVersionMatch[1],
+            minor: +globalVersionMatch[2],
+            patch: +globalVersionMatch[3],
+            prerelease: globalVersionMatch[4],
+        };
+        // if globalVersion has a prerelease tag, versions must match exactly
+        if (globalVersionParsed.prerelease != null) {
+            return _reject(globalVersion);
+        }
+        // major versions must match
+        if (ownVersionParsed.major !== globalVersionParsed.major) {
+            return _reject(globalVersion);
+        }
+        if (ownVersionParsed.major === 0) {
+            if (ownVersionParsed.minor === globalVersionParsed.minor &&
+                ownVersionParsed.patch <= globalVersionParsed.patch) {
+                return _accept(globalVersion);
+            }
+            return _reject(globalVersion);
+        }
+        if (ownVersionParsed.minor <= globalVersionParsed.minor) {
+            return _accept(globalVersion);
+        }
+        return _reject(globalVersion);
+    };
+}
+exports._makeCompatibilityCheck = _makeCompatibilityCheck;
+/**
+ * Test an API version to see if it is compatible with this API.
+ *
+ * - Exact match is always compatible
+ * - Major versions must match exactly
+ *    - 1.x package cannot use global 2.x package
+ *    - 2.x package cannot use global 1.x package
+ * - The minor version of the API module requesting access to the global API must be less than or equal to the minor version of this API
+ *    - 1.3 package may use 1.4 global because the later global contains all functions 1.3 expects
+ *    - 1.4 package may NOT use 1.3 global because it may try to call functions which don't exist on 1.3
+ * - If the major version is 0, the minor version is treated as the major and the patch is treated as the minor
+ * - Patch and build tag differences are not considered at this time
+ *
+ * @param version version of the API requesting an instance of the global API
+ */
+exports.isCompatible = _makeCompatibilityCheck(version_1.VERSION);
+//# sourceMappingURL=semver.js.map
+
+/***/ }),
+
+/***/ 3065:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.metrics = void 0;
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const metrics_1 = __nccwpck_require__(935);
+/** Entrypoint for metrics API */
+exports.metrics = metrics_1.MetricsAPI.getInstance();
+//# sourceMappingURL=metrics-api.js.map
+
+/***/ }),
+
+/***/ 2959:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValueType = void 0;
+/** The Type of value. It describes how the data is reported. */
+var ValueType;
+(function (ValueType) {
+    ValueType[ValueType["INT"] = 0] = "INT";
+    ValueType[ValueType["DOUBLE"] = 1] = "DOUBLE";
+})(ValueType = exports.ValueType || (exports.ValueType = {}));
+//# sourceMappingURL=Metric.js.map
+
+/***/ }),
+
+/***/ 4110:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createNoopMeter = exports.NOOP_OBSERVABLE_UP_DOWN_COUNTER_METRIC = exports.NOOP_OBSERVABLE_GAUGE_METRIC = exports.NOOP_OBSERVABLE_COUNTER_METRIC = exports.NOOP_UP_DOWN_COUNTER_METRIC = exports.NOOP_HISTOGRAM_METRIC = exports.NOOP_GAUGE_METRIC = exports.NOOP_COUNTER_METRIC = exports.NOOP_METER = exports.NoopObservableUpDownCounterMetric = exports.NoopObservableGaugeMetric = exports.NoopObservableCounterMetric = exports.NoopObservableMetric = exports.NoopHistogramMetric = exports.NoopGaugeMetric = exports.NoopUpDownCounterMetric = exports.NoopCounterMetric = exports.NoopMetric = exports.NoopMeter = void 0;
+/**
+ * NoopMeter is a noop implementation of the {@link Meter} interface. It reuses
+ * constant NoopMetrics for all of its methods.
+ */
+class NoopMeter {
+    constructor() { }
+    /**
+     * @see {@link Meter.createGauge}
+     */
+    createGauge(_name, _options) {
+        return exports.NOOP_GAUGE_METRIC;
+    }
+    /**
+     * @see {@link Meter.createHistogram}
+     */
+    createHistogram(_name, _options) {
+        return exports.NOOP_HISTOGRAM_METRIC;
+    }
+    /**
+     * @see {@link Meter.createCounter}
+     */
+    createCounter(_name, _options) {
+        return exports.NOOP_COUNTER_METRIC;
+    }
+    /**
+     * @see {@link Meter.createUpDownCounter}
+     */
+    createUpDownCounter(_name, _options) {
+        return exports.NOOP_UP_DOWN_COUNTER_METRIC;
+    }
+    /**
+     * @see {@link Meter.createObservableGauge}
+     */
+    createObservableGauge(_name, _options) {
+        return exports.NOOP_OBSERVABLE_GAUGE_METRIC;
+    }
+    /**
+     * @see {@link Meter.createObservableCounter}
+     */
+    createObservableCounter(_name, _options) {
+        return exports.NOOP_OBSERVABLE_COUNTER_METRIC;
+    }
+    /**
+     * @see {@link Meter.createObservableUpDownCounter}
+     */
+    createObservableUpDownCounter(_name, _options) {
+        return exports.NOOP_OBSERVABLE_UP_DOWN_COUNTER_METRIC;
+    }
+    /**
+     * @see {@link Meter.addBatchObservableCallback}
+     */
+    addBatchObservableCallback(_callback, _observables) { }
+    /**
+     * @see {@link Meter.removeBatchObservableCallback}
+     */
+    removeBatchObservableCallback(_callback) { }
+}
+exports.NoopMeter = NoopMeter;
+class NoopMetric {
+}
+exports.NoopMetric = NoopMetric;
+class NoopCounterMetric extends NoopMetric {
+    add(_value, _attributes) { }
+}
+exports.NoopCounterMetric = NoopCounterMetric;
+class NoopUpDownCounterMetric extends NoopMetric {
+    add(_value, _attributes) { }
+}
+exports.NoopUpDownCounterMetric = NoopUpDownCounterMetric;
+class NoopGaugeMetric extends NoopMetric {
+    record(_value, _attributes) { }
+}
+exports.NoopGaugeMetric = NoopGaugeMetric;
+class NoopHistogramMetric extends NoopMetric {
+    record(_value, _attributes) { }
+}
+exports.NoopHistogramMetric = NoopHistogramMetric;
+class NoopObservableMetric {
+    addCallback(_callback) { }
+    removeCallback(_callback) { }
+}
+exports.NoopObservableMetric = NoopObservableMetric;
+class NoopObservableCounterMetric extends NoopObservableMetric {
+}
+exports.NoopObservableCounterMetric = NoopObservableCounterMetric;
+class NoopObservableGaugeMetric extends NoopObservableMetric {
+}
+exports.NoopObservableGaugeMetric = NoopObservableGaugeMetric;
+class NoopObservableUpDownCounterMetric extends NoopObservableMetric {
+}
+exports.NoopObservableUpDownCounterMetric = NoopObservableUpDownCounterMetric;
+exports.NOOP_METER = new NoopMeter();
+// Synchronous instruments
+exports.NOOP_COUNTER_METRIC = new NoopCounterMetric();
+exports.NOOP_GAUGE_METRIC = new NoopGaugeMetric();
+exports.NOOP_HISTOGRAM_METRIC = new NoopHistogramMetric();
+exports.NOOP_UP_DOWN_COUNTER_METRIC = new NoopUpDownCounterMetric();
+// Asynchronous instruments
+exports.NOOP_OBSERVABLE_COUNTER_METRIC = new NoopObservableCounterMetric();
+exports.NOOP_OBSERVABLE_GAUGE_METRIC = new NoopObservableGaugeMetric();
+exports.NOOP_OBSERVABLE_UP_DOWN_COUNTER_METRIC = new NoopObservableUpDownCounterMetric();
+/**
+ * Create a no-op Meter
+ */
+function createNoopMeter() {
+    return exports.NOOP_METER;
+}
+exports.createNoopMeter = createNoopMeter;
+//# sourceMappingURL=NoopMeter.js.map
+
+/***/ }),
+
+/***/ 8235:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NOOP_METER_PROVIDER = exports.NoopMeterProvider = void 0;
+const NoopMeter_1 = __nccwpck_require__(4110);
+/**
+ * An implementation of the {@link MeterProvider} which returns an impotent Meter
+ * for all calls to `getMeter`
+ */
+class NoopMeterProvider {
+    getMeter(_name, _version, _options) {
+        return NoopMeter_1.NOOP_METER;
+    }
+}
+exports.NoopMeterProvider = NoopMeterProvider;
+exports.NOOP_METER_PROVIDER = new NoopMeterProvider();
+//# sourceMappingURL=NoopMeterProvider.js.map
+
+/***/ }),
+
+/***/ 8197:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(5926), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 1047:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports._globalThis = void 0;
+/** only globals that common to node and browsers are allowed */
+// eslint-disable-next-line node/no-unsupported-features/es-builtins
+exports._globalThis = typeof globalThis === 'object' ? globalThis : global;
+//# sourceMappingURL=globalThis.js.map
+
+/***/ }),
+
+/***/ 5926:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(1047), exports);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 2930:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.propagation = void 0;
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const propagation_1 = __nccwpck_require__(9512);
+/** Entrypoint for propagation API */
+exports.propagation = propagation_1.PropagationAPI.getInstance();
+//# sourceMappingURL=propagation-api.js.map
+
+/***/ }),
+
+/***/ 9506:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoopTextMapPropagator = void 0;
+/**
+ * No-op implementations of {@link TextMapPropagator}.
+ */
+class NoopTextMapPropagator {
+    /** Noop inject function does nothing */
+    inject(_context, _carrier) { }
+    /** Noop extract function does nothing and returns the input context */
+    extract(context, _carrier) {
+        return context;
+    }
+    fields() {
+        return [];
+    }
+}
+exports.NoopTextMapPropagator = NoopTextMapPropagator;
+//# sourceMappingURL=NoopTextMapPropagator.js.map
+
+/***/ }),
+
+/***/ 6858:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.defaultTextMapSetter = exports.defaultTextMapGetter = void 0;
+exports.defaultTextMapGetter = {
+    get(carrier, key) {
+        if (carrier == null) {
+            return undefined;
+        }
+        return carrier[key];
+    },
+    keys(carrier) {
+        if (carrier == null) {
+            return [];
+        }
+        return Object.keys(carrier);
+    },
+};
+exports.defaultTextMapSetter = {
+    set(carrier, key, value) {
+        if (carrier == null) {
+            return;
+        }
+        carrier[key] = value;
+    },
+};
+//# sourceMappingURL=TextMapPropagator.js.map
+
+/***/ }),
+
+/***/ 665:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.trace = void 0;
+// Split module-level variable definition into separate files to allow
+// tree-shaking on each api instance.
+const trace_1 = __nccwpck_require__(9139);
+/** Entrypoint for trace API */
+exports.trace = trace_1.TraceAPI.getInstance();
+//# sourceMappingURL=trace-api.js.map
+
+/***/ }),
+
+/***/ 6933:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonRecordingSpan = void 0;
+const invalid_span_constants_1 = __nccwpck_require__(1281);
+/**
+ * The NonRecordingSpan is the default {@link Span} that is used when no Span
+ * implementation is available. All operations are no-op including context
+ * propagation.
+ */
+class NonRecordingSpan {
+    constructor(_spanContext = invalid_span_constants_1.INVALID_SPAN_CONTEXT) {
+        this._spanContext = _spanContext;
+    }
+    // Returns a SpanContext.
+    spanContext() {
+        return this._spanContext;
+    }
+    // By default does nothing
+    setAttribute(_key, _value) {
+        return this;
+    }
+    // By default does nothing
+    setAttributes(_attributes) {
+        return this;
+    }
+    // By default does nothing
+    addEvent(_name, _attributes) {
+        return this;
+    }
+    addLink(_link) {
+        return this;
+    }
+    addLinks(_links) {
+        return this;
+    }
+    // By default does nothing
+    setStatus(_status) {
+        return this;
+    }
+    // By default does nothing
+    updateName(_name) {
+        return this;
+    }
+    // By default does nothing
+    end(_endTime) { }
+    // isRecording always returns false for NonRecordingSpan.
+    isRecording() {
+        return false;
+    }
+    // By default does nothing
+    recordException(_exception, _time) { }
+}
+exports.NonRecordingSpan = NonRecordingSpan;
+//# sourceMappingURL=NonRecordingSpan.js.map
+
+/***/ }),
+
+/***/ 1422:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoopTracer = void 0;
+const context_1 = __nccwpck_require__(5529);
+const context_utils_1 = __nccwpck_require__(1096);
+const NonRecordingSpan_1 = __nccwpck_require__(6933);
+const spancontext_utils_1 = __nccwpck_require__(408);
+const contextApi = context_1.ContextAPI.getInstance();
+/**
+ * No-op implementations of {@link Tracer}.
+ */
+class NoopTracer {
+    // startSpan starts a noop span.
+    startSpan(name, options, context = contextApi.active()) {
+        const root = Boolean(options === null || options === void 0 ? void 0 : options.root);
+        if (root) {
+            return new NonRecordingSpan_1.NonRecordingSpan();
+        }
+        const parentFromContext = context && (0, context_utils_1.getSpanContext)(context);
+        if (isSpanContext(parentFromContext) &&
+            (0, spancontext_utils_1.isSpanContextValid)(parentFromContext)) {
+            return new NonRecordingSpan_1.NonRecordingSpan(parentFromContext);
+        }
+        else {
+            return new NonRecordingSpan_1.NonRecordingSpan();
+        }
+    }
+    startActiveSpan(name, arg2, arg3, arg4) {
+        let opts;
+        let ctx;
+        let fn;
+        if (arguments.length < 2) {
+            return;
+        }
+        else if (arguments.length === 2) {
+            fn = arg2;
+        }
+        else if (arguments.length === 3) {
+            opts = arg2;
+            fn = arg3;
+        }
+        else {
+            opts = arg2;
+            ctx = arg3;
+            fn = arg4;
+        }
+        const parentContext = ctx !== null && ctx !== void 0 ? ctx : contextApi.active();
+        const span = this.startSpan(name, opts, parentContext);
+        const contextWithSpanSet = (0, context_utils_1.setSpan)(parentContext, span);
+        return contextApi.with(contextWithSpanSet, fn, undefined, span);
+    }
+}
+exports.NoopTracer = NoopTracer;
+function isSpanContext(spanContext) {
+    return (typeof spanContext === 'object' &&
+        typeof spanContext['spanId'] === 'string' &&
+        typeof spanContext['traceId'] === 'string' &&
+        typeof spanContext['traceFlags'] === 'number');
+}
+//# sourceMappingURL=NoopTracer.js.map
+
+/***/ }),
+
+/***/ 731:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoopTracerProvider = void 0;
+const NoopTracer_1 = __nccwpck_require__(1422);
+/**
+ * An implementation of the {@link TracerProvider} which returns an impotent
+ * Tracer for all calls to `getTracer`.
+ *
+ * All operations are no-op.
+ */
+class NoopTracerProvider {
+    getTracer(_name, _version, _options) {
+        return new NoopTracer_1.NoopTracer();
+    }
+}
+exports.NoopTracerProvider = NoopTracerProvider;
+//# sourceMappingURL=NoopTracerProvider.js.map
+
+/***/ }),
+
+/***/ 2206:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProxyTracer = void 0;
+const NoopTracer_1 = __nccwpck_require__(1422);
+const NOOP_TRACER = new NoopTracer_1.NoopTracer();
+/**
+ * Proxy tracer provided by the proxy tracer provider
+ */
+class ProxyTracer {
+    constructor(_provider, name, version, options) {
+        this._provider = _provider;
+        this.name = name;
+        this.version = version;
+        this.options = options;
+    }
+    startSpan(name, options, context) {
+        return this._getTracer().startSpan(name, options, context);
+    }
+    startActiveSpan(_name, _options, _context, _fn) {
+        const tracer = this._getTracer();
+        return Reflect.apply(tracer.startActiveSpan, tracer, arguments);
+    }
+    /**
+     * Try to get a tracer from the proxy tracer provider.
+     * If the proxy tracer provider has no delegate, return a noop tracer.
+     */
+    _getTracer() {
+        if (this._delegate) {
+            return this._delegate;
+        }
+        const tracer = this._provider.getDelegateTracer(this.name, this.version, this.options);
+        if (!tracer) {
+            return NOOP_TRACER;
+        }
+        this._delegate = tracer;
+        return this._delegate;
+    }
+}
+exports.ProxyTracer = ProxyTracer;
+//# sourceMappingURL=ProxyTracer.js.map
+
+/***/ }),
+
+/***/ 9243:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProxyTracerProvider = void 0;
+const ProxyTracer_1 = __nccwpck_require__(2206);
+const NoopTracerProvider_1 = __nccwpck_require__(731);
+const NOOP_TRACER_PROVIDER = new NoopTracerProvider_1.NoopTracerProvider();
+/**
+ * Tracer provider which provides {@link ProxyTracer}s.
+ *
+ * Before a delegate is set, tracers provided are NoOp.
+ *   When a delegate is set, traces are provided from the delegate.
+ *   When a delegate is set after tracers have already been provided,
+ *   all tracers already provided will use the provided delegate implementation.
+ */
+class ProxyTracerProvider {
+    /**
+     * Get a {@link ProxyTracer}
+     */
+    getTracer(name, version, options) {
+        var _a;
+        return ((_a = this.getDelegateTracer(name, version, options)) !== null && _a !== void 0 ? _a : new ProxyTracer_1.ProxyTracer(this, name, version, options));
+    }
+    getDelegate() {
+        var _a;
+        return (_a = this._delegate) !== null && _a !== void 0 ? _a : NOOP_TRACER_PROVIDER;
+    }
+    /**
+     * Set the delegate tracer provider
+     */
+    setDelegate(delegate) {
+        this._delegate = delegate;
+    }
+    getDelegateTracer(name, version, options) {
+        var _a;
+        return (_a = this._delegate) === null || _a === void 0 ? void 0 : _a.getTracer(name, version, options);
+    }
+}
+exports.ProxyTracerProvider = ProxyTracerProvider;
+//# sourceMappingURL=ProxyTracerProvider.js.map
+
+/***/ }),
+
+/***/ 2015:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SamplingDecision = void 0;
+/**
+ * @deprecated use the one declared in @opentelemetry/sdk-trace-base instead.
+ * A sampling decision that determines how a {@link Span} will be recorded
+ * and collected.
+ */
+var SamplingDecision;
+(function (SamplingDecision) {
+    /**
+     * `Span.isRecording() === false`, span will not be recorded and all events
+     * and attributes will be dropped.
+     */
+    SamplingDecision[SamplingDecision["NOT_RECORD"] = 0] = "NOT_RECORD";
+    /**
+     * `Span.isRecording() === true`, but `Sampled` flag in {@link TraceFlags}
+     * MUST NOT be set.
+     */
+    SamplingDecision[SamplingDecision["RECORD"] = 1] = "RECORD";
+    /**
+     * `Span.isRecording() === true` AND `Sampled` flag in {@link TraceFlags}
+     * MUST be set.
+     */
+    SamplingDecision[SamplingDecision["RECORD_AND_SAMPLED"] = 2] = "RECORD_AND_SAMPLED";
+})(SamplingDecision = exports.SamplingDecision || (exports.SamplingDecision = {}));
+//# sourceMappingURL=SamplingResult.js.map
+
+/***/ }),
+
+/***/ 1096:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSpanContext = exports.setSpanContext = exports.deleteSpan = exports.setSpan = exports.getActiveSpan = exports.getSpan = void 0;
+const context_1 = __nccwpck_require__(318);
+const NonRecordingSpan_1 = __nccwpck_require__(6933);
+const context_2 = __nccwpck_require__(5529);
+/**
+ * span key
+ */
+const SPAN_KEY = (0, context_1.createContextKey)('OpenTelemetry Context Key SPAN');
+/**
+ * Return the span if one exists
+ *
+ * @param context context to get span from
+ */
+function getSpan(context) {
+    return context.getValue(SPAN_KEY) || undefined;
+}
+exports.getSpan = getSpan;
+/**
+ * Gets the span from the current context, if one exists.
+ */
+function getActiveSpan() {
+    return getSpan(context_2.ContextAPI.getInstance().active());
+}
+exports.getActiveSpan = getActiveSpan;
+/**
+ * Set the span on a context
+ *
+ * @param context context to use as parent
+ * @param span span to set active
+ */
+function setSpan(context, span) {
+    return context.setValue(SPAN_KEY, span);
+}
+exports.setSpan = setSpan;
+/**
+ * Remove current span stored in the context
+ *
+ * @param context context to delete span from
+ */
+function deleteSpan(context) {
+    return context.deleteValue(SPAN_KEY);
+}
+exports.deleteSpan = deleteSpan;
+/**
+ * Wrap span context in a NoopSpan and set as span in a new
+ * context
+ *
+ * @param context context to set active span on
+ * @param spanContext span context to be wrapped
+ */
+function setSpanContext(context, spanContext) {
+    return setSpan(context, new NonRecordingSpan_1.NonRecordingSpan(spanContext));
+}
+exports.setSpanContext = setSpanContext;
+/**
+ * Get the span context of the span if it exists.
+ *
+ * @param context context to get values from
+ */
+function getSpanContext(context) {
+    var _a;
+    return (_a = getSpan(context)) === null || _a === void 0 ? void 0 : _a.spanContext();
+}
+exports.getSpanContext = getSpanContext;
+//# sourceMappingURL=context-utils.js.map
+
+/***/ }),
+
+/***/ 9326:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TraceStateImpl = void 0;
+const tracestate_validators_1 = __nccwpck_require__(6259);
+const MAX_TRACE_STATE_ITEMS = 32;
+const MAX_TRACE_STATE_LEN = 512;
+const LIST_MEMBERS_SEPARATOR = ',';
+const LIST_MEMBER_KEY_VALUE_SPLITTER = '=';
+/**
+ * TraceState must be a class and not a simple object type because of the spec
+ * requirement (https://www.w3.org/TR/trace-context/#tracestate-field).
+ *
+ * Here is the list of allowed mutations:
+ * - New key-value pair should be added into the beginning of the list
+ * - The value of any key can be updated. Modified keys MUST be moved to the
+ * beginning of the list.
+ */
+class TraceStateImpl {
+    constructor(rawTraceState) {
+        this._internalState = new Map();
+        if (rawTraceState)
+            this._parse(rawTraceState);
+    }
+    set(key, value) {
+        // TODO: Benchmark the different approaches(map vs list) and
+        // use the faster one.
+        const traceState = this._clone();
+        if (traceState._internalState.has(key)) {
+            traceState._internalState.delete(key);
+        }
+        traceState._internalState.set(key, value);
+        return traceState;
+    }
+    unset(key) {
+        const traceState = this._clone();
+        traceState._internalState.delete(key);
+        return traceState;
+    }
+    get(key) {
+        return this._internalState.get(key);
+    }
+    serialize() {
+        return this._keys()
+            .reduce((agg, key) => {
+            agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER + this.get(key));
+            return agg;
+        }, [])
+            .join(LIST_MEMBERS_SEPARATOR);
+    }
+    _parse(rawTraceState) {
+        if (rawTraceState.length > MAX_TRACE_STATE_LEN)
+            return;
+        this._internalState = rawTraceState
+            .split(LIST_MEMBERS_SEPARATOR)
+            .reverse() // Store in reverse so new keys (.set(...)) will be placed at the beginning
+            .reduce((agg, part) => {
+            const listMember = part.trim(); // Optional Whitespace (OWS) handling
+            const i = listMember.indexOf(LIST_MEMBER_KEY_VALUE_SPLITTER);
+            if (i !== -1) {
+                const key = listMember.slice(0, i);
+                const value = listMember.slice(i + 1, part.length);
+                if ((0, tracestate_validators_1.validateKey)(key) && (0, tracestate_validators_1.validateValue)(value)) {
+                    agg.set(key, value);
+                }
+                else {
+                    // TODO: Consider to add warning log
+                }
+            }
+            return agg;
+        }, new Map());
+        // Because of the reverse() requirement, trunc must be done after map is created
+        if (this._internalState.size > MAX_TRACE_STATE_ITEMS) {
+            this._internalState = new Map(Array.from(this._internalState.entries())
+                .reverse() // Use reverse same as original tracestate parse chain
+                .slice(0, MAX_TRACE_STATE_ITEMS));
+        }
+    }
+    _keys() {
+        return Array.from(this._internalState.keys()).reverse();
+    }
+    _clone() {
+        const traceState = new TraceStateImpl();
+        traceState._internalState = new Map(this._internalState);
+        return traceState;
+    }
+}
+exports.TraceStateImpl = TraceStateImpl;
+//# sourceMappingURL=tracestate-impl.js.map
+
+/***/ }),
+
+/***/ 6259:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateValue = exports.validateKey = void 0;
+const VALID_KEY_CHAR_RANGE = '[_0-9a-z-*/]';
+const VALID_KEY = `[a-z]${VALID_KEY_CHAR_RANGE}{0,255}`;
+const VALID_VENDOR_KEY = `[a-z0-9]${VALID_KEY_CHAR_RANGE}{0,240}@[a-z]${VALID_KEY_CHAR_RANGE}{0,13}`;
+const VALID_KEY_REGEX = new RegExp(`^(?:${VALID_KEY}|${VALID_VENDOR_KEY})$`);
+const VALID_VALUE_BASE_REGEX = /^[ -~]{0,255}[!-~]$/;
+const INVALID_VALUE_COMMA_EQUAL_REGEX = /,|=/;
+/**
+ * Key is opaque string up to 256 characters printable. It MUST begin with a
+ * lowercase letter, and can only contain lowercase letters a-z, digits 0-9,
+ * underscores _, dashes -, asterisks *, and forward slashes /.
+ * For multi-tenant vendor scenarios, an at sign (@) can be used to prefix the
+ * vendor name. Vendors SHOULD set the tenant ID at the beginning of the key.
+ * see https://www.w3.org/TR/trace-context/#key
+ */
+function validateKey(key) {
+    return VALID_KEY_REGEX.test(key);
+}
+exports.validateKey = validateKey;
+/**
+ * Value is opaque string up to 256 characters printable ASCII RFC0020
+ * characters (i.e., the range 0x20 to 0x7E) except comma , and =.
+ */
+function validateValue(value) {
+    return (VALID_VALUE_BASE_REGEX.test(value) &&
+        !INVALID_VALUE_COMMA_EQUAL_REGEX.test(value));
+}
+exports.validateValue = validateValue;
+//# sourceMappingURL=tracestate-validators.js.map
+
+/***/ }),
+
+/***/ 2008:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createTraceState = void 0;
+const tracestate_impl_1 = __nccwpck_require__(9326);
+function createTraceState(rawTraceState) {
+    return new tracestate_impl_1.TraceStateImpl(rawTraceState);
+}
+exports.createTraceState = createTraceState;
+//# sourceMappingURL=utils.js.map
+
+/***/ }),
+
+/***/ 1281:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.INVALID_SPAN_CONTEXT = exports.INVALID_TRACEID = exports.INVALID_SPANID = void 0;
+const trace_flags_1 = __nccwpck_require__(2594);
+exports.INVALID_SPANID = '0000000000000000';
+exports.INVALID_TRACEID = '00000000000000000000000000000000';
+exports.INVALID_SPAN_CONTEXT = {
+    traceId: exports.INVALID_TRACEID,
+    spanId: exports.INVALID_SPANID,
+    traceFlags: trace_flags_1.TraceFlags.NONE,
+};
+//# sourceMappingURL=invalid-span-constants.js.map
+
+/***/ }),
+
+/***/ 884:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SpanKind = void 0;
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var SpanKind;
+(function (SpanKind) {
+    /** Default value. Indicates that the span is used internally. */
+    SpanKind[SpanKind["INTERNAL"] = 0] = "INTERNAL";
+    /**
+     * Indicates that the span covers server-side handling of an RPC or other
+     * remote request.
+     */
+    SpanKind[SpanKind["SERVER"] = 1] = "SERVER";
+    /**
+     * Indicates that the span covers the client-side wrapper around an RPC or
+     * other remote request.
+     */
+    SpanKind[SpanKind["CLIENT"] = 2] = "CLIENT";
+    /**
+     * Indicates that the span describes producer sending a message to a
+     * broker. Unlike client and server, there is no direct critical path latency
+     * relationship between producer and consumer spans.
+     */
+    SpanKind[SpanKind["PRODUCER"] = 3] = "PRODUCER";
+    /**
+     * Indicates that the span describes consumer receiving a message from a
+     * broker. Unlike client and server, there is no direct critical path latency
+     * relationship between producer and consumer spans.
+     */
+    SpanKind[SpanKind["CONSUMER"] = 4] = "CONSUMER";
+})(SpanKind = exports.SpanKind || (exports.SpanKind = {}));
+//# sourceMappingURL=span_kind.js.map
+
+/***/ }),
+
+/***/ 408:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.wrapSpanContext = exports.isSpanContextValid = exports.isValidSpanId = exports.isValidTraceId = void 0;
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const invalid_span_constants_1 = __nccwpck_require__(1281);
+const NonRecordingSpan_1 = __nccwpck_require__(6933);
+const VALID_TRACEID_REGEX = /^([0-9a-f]{32})$/i;
+const VALID_SPANID_REGEX = /^[0-9a-f]{16}$/i;
+function isValidTraceId(traceId) {
+    return VALID_TRACEID_REGEX.test(traceId) && traceId !== invalid_span_constants_1.INVALID_TRACEID;
+}
+exports.isValidTraceId = isValidTraceId;
+function isValidSpanId(spanId) {
+    return VALID_SPANID_REGEX.test(spanId) && spanId !== invalid_span_constants_1.INVALID_SPANID;
+}
+exports.isValidSpanId = isValidSpanId;
+/**
+ * Returns true if this {@link SpanContext} is valid.
+ * @return true if this {@link SpanContext} is valid.
+ */
+function isSpanContextValid(spanContext) {
+    return (isValidTraceId(spanContext.traceId) && isValidSpanId(spanContext.spanId));
+}
+exports.isSpanContextValid = isSpanContextValid;
+/**
+ * Wrap the given {@link SpanContext} in a new non-recording {@link Span}
+ *
+ * @param spanContext span context to be wrapped
+ * @returns a new non-recording {@link Span} with the provided context
+ */
+function wrapSpanContext(spanContext) {
+    return new NonRecordingSpan_1.NonRecordingSpan(spanContext);
+}
+exports.wrapSpanContext = wrapSpanContext;
+//# sourceMappingURL=spancontext-utils.js.map
+
+/***/ }),
+
+/***/ 8985:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SpanStatusCode = void 0;
+/**
+ * An enumeration of status codes.
+ */
+var SpanStatusCode;
+(function (SpanStatusCode) {
+    /**
+     * The default status.
+     */
+    SpanStatusCode[SpanStatusCode["UNSET"] = 0] = "UNSET";
+    /**
+     * The operation has been validated by an Application developer or
+     * Operator to have completed successfully.
+     */
+    SpanStatusCode[SpanStatusCode["OK"] = 1] = "OK";
+    /**
+     * The operation contains an error.
+     */
+    SpanStatusCode[SpanStatusCode["ERROR"] = 2] = "ERROR";
+})(SpanStatusCode = exports.SpanStatusCode || (exports.SpanStatusCode = {}));
+//# sourceMappingURL=status.js.map
+
+/***/ }),
+
+/***/ 2594:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TraceFlags = void 0;
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var TraceFlags;
+(function (TraceFlags) {
+    /** Represents no flag set. */
+    TraceFlags[TraceFlags["NONE"] = 0] = "NONE";
+    /** Bit to represent whether trace is sampled in trace flags. */
+    TraceFlags[TraceFlags["SAMPLED"] = 1] = "SAMPLED";
+})(TraceFlags = exports.TraceFlags || (exports.TraceFlags = {}));
+//# sourceMappingURL=trace_flags.js.map
+
+/***/ }),
+
+/***/ 6861:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.VERSION = void 0;
+// this is autogenerated file, see scripts/version-update.js
+exports.VERSION = '1.9.0';
+//# sourceMappingURL=version.js.map
+
+/***/ }),
+
+/***/ 3474:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name17 in all)
+    __defProp(target, name17, { get: all[name17], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  AISDKError: () => import_provider17.AISDKError,
+  APICallError: () => import_provider17.APICallError,
+  AbstractChat: () => AbstractChat,
+  DefaultChatTransport: () => DefaultChatTransport,
+  DownloadError: () => DownloadError,
+  EmptyResponseBodyError: () => import_provider17.EmptyResponseBodyError,
+  Experimental_Agent: () => Agent,
+  HttpChatTransport: () => HttpChatTransport,
+  InvalidArgumentError: () => InvalidArgumentError,
+  InvalidDataContentError: () => InvalidDataContentError,
+  InvalidMessageRoleError: () => InvalidMessageRoleError,
+  InvalidPromptError: () => import_provider17.InvalidPromptError,
+  InvalidResponseDataError: () => import_provider17.InvalidResponseDataError,
+  InvalidStreamPartError: () => InvalidStreamPartError,
+  InvalidToolInputError: () => InvalidToolInputError,
+  JSONParseError: () => import_provider17.JSONParseError,
+  JsonToSseTransformStream: () => JsonToSseTransformStream,
+  LoadAPIKeyError: () => import_provider17.LoadAPIKeyError,
+  MCPClientError: () => MCPClientError,
+  MessageConversionError: () => MessageConversionError,
+  NoContentGeneratedError: () => import_provider17.NoContentGeneratedError,
+  NoImageGeneratedError: () => NoImageGeneratedError,
+  NoObjectGeneratedError: () => NoObjectGeneratedError,
+  NoOutputGeneratedError: () => NoOutputGeneratedError,
+  NoOutputSpecifiedError: () => NoOutputSpecifiedError,
+  NoSuchModelError: () => import_provider17.NoSuchModelError,
+  NoSuchProviderError: () => NoSuchProviderError,
+  NoSuchToolError: () => NoSuchToolError,
+  Output: () => output_exports,
+  RetryError: () => RetryError,
+  SerialJobExecutor: () => SerialJobExecutor,
+  TextStreamChatTransport: () => TextStreamChatTransport,
+  ToolCallRepairError: () => ToolCallRepairError,
+  TypeValidationError: () => import_provider17.TypeValidationError,
+  UI_MESSAGE_STREAM_HEADERS: () => UI_MESSAGE_STREAM_HEADERS,
+  UnsupportedFunctionalityError: () => import_provider17.UnsupportedFunctionalityError,
+  UnsupportedModelVersionError: () => UnsupportedModelVersionError,
+  asSchema: () => import_provider_utils29.asSchema,
+  assistantModelMessageSchema: () => assistantModelMessageSchema,
+  callCompletionApi: () => callCompletionApi,
+  consumeStream: () => consumeStream,
+  convertFileListToFileUIParts: () => convertFileListToFileUIParts,
+  convertToCoreMessages: () => convertToCoreMessages,
+  convertToModelMessages: () => convertToModelMessages,
+  coreAssistantMessageSchema: () => coreAssistantMessageSchema,
+  coreMessageSchema: () => coreMessageSchema,
+  coreSystemMessageSchema: () => coreSystemMessageSchema,
+  coreToolMessageSchema: () => coreToolMessageSchema,
+  coreUserMessageSchema: () => coreUserMessageSchema,
+  cosineSimilarity: () => cosineSimilarity,
+  createIdGenerator: () => import_provider_utils29.createIdGenerator,
+  createProviderRegistry: () => createProviderRegistry,
+  createTextStreamResponse: () => createTextStreamResponse,
+  createUIMessageStream: () => createUIMessageStream,
+  createUIMessageStreamResponse: () => createUIMessageStreamResponse,
+  customProvider: () => customProvider,
+  defaultSettingsMiddleware: () => defaultSettingsMiddleware,
+  dynamicTool: () => import_provider_utils29.dynamicTool,
+  embed: () => embed,
+  embedMany: () => embedMany,
+  experimental_createMCPClient: () => createMCPClient,
+  experimental_createProviderRegistry: () => experimental_createProviderRegistry,
+  experimental_customProvider: () => experimental_customProvider,
+  experimental_generateImage: () => generateImage,
+  experimental_generateSpeech: () => generateSpeech,
+  experimental_transcribe: () => transcribe,
+  extractReasoningMiddleware: () => extractReasoningMiddleware,
+  generateId: () => import_provider_utils29.generateId,
+  generateObject: () => generateObject,
+  generateText: () => generateText,
+  getTextFromDataUrl: () => getTextFromDataUrl,
+  getToolName: () => getToolName,
+  hasToolCall: () => hasToolCall,
+  isDeepEqualData: () => isDeepEqualData,
+  isToolUIPart: () => isToolUIPart,
+  jsonSchema: () => import_provider_utils29.jsonSchema,
+  lastAssistantMessageIsCompleteWithToolCalls: () => lastAssistantMessageIsCompleteWithToolCalls,
+  modelMessageSchema: () => modelMessageSchema,
+  parsePartialJson: () => parsePartialJson,
+  pipeTextStreamToResponse: () => pipeTextStreamToResponse,
+  pipeUIMessageStreamToResponse: () => pipeUIMessageStreamToResponse,
+  readUIMessageStream: () => readUIMessageStream,
+  simulateReadableStream: () => simulateReadableStream,
+  simulateStreamingMiddleware: () => simulateStreamingMiddleware,
+  smoothStream: () => smoothStream,
+  stepCountIs: () => stepCountIs,
+  streamObject: () => streamObject,
+  streamText: () => streamText,
+  systemModelMessageSchema: () => systemModelMessageSchema,
+  tool: () => import_provider_utils29.tool,
+  toolModelMessageSchema: () => toolModelMessageSchema,
+  userModelMessageSchema: () => userModelMessageSchema,
+  validateUIMessages: () => validateUIMessages,
+  wrapLanguageModel: () => wrapLanguageModel,
+  wrapProvider: () => wrapProvider,
+  zodSchema: () => import_provider_utils29.zodSchema
+});
+module.exports = __toCommonJS(src_exports);
+var import_provider_utils29 = __nccwpck_require__(9033);
+
+// src/generate-text/generate-text.ts
+var import_provider_utils9 = __nccwpck_require__(9033);
+
+// src/error/no-output-specified-error.ts
+var import_provider = __nccwpck_require__(2585);
+var name = "AI_NoOutputSpecifiedError";
+var marker = `vercel.ai.error.${name}`;
+var symbol = Symbol.for(marker);
+var _a;
+var NoOutputSpecifiedError = class extends import_provider.AISDKError {
+  // used in isInstance
+  constructor({ message = "No output specified." } = {}) {
+    super({ name, message });
+    this[_a] = true;
+  }
+  static isInstance(error) {
+    return import_provider.AISDKError.hasMarker(error, marker);
+  }
+};
+_a = symbol;
+
+// src/model/resolve-model.ts
+var import_gateway = __nccwpck_require__(7860);
+
+// src/error/index.ts
+var import_provider17 = __nccwpck_require__(2585);
+
+// src/error/invalid-argument-error.ts
+var import_provider2 = __nccwpck_require__(2585);
+var name2 = "AI_InvalidArgumentError";
+var marker2 = `vercel.ai.error.${name2}`;
+var symbol2 = Symbol.for(marker2);
+var _a2;
+var InvalidArgumentError = class extends import_provider2.AISDKError {
+  constructor({
+    parameter,
+    value,
+    message
+  }) {
+    super({
+      name: name2,
+      message: `Invalid argument for parameter ${parameter}: ${message}`
+    });
+    this[_a2] = true;
+    this.parameter = parameter;
+    this.value = value;
+  }
+  static isInstance(error) {
+    return import_provider2.AISDKError.hasMarker(error, marker2);
+  }
+};
+_a2 = symbol2;
+
+// src/error/invalid-stream-part-error.ts
+var import_provider3 = __nccwpck_require__(2585);
+var name3 = "AI_InvalidStreamPartError";
+var marker3 = `vercel.ai.error.${name3}`;
+var symbol3 = Symbol.for(marker3);
+var _a3;
+var InvalidStreamPartError = class extends import_provider3.AISDKError {
+  constructor({
+    chunk,
+    message
+  }) {
+    super({ name: name3, message });
+    this[_a3] = true;
+    this.chunk = chunk;
+  }
+  static isInstance(error) {
+    return import_provider3.AISDKError.hasMarker(error, marker3);
+  }
+};
+_a3 = symbol3;
+
+// src/error/invalid-tool-input-error.ts
+var import_provider4 = __nccwpck_require__(2585);
+var name4 = "AI_InvalidToolInputError";
+var marker4 = `vercel.ai.error.${name4}`;
+var symbol4 = Symbol.for(marker4);
+var _a4;
+var InvalidToolInputError = class extends import_provider4.AISDKError {
+  constructor({
+    toolInput,
+    toolName,
+    cause,
+    message = `Invalid input for tool ${toolName}: ${(0, import_provider4.getErrorMessage)(cause)}`
+  }) {
+    super({ name: name4, message, cause });
+    this[_a4] = true;
+    this.toolInput = toolInput;
+    this.toolName = toolName;
+  }
+  static isInstance(error) {
+    return import_provider4.AISDKError.hasMarker(error, marker4);
+  }
+};
+_a4 = symbol4;
+
+// src/error/mcp-client-error.ts
+var import_provider5 = __nccwpck_require__(2585);
+var name5 = "AI_MCPClientError";
+var marker5 = `vercel.ai.error.${name5}`;
+var symbol5 = Symbol.for(marker5);
+var _a5;
+var MCPClientError = class extends import_provider5.AISDKError {
+  constructor({
+    name: name17 = "MCPClientError",
+    message,
+    cause
+  }) {
+    super({ name: name17, message, cause });
+    this[_a5] = true;
+  }
+  static isInstance(error) {
+    return import_provider5.AISDKError.hasMarker(error, marker5);
+  }
+};
+_a5 = symbol5;
+
+// src/error/no-image-generated-error.ts
+var import_provider6 = __nccwpck_require__(2585);
+var name6 = "AI_NoImageGeneratedError";
+var marker6 = `vercel.ai.error.${name6}`;
+var symbol6 = Symbol.for(marker6);
+var _a6;
+var NoImageGeneratedError = class extends import_provider6.AISDKError {
+  constructor({
+    message = "No image generated.",
+    cause,
+    responses
+  }) {
+    super({ name: name6, message, cause });
+    this[_a6] = true;
+    this.responses = responses;
+  }
+  static isInstance(error) {
+    return import_provider6.AISDKError.hasMarker(error, marker6);
+  }
+};
+_a6 = symbol6;
+
+// src/error/no-object-generated-error.ts
+var import_provider7 = __nccwpck_require__(2585);
+var name7 = "AI_NoObjectGeneratedError";
+var marker7 = `vercel.ai.error.${name7}`;
+var symbol7 = Symbol.for(marker7);
+var _a7;
+var NoObjectGeneratedError = class extends import_provider7.AISDKError {
+  constructor({
+    message = "No object generated.",
+    cause,
+    text: text2,
+    response,
+    usage,
+    finishReason
+  }) {
+    super({ name: name7, message, cause });
+    this[_a7] = true;
+    this.text = text2;
+    this.response = response;
+    this.usage = usage;
+    this.finishReason = finishReason;
+  }
+  static isInstance(error) {
+    return import_provider7.AISDKError.hasMarker(error, marker7);
+  }
+};
+_a7 = symbol7;
+
+// src/error/no-output-generated-error.ts
+var import_provider8 = __nccwpck_require__(2585);
+var name8 = "AI_NoOutputGeneratedError";
+var marker8 = `vercel.ai.error.${name8}`;
+var symbol8 = Symbol.for(marker8);
+var _a8;
+var NoOutputGeneratedError = class extends import_provider8.AISDKError {
+  // used in isInstance
+  constructor({
+    message = "No output generated.",
+    cause
+  } = {}) {
+    super({ name: name8, message, cause });
+    this[_a8] = true;
+  }
+  static isInstance(error) {
+    return import_provider8.AISDKError.hasMarker(error, marker8);
+  }
+};
+_a8 = symbol8;
+
+// src/error/no-such-tool-error.ts
+var import_provider9 = __nccwpck_require__(2585);
+var name9 = "AI_NoSuchToolError";
+var marker9 = `vercel.ai.error.${name9}`;
+var symbol9 = Symbol.for(marker9);
+var _a9;
+var NoSuchToolError = class extends import_provider9.AISDKError {
+  constructor({
+    toolName,
+    availableTools = void 0,
+    message = `Model tried to call unavailable tool '${toolName}'. ${availableTools === void 0 ? "No tools are available." : `Available tools: ${availableTools.join(", ")}.`}`
+  }) {
+    super({ name: name9, message });
+    this[_a9] = true;
+    this.toolName = toolName;
+    this.availableTools = availableTools;
+  }
+  static isInstance(error) {
+    return import_provider9.AISDKError.hasMarker(error, marker9);
+  }
+};
+_a9 = symbol9;
+
+// src/error/tool-call-repair-error.ts
+var import_provider10 = __nccwpck_require__(2585);
+var name10 = "AI_ToolCallRepairError";
+var marker10 = `vercel.ai.error.${name10}`;
+var symbol10 = Symbol.for(marker10);
+var _a10;
+var ToolCallRepairError = class extends import_provider10.AISDKError {
+  constructor({
+    cause,
+    originalError,
+    message = `Error repairing tool call: ${(0, import_provider10.getErrorMessage)(cause)}`
+  }) {
+    super({ name: name10, message, cause });
+    this[_a10] = true;
+    this.originalError = originalError;
+  }
+  static isInstance(error) {
+    return import_provider10.AISDKError.hasMarker(error, marker10);
+  }
+};
+_a10 = symbol10;
+
+// src/error/unsupported-model-version-error.ts
+var import_provider11 = __nccwpck_require__(2585);
+var UnsupportedModelVersionError = class extends import_provider11.AISDKError {
+  constructor(options) {
+    super({
+      name: "AI_UnsupportedModelVersionError",
+      message: `Unsupported model version ${options.version} for provider "${options.provider}" and model "${options.modelId}". AI SDK 5 only supports models that implement specification version "v2".`
+    });
+    this.version = options.version;
+    this.provider = options.provider;
+    this.modelId = options.modelId;
+  }
+};
+
+// src/prompt/invalid-data-content-error.ts
+var import_provider12 = __nccwpck_require__(2585);
+var name11 = "AI_InvalidDataContentError";
+var marker11 = `vercel.ai.error.${name11}`;
+var symbol11 = Symbol.for(marker11);
+var _a11;
+var InvalidDataContentError = class extends import_provider12.AISDKError {
+  constructor({
+    content,
+    cause,
+    message = `Invalid data content. Expected a base64 string, Uint8Array, ArrayBuffer, or Buffer, but got ${typeof content}.`
+  }) {
+    super({ name: name11, message, cause });
+    this[_a11] = true;
+    this.content = content;
+  }
+  static isInstance(error) {
+    return import_provider12.AISDKError.hasMarker(error, marker11);
+  }
+};
+_a11 = symbol11;
+
+// src/prompt/invalid-message-role-error.ts
+var import_provider13 = __nccwpck_require__(2585);
+var name12 = "AI_InvalidMessageRoleError";
+var marker12 = `vercel.ai.error.${name12}`;
+var symbol12 = Symbol.for(marker12);
+var _a12;
+var InvalidMessageRoleError = class extends import_provider13.AISDKError {
+  constructor({
+    role,
+    message = `Invalid message role: '${role}'. Must be one of: "system", "user", "assistant", "tool".`
+  }) {
+    super({ name: name12, message });
+    this[_a12] = true;
+    this.role = role;
+  }
+  static isInstance(error) {
+    return import_provider13.AISDKError.hasMarker(error, marker12);
+  }
+};
+_a12 = symbol12;
+
+// src/prompt/message-conversion-error.ts
+var import_provider14 = __nccwpck_require__(2585);
+var name13 = "AI_MessageConversionError";
+var marker13 = `vercel.ai.error.${name13}`;
+var symbol13 = Symbol.for(marker13);
+var _a13;
+var MessageConversionError = class extends import_provider14.AISDKError {
+  constructor({
+    originalMessage,
+    message
+  }) {
+    super({ name: name13, message });
+    this[_a13] = true;
+    this.originalMessage = originalMessage;
+  }
+  static isInstance(error) {
+    return import_provider14.AISDKError.hasMarker(error, marker13);
+  }
+};
+_a13 = symbol13;
+
+// src/util/download-error.ts
+var import_provider15 = __nccwpck_require__(2585);
+var name14 = "AI_DownloadError";
+var marker14 = `vercel.ai.error.${name14}`;
+var symbol14 = Symbol.for(marker14);
+var _a14;
+var DownloadError = class extends import_provider15.AISDKError {
+  constructor({
+    url,
+    statusCode,
+    statusText,
+    cause,
+    message = cause == null ? `Failed to download ${url}: ${statusCode} ${statusText}` : `Failed to download ${url}: ${cause}`
+  }) {
+    super({ name: name14, message, cause });
+    this[_a14] = true;
+    this.url = url;
+    this.statusCode = statusCode;
+    this.statusText = statusText;
+  }
+  static isInstance(error) {
+    return import_provider15.AISDKError.hasMarker(error, marker14);
+  }
+};
+_a14 = symbol14;
+
+// src/util/retry-error.ts
+var import_provider16 = __nccwpck_require__(2585);
+var name15 = "AI_RetryError";
+var marker15 = `vercel.ai.error.${name15}`;
+var symbol15 = Symbol.for(marker15);
+var _a15;
+var RetryError = class extends import_provider16.AISDKError {
+  constructor({
+    message,
+    reason,
+    errors
+  }) {
+    super({ name: name15, message });
+    this[_a15] = true;
+    this.reason = reason;
+    this.errors = errors;
+    this.lastError = errors[errors.length - 1];
+  }
+  static isInstance(error) {
+    return import_provider16.AISDKError.hasMarker(error, marker15);
+  }
+};
+_a15 = symbol15;
+
+// src/model/resolve-model.ts
+function resolveLanguageModel(model) {
+  if (typeof model !== "string") {
+    if (model.specificationVersion !== "v2") {
+      throw new UnsupportedModelVersionError({
+        version: model.specificationVersion,
+        provider: model.provider,
+        modelId: model.modelId
+      });
+    }
+    return model;
+  }
+  return getGlobalProvider().languageModel(model);
+}
+function resolveEmbeddingModel(model) {
+  if (typeof model !== "string") {
+    if (model.specificationVersion !== "v2") {
+      throw new UnsupportedModelVersionError({
+        version: model.specificationVersion,
+        provider: model.provider,
+        modelId: model.modelId
+      });
+    }
+    return model;
+  }
+  return getGlobalProvider().textEmbeddingModel(
+    model
+  );
+}
+function getGlobalProvider() {
+  var _a17;
+  return (_a17 = globalThis.AI_SDK_DEFAULT_PROVIDER) != null ? _a17 : import_gateway.gateway;
+}
+
+// src/prompt/convert-to-language-model-prompt.ts
+var import_provider_utils3 = __nccwpck_require__(9033);
+
+// src/util/detect-media-type.ts
+var import_provider_utils = __nccwpck_require__(9033);
+var imageMediaTypeSignatures = [
+  {
+    mediaType: "image/gif",
+    bytesPrefix: [71, 73, 70],
+    base64Prefix: "R0lG"
+  },
+  {
+    mediaType: "image/png",
+    bytesPrefix: [137, 80, 78, 71],
+    base64Prefix: "iVBORw"
+  },
+  {
+    mediaType: "image/jpeg",
+    bytesPrefix: [255, 216],
+    base64Prefix: "/9j/"
+  },
+  {
+    mediaType: "image/webp",
+    bytesPrefix: [82, 73, 70, 70],
+    base64Prefix: "UklGRg"
+  },
+  {
+    mediaType: "image/bmp",
+    bytesPrefix: [66, 77],
+    base64Prefix: "Qk"
+  },
+  {
+    mediaType: "image/tiff",
+    bytesPrefix: [73, 73, 42, 0],
+    base64Prefix: "SUkqAA"
+  },
+  {
+    mediaType: "image/tiff",
+    bytesPrefix: [77, 77, 0, 42],
+    base64Prefix: "TU0AKg"
+  },
+  {
+    mediaType: "image/avif",
+    bytesPrefix: [
+      0,
+      0,
+      0,
+      32,
+      102,
+      116,
+      121,
+      112,
+      97,
+      118,
+      105,
+      102
+    ],
+    base64Prefix: "AAAAIGZ0eXBhdmlm"
+  },
+  {
+    mediaType: "image/heic",
+    bytesPrefix: [
+      0,
+      0,
+      0,
+      32,
+      102,
+      116,
+      121,
+      112,
+      104,
+      101,
+      105,
+      99
+    ],
+    base64Prefix: "AAAAIGZ0eXBoZWlj"
+  }
+];
+var audioMediaTypeSignatures = [
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 251],
+    base64Prefix: "//s="
+  },
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 250],
+    base64Prefix: "//o="
+  },
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 243],
+    base64Prefix: "//M="
+  },
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 242],
+    base64Prefix: "//I="
+  },
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 227],
+    base64Prefix: "/+M="
+  },
+  {
+    mediaType: "audio/mpeg",
+    bytesPrefix: [255, 226],
+    base64Prefix: "/+I="
+  },
+  {
+    mediaType: "audio/wav",
+    bytesPrefix: [82, 73, 70, 70],
+    base64Prefix: "UklGR"
+  },
+  {
+    mediaType: "audio/ogg",
+    bytesPrefix: [79, 103, 103, 83],
+    base64Prefix: "T2dnUw"
+  },
+  {
+    mediaType: "audio/flac",
+    bytesPrefix: [102, 76, 97, 67],
+    base64Prefix: "ZkxhQw"
+  },
+  {
+    mediaType: "audio/aac",
+    bytesPrefix: [64, 21, 0, 0],
+    base64Prefix: "QBUA"
+  },
+  {
+    mediaType: "audio/mp4",
+    bytesPrefix: [102, 116, 121, 112],
+    base64Prefix: "ZnR5cA"
+  },
+  {
+    mediaType: "audio/webm",
+    bytesPrefix: [26, 69, 223, 163],
+    base64Prefix: "GkXf"
+  }
+];
+var stripID3 = (data) => {
+  const bytes = typeof data === "string" ? (0, import_provider_utils.convertBase64ToUint8Array)(data) : data;
+  const id3Size = (bytes[6] & 127) << 21 | (bytes[7] & 127) << 14 | (bytes[8] & 127) << 7 | bytes[9] & 127;
+  return bytes.slice(id3Size + 10);
+};
+function stripID3TagsIfPresent(data) {
+  const hasId3 = typeof data === "string" && data.startsWith("SUQz") || typeof data !== "string" && data.length > 10 && data[0] === 73 && // 'I'
+  data[1] === 68 && // 'D'
+  data[2] === 51;
+  return hasId3 ? stripID3(data) : data;
+}
+function detectMediaType({
+  data,
+  signatures
+}) {
+  const processedData = stripID3TagsIfPresent(data);
+  for (const signature of signatures) {
+    if (typeof processedData === "string" ? processedData.startsWith(signature.base64Prefix) : processedData.length >= signature.bytesPrefix.length && signature.bytesPrefix.every(
+      (byte, index) => processedData[index] === byte
+    )) {
+      return signature.mediaType;
     }
   }
   return void 0;
 }
 
-// core/prompt/data-content.ts
-var import_provider2 = __nccwpck_require__(131);
-var import_provider_utils2 = __nccwpck_require__(9711);
+// src/util/download.ts
+async function download({ url }) {
+  var _a17;
+  const urlText = url.toString();
+  try {
+    const response = await fetch(urlText);
+    if (!response.ok) {
+      throw new DownloadError({
+        url: urlText,
+        statusCode: response.status,
+        statusText: response.statusText
+      });
+    }
+    return {
+      data: new Uint8Array(await response.arrayBuffer()),
+      mediaType: (_a17 = response.headers.get("content-type")) != null ? _a17 : void 0
+    };
+  } catch (error) {
+    if (DownloadError.isInstance(error)) {
+      throw error;
+    }
+    throw new DownloadError({ url: urlText, cause: error });
+  }
+}
+
+// src/prompt/data-content.ts
+var import_provider18 = __nccwpck_require__(2585);
+var import_provider_utils2 = __nccwpck_require__(9033);
+var import_v4 = __nccwpck_require__(5350);
+
+// src/prompt/split-data-url.ts
+function splitDataUrl(dataUrl) {
+  try {
+    const [header, base64Content] = dataUrl.split(",");
+    return {
+      mediaType: header.split(";")[0].split(":")[1],
+      base64Content
+    };
+  } catch (error) {
+    return {
+      mediaType: void 0,
+      base64Content: void 0
+    };
+  }
+}
+
+// src/prompt/data-content.ts
+var dataContentSchema = import_v4.z.union([
+  import_v4.z.string(),
+  import_v4.z.instanceof(Uint8Array),
+  import_v4.z.instanceof(ArrayBuffer),
+  import_v4.z.custom(
+    // Buffer might not be available in some environments such as CloudFlare:
+    (value) => {
+      var _a17, _b;
+      return (_b = (_a17 = globalThis.Buffer) == null ? void 0 : _a17.isBuffer(value)) != null ? _b : false;
+    },
+    { message: "Must be a Buffer" }
+  )
+]);
+function convertToLanguageModelV2DataContent(content) {
+  if (content instanceof Uint8Array) {
+    return { data: content, mediaType: void 0 };
+  }
+  if (content instanceof ArrayBuffer) {
+    return { data: new Uint8Array(content), mediaType: void 0 };
+  }
+  if (typeof content === "string") {
+    try {
+      content = new URL(content);
+    } catch (error) {
+    }
+  }
+  if (content instanceof URL && content.protocol === "data:") {
+    const { mediaType: dataUrlMediaType, base64Content } = splitDataUrl(
+      content.toString()
+    );
+    if (dataUrlMediaType == null || base64Content == null) {
+      throw new import_provider18.AISDKError({
+        name: "InvalidDataContentError",
+        message: `Invalid data URL format in content ${content.toString()}`
+      });
+    }
+    return { data: base64Content, mediaType: dataUrlMediaType };
+  }
+  return { data: content, mediaType: void 0 };
+}
 function convertDataContentToBase64String(content) {
   if (typeof content === "string") {
     return content;
@@ -18858,8 +25649,8 @@ function convertDataContentToUint8Array(content) {
     try {
       return (0, import_provider_utils2.convertBase64ToUint8Array)(content);
     } catch (error) {
-      throw new import_provider2.InvalidDataContentError({
-        message: "Invalid data content. Content string is not a base64-encoded image.",
+      throw new InvalidDataContentError({
+        message: "Invalid data content. Content string is not a base64-encoded media.",
         content,
         cause: error
       });
@@ -18868,149 +25659,60 @@ function convertDataContentToUint8Array(content) {
   if (content instanceof ArrayBuffer) {
     return new Uint8Array(content);
   }
-  throw new import_provider2.InvalidDataContentError({ content });
+  throw new InvalidDataContentError({ content });
 }
 
-// core/prompt/invalid-message-role-error.ts
-var InvalidMessageRoleError = class extends Error {
-  constructor({
-    role,
-    message = `Invalid message role: '${role}'. Must be one of: "system", "user", "assistant", "tool".`
-  }) {
-    super(message);
-    this.name = "AI_InvalidMessageRoleError";
-    this.role = role;
-  }
-  static isInvalidMessageRoleError(error) {
-    return error instanceof Error && error.name === "AI_InvalidMessageRoleError" && typeof error.role === "string";
-  }
-  toJSON() {
-    return {
-      name: this.name,
-      message: this.message,
-      stack: this.stack,
-      role: this.role
-    };
-  }
-};
-
-// core/prompt/convert-to-language-model-prompt.ts
-var import_provider_utils3 = __nccwpck_require__(9711);
-function convertToLanguageModelPrompt(prompt) {
-  const languageModelMessages = [];
-  if (prompt.system != null) {
-    languageModelMessages.push({ role: "system", content: prompt.system });
-  }
-  const promptType = prompt.type;
-  switch (promptType) {
-    case "prompt": {
-      languageModelMessages.push({
-        role: "user",
-        content: [{ type: "text", text: prompt.prompt }]
-      });
-      break;
-    }
-    case "messages": {
-      languageModelMessages.push(
-        ...prompt.messages.map(convertToLanguageModelMessage)
-      );
-      break;
-    }
-    default: {
-      const _exhaustiveCheck = promptType;
-      throw new Error(`Unsupported prompt type: ${_exhaustiveCheck}`);
-    }
-  }
-  return languageModelMessages;
+// src/prompt/convert-to-language-model-prompt.ts
+async function convertToLanguageModelPrompt({
+  prompt,
+  supportedUrls,
+  downloadImplementation = download
+}) {
+  const downloadedAssets = await downloadAssets(
+    prompt.messages,
+    downloadImplementation,
+    supportedUrls
+  );
+  return [
+    ...prompt.system != null ? [{ role: "system", content: prompt.system }] : [],
+    ...prompt.messages.map(
+      (message) => convertToLanguageModelMessage({ message, downloadedAssets })
+    )
+  ];
 }
-function convertToLanguageModelMessage(message) {
+function convertToLanguageModelMessage({
+  message,
+  downloadedAssets
+}) {
   const role = message.role;
   switch (role) {
     case "system": {
-      return { role: "system", content: message.content };
+      return {
+        role: "system",
+        content: message.content,
+        providerOptions: message.providerOptions
+      };
     }
     case "user": {
       if (typeof message.content === "string") {
         return {
           role: "user",
-          content: [{ type: "text", text: message.content }]
+          content: [{ type: "text", text: message.content }],
+          providerOptions: message.providerOptions
         };
       }
       return {
         role: "user",
-        content: message.content.map(
-          (part) => {
-            var _a;
-            switch (part.type) {
-              case "text": {
-                return part;
-              }
-              case "image": {
-                if (part.image instanceof URL) {
-                  return {
-                    type: "image",
-                    image: part.image,
-                    mimeType: part.mimeType
-                  };
-                }
-                if (typeof part.image === "string") {
-                  try {
-                    const url = new URL(part.image);
-                    switch (url.protocol) {
-                      case "http:":
-                      case "https:": {
-                        return {
-                          type: "image",
-                          image: url,
-                          mimeType: part.mimeType
-                        };
-                      }
-                      case "data:": {
-                        try {
-                          const [header, base64Content] = part.image.split(",");
-                          const mimeType = header.split(";")[0].split(":")[1];
-                          if (mimeType == null || base64Content == null) {
-                            throw new Error("Invalid data URL format");
-                          }
-                          return {
-                            type: "image",
-                            image: convertDataContentToUint8Array(base64Content),
-                            mimeType
-                          };
-                        } catch (error) {
-                          throw new Error(
-                            `Error processing data URL: ${(0, import_provider_utils3.getErrorMessage)(
-                              message
-                            )}`
-                          );
-                        }
-                      }
-                      default: {
-                        throw new Error(
-                          `Unsupported URL protocol: ${url.protocol}`
-                        );
-                      }
-                    }
-                  } catch (_ignored) {
-                  }
-                }
-                const imageUint8 = convertDataContentToUint8Array(part.image);
-                return {
-                  type: "image",
-                  image: imageUint8,
-                  mimeType: (_a = part.mimeType) != null ? _a : detectImageMimeType(imageUint8)
-                };
-              }
-            }
-          }
-        )
+        content: message.content.map((part) => convertPartToLanguageModelPart(part, downloadedAssets)).filter((part) => part.type !== "text" || part.text !== ""),
+        providerOptions: message.providerOptions
       };
     }
     case "assistant": {
       if (typeof message.content === "string") {
         return {
           role: "assistant",
-          content: [{ type: "text", text: message.content }]
+          content: [{ type: "text", text: message.content }],
+          providerOptions: message.providerOptions
         };
       }
       return {
@@ -19018,11 +25720,71 @@ function convertToLanguageModelMessage(message) {
         content: message.content.filter(
           // remove empty text parts:
           (part) => part.type !== "text" || part.text !== ""
-        )
+        ).map((part) => {
+          const providerOptions = part.providerOptions;
+          switch (part.type) {
+            case "file": {
+              const { data, mediaType } = convertToLanguageModelV2DataContent(
+                part.data
+              );
+              return {
+                type: "file",
+                data,
+                filename: part.filename,
+                mediaType: mediaType != null ? mediaType : part.mediaType,
+                providerOptions
+              };
+            }
+            case "reasoning": {
+              return {
+                type: "reasoning",
+                text: part.text,
+                providerOptions
+              };
+            }
+            case "text": {
+              return {
+                type: "text",
+                text: part.text,
+                providerOptions
+              };
+            }
+            case "tool-call": {
+              return {
+                type: "tool-call",
+                toolCallId: part.toolCallId,
+                toolName: part.toolName,
+                input: part.input,
+                providerExecuted: part.providerExecuted,
+                providerOptions
+              };
+            }
+            case "tool-result": {
+              return {
+                type: "tool-result",
+                toolCallId: part.toolCallId,
+                toolName: part.toolName,
+                output: part.output,
+                providerOptions
+              };
+            }
+          }
+        }),
+        providerOptions: message.providerOptions
       };
     }
     case "tool": {
-      return message;
+      return {
+        role: "tool",
+        content: message.content.map((part) => ({
+          type: "tool-result",
+          toolCallId: part.toolCallId,
+          toolName: part.toolName,
+          output: part.output,
+          providerOptions: part.providerOptions
+        })),
+        providerOptions: message.providerOptions
+      };
     }
     default: {
       const _exhaustiveCheck = role;
@@ -19030,66 +25792,129 @@ function convertToLanguageModelMessage(message) {
     }
   }
 }
-
-// core/prompt/get-validated-prompt.ts
-var import_provider3 = __nccwpck_require__(131);
-function getValidatedPrompt(prompt) {
-  if (prompt.prompt == null && prompt.messages == null) {
-    throw new import_provider3.InvalidPromptError({
-      prompt,
-      message: "prompt or messages must be defined"
-    });
+async function downloadAssets(messages, downloadImplementation, supportedUrls) {
+  const urls = messages.filter((message) => message.role === "user").map((message) => message.content).filter(
+    (content) => Array.isArray(content)
+  ).flat().filter(
+    (part) => part.type === "image" || part.type === "file"
+  ).map((part) => {
+    var _a17;
+    const mediaType = (_a17 = part.mediaType) != null ? _a17 : part.type === "image" ? "image/*" : void 0;
+    let data = part.type === "image" ? part.image : part.data;
+    if (typeof data === "string") {
+      try {
+        data = new URL(data);
+      } catch (ignored) {
+      }
+    }
+    return { mediaType, data };
+  }).filter(
+    (part) => part.data instanceof URL && part.mediaType != null && !(0, import_provider_utils3.isUrlSupported)({
+      url: part.data.toString(),
+      mediaType: part.mediaType,
+      supportedUrls
+    })
+  ).map((part) => part.data);
+  const downloadedImages = await Promise.all(
+    urls.map(async (url) => ({
+      url,
+      data: await downloadImplementation({ url })
+    }))
+  );
+  return Object.fromEntries(
+    downloadedImages.map(({ url, data }) => [url.toString(), data])
+  );
+}
+function convertPartToLanguageModelPart(part, downloadedAssets) {
+  var _a17;
+  if (part.type === "text") {
+    return {
+      type: "text",
+      text: part.text,
+      providerOptions: part.providerOptions
+    };
   }
-  if (prompt.prompt != null && prompt.messages != null) {
-    throw new import_provider3.InvalidPromptError({
-      prompt,
-      message: "prompt and messages cannot be defined at the same time"
-    });
+  let originalData;
+  const type = part.type;
+  switch (type) {
+    case "image":
+      originalData = part.image;
+      break;
+    case "file":
+      originalData = part.data;
+      break;
+    default:
+      throw new Error(`Unsupported part type: ${type}`);
   }
-  return prompt.prompt != null ? {
-    type: "prompt",
-    prompt: prompt.prompt,
-    messages: void 0,
-    system: prompt.system
-  } : {
-    type: "messages",
-    prompt: void 0,
-    messages: prompt.messages,
-    // only possible case bc of checks above
-    system: prompt.system
-  };
+  const { data: convertedData, mediaType: convertedMediaType } = convertToLanguageModelV2DataContent(originalData);
+  let mediaType = convertedMediaType != null ? convertedMediaType : part.mediaType;
+  let data = convertedData;
+  if (data instanceof URL) {
+    const downloadedFile = downloadedAssets[data.toString()];
+    if (downloadedFile) {
+      data = downloadedFile.data;
+      mediaType != null ? mediaType : mediaType = downloadedFile.mediaType;
+    }
+  }
+  switch (type) {
+    case "image": {
+      if (data instanceof Uint8Array || typeof data === "string") {
+        mediaType = (_a17 = detectMediaType({ data, signatures: imageMediaTypeSignatures })) != null ? _a17 : mediaType;
+      }
+      return {
+        type: "file",
+        mediaType: mediaType != null ? mediaType : "image/*",
+        // any image
+        filename: void 0,
+        data,
+        providerOptions: part.providerOptions
+      };
+    }
+    case "file": {
+      if (mediaType == null) {
+        throw new Error(`Media type is missing for file part`);
+      }
+      return {
+        type: "file",
+        mediaType,
+        filename: part.filename,
+        data,
+        providerOptions: part.providerOptions
+      };
+    }
+  }
 }
 
-// core/prompt/prepare-call-settings.ts
-var import_provider4 = __nccwpck_require__(131);
+// src/prompt/prepare-call-settings.ts
 function prepareCallSettings({
-  maxTokens,
+  maxOutputTokens,
   temperature,
   topP,
+  topK,
   presencePenalty,
   frequencyPenalty,
   seed,
-  maxRetries
+  stopSequences
 }) {
-  if (maxTokens != null) {
-    if (!Number.isInteger(maxTokens)) {
-      throw new import_provider4.InvalidArgumentError({
-        parameter: "maxTokens",
-        value: maxTokens,
-        message: "maxTokens must be an integer"
+  if (maxOutputTokens != null) {
+    if (!Number.isInteger(maxOutputTokens)) {
+      throw new InvalidArgumentError({
+        parameter: "maxOutputTokens",
+        value: maxOutputTokens,
+        message: "maxOutputTokens must be an integer"
       });
     }
-    if (maxTokens < 1) {
-      throw new import_provider4.InvalidArgumentError({
-        parameter: "maxTokens",
-        value: maxTokens,
-        message: "maxTokens must be >= 1"
+    if (maxOutputTokens < 1) {
+      throw new InvalidArgumentError({
+        parameter: "maxOutputTokens",
+        value: maxOutputTokens,
+        message: "maxOutputTokens must be >= 1"
       });
     }
   }
   if (temperature != null) {
     if (typeof temperature !== "number") {
-      throw new import_provider4.InvalidArgumentError({
+      throw new InvalidArgumentError({
         parameter: "temperature",
         value: temperature,
         message: "temperature must be a number"
@@ -19098,16 +25923,25 @@ function prepareCallSettings({
   }
   if (topP != null) {
     if (typeof topP !== "number") {
-      throw new import_provider4.InvalidArgumentError({
+      throw new InvalidArgumentError({
         parameter: "topP",
         value: topP,
         message: "topP must be a number"
       });
     }
   }
+  if (topK != null) {
+    if (typeof topK !== "number") {
+      throw new InvalidArgumentError({
+        parameter: "topK",
+        value: topK,
+        message: "topK must be a number"
+      });
+    }
+  }
   if (presencePenalty != null) {
     if (typeof presencePenalty !== "number") {
-      throw new import_provider4.InvalidArgumentError({
+      throw new InvalidArgumentError({
         parameter: "presencePenalty",
         value: presencePenalty,
         message: "presencePenalty must be a number"
@@ -19116,7 +25950,7 @@ function prepareCallSettings({
   }
   if (frequencyPenalty != null) {
     if (typeof frequencyPenalty !== "number") {
-      throw new import_provider4.InvalidArgumentError({
+      throw new InvalidArgumentError({
         parameter: "frequencyPenalty",
         value: frequencyPenalty,
         message: "frequencyPenalty must be a number"
@@ -19125,612 +25959,38 @@ function prepareCallSettings({
   }
   if (seed != null) {
     if (!Number.isInteger(seed)) {
-      throw new import_provider4.InvalidArgumentError({
+      throw new InvalidArgumentError({
         parameter: "seed",
         value: seed,
         message: "seed must be an integer"
       });
     }
   }
-  if (maxRetries != null) {
-    if (!Number.isInteger(maxRetries)) {
-      throw new import_provider4.InvalidArgumentError({
-        parameter: "maxRetries",
-        value: maxRetries,
-        message: "maxRetries must be an integer"
-      });
-    }
-    if (maxRetries < 0) {
-      throw new import_provider4.InvalidArgumentError({
-        parameter: "maxRetries",
-        value: maxRetries,
-        message: "maxRetries must be >= 0"
-      });
-    }
-  }
   return {
-    maxTokens,
-    temperature: temperature != null ? temperature : 0,
+    maxOutputTokens,
+    temperature,
     topP,
+    topK,
     presencePenalty,
     frequencyPenalty,
-    seed,
-    maxRetries: maxRetries != null ? maxRetries : 2
+    stopSequences,
+    seed
   };
 }
 
-// core/util/convert-zod-to-json-schema.ts
-var import_zod_to_json_schema = __toESM(__nccwpck_require__(2708));
-function convertZodToJSONSchema(zodSchema) {
-  return (0, import_zod_to_json_schema.default)(zodSchema);
+// src/prompt/prepare-tools-and-tool-choice.ts
+var import_provider_utils4 = __nccwpck_require__(9033);
+
+// src/util/is-non-empty-object.ts
+function isNonEmptyObject(object2) {
+  return object2 != null && Object.keys(object2).length > 0;
 }
 
-// core/generate-object/inject-json-schema-into-system.ts
-var DEFAULT_SCHEMA_PREFIX = "JSON schema:";
-var DEFAULT_SCHEMA_SUFFIX = "You MUST answer with a JSON object that matches the JSON schema above.";
-function injectJsonSchemaIntoSystem({
-  system,
-  schema,
-  schemaPrefix = DEFAULT_SCHEMA_PREFIX,
-  schemaSuffix = DEFAULT_SCHEMA_SUFFIX
-}) {
-  return [
-    system,
-    system != null ? "" : null,
-    // add a newline if system is not null
-    schemaPrefix,
-    JSON.stringify(schema),
-    schemaSuffix
-  ].filter((line) => line != null).join("\n");
-}
-
-// core/util/prepare-response-headers.ts
-function prepareResponseHeaders(init, { contentType }) {
-  var _a;
-  const headers = new Headers((_a = init == null ? void 0 : init.headers) != null ? _a : {});
-  if (!headers.has("Content-Type")) {
-    headers.set("Content-Type", contentType);
-  }
-  return headers;
-}
-
-// core/generate-object/generate-object.ts
-async function generateObject({
-  model,
-  schema,
-  mode,
-  system,
-  prompt,
-  messages,
-  maxRetries,
-  abortSignal,
-  headers,
-  ...settings
-}) {
-  var _a, _b;
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const jsonSchema = convertZodToJSONSchema(schema);
-  if (mode === "auto" || mode == null) {
-    mode = model.defaultObjectGenerationMode;
-  }
-  let result;
-  let finishReason;
-  let usage;
-  let warnings;
-  let rawResponse;
-  let logprobs;
-  switch (mode) {
-    case "json": {
-      const validatedPrompt = getValidatedPrompt({
-        system: injectJsonSchemaIntoSystem({ system, schema: jsonSchema }),
-        prompt,
-        messages
-      });
-      const generateResult = await retry(() => {
-        return model.doGenerate({
-          mode: { type: "object-json" },
-          ...prepareCallSettings(settings),
-          inputFormat: validatedPrompt.type,
-          prompt: convertToLanguageModelPrompt(validatedPrompt),
-          abortSignal,
-          headers
-        });
-      });
-      if (generateResult.text === void 0) {
-        throw new import_provider5.NoObjectGeneratedError();
-      }
-      result = generateResult.text;
-      finishReason = generateResult.finishReason;
-      usage = generateResult.usage;
-      warnings = generateResult.warnings;
-      rawResponse = generateResult.rawResponse;
-      logprobs = generateResult.logprobs;
-      break;
-    }
-    case "grammar": {
-      const validatedPrompt = getValidatedPrompt({
-        system: injectJsonSchemaIntoSystem({ system, schema: jsonSchema }),
-        prompt,
-        messages
-      });
-      const generateResult = await retry(
-        () => model.doGenerate({
-          mode: { type: "object-grammar", schema: jsonSchema },
-          ...prepareCallSettings(settings),
-          inputFormat: validatedPrompt.type,
-          prompt: convertToLanguageModelPrompt(validatedPrompt),
-          abortSignal
-        })
-      );
-      if (generateResult.text === void 0) {
-        throw new import_provider5.NoObjectGeneratedError();
-      }
-      result = generateResult.text;
-      finishReason = generateResult.finishReason;
-      usage = generateResult.usage;
-      warnings = generateResult.warnings;
-      rawResponse = generateResult.rawResponse;
-      logprobs = generateResult.logprobs;
-      break;
-    }
-    case "tool": {
-      const validatedPrompt = getValidatedPrompt({
-        system,
-        prompt,
-        messages
-      });
-      const generateResult = await retry(
-        () => model.doGenerate({
-          mode: {
-            type: "object-tool",
-            tool: {
-              type: "function",
-              name: "json",
-              description: "Respond with a JSON object.",
-              parameters: jsonSchema
-            }
-          },
-          ...prepareCallSettings(settings),
-          inputFormat: validatedPrompt.type,
-          prompt: convertToLanguageModelPrompt(validatedPrompt),
-          abortSignal
-        })
-      );
-      const functionArgs = (_b = (_a = generateResult.toolCalls) == null ? void 0 : _a[0]) == null ? void 0 : _b.args;
-      if (functionArgs === void 0) {
-        throw new import_provider5.NoObjectGeneratedError();
-      }
-      result = functionArgs;
-      finishReason = generateResult.finishReason;
-      usage = generateResult.usage;
-      warnings = generateResult.warnings;
-      rawResponse = generateResult.rawResponse;
-      logprobs = generateResult.logprobs;
-      break;
-    }
-    case void 0: {
-      throw new Error("Model does not have a default object generation mode.");
-    }
-    default: {
-      const _exhaustiveCheck = mode;
-      throw new Error(`Unsupported mode: ${_exhaustiveCheck}`);
-    }
-  }
-  const parseResult = (0, import_provider_utils4.safeParseJSON)({ text: result, schema });
-  if (!parseResult.success) {
-    throw parseResult.error;
-  }
-  return new GenerateObjectResult({
-    object: parseResult.value,
-    finishReason,
-    usage: calculateTokenUsage(usage),
-    warnings,
-    rawResponse,
-    logprobs
-  });
-}
-var GenerateObjectResult = class {
-  constructor(options) {
-    this.object = options.object;
-    this.finishReason = options.finishReason;
-    this.usage = options.usage;
-    this.warnings = options.warnings;
-    this.rawResponse = options.rawResponse;
-    this.logprobs = options.logprobs;
-  }
-  /**
-  Converts the object to a JSON response.
-  The response will have a status code of 200 and a content type of `application/json; charset=utf-8`.
-     */
-  toJsonResponse(init) {
-    var _a;
-    return new Response(JSON.stringify(this.object), {
-      status: (_a = init == null ? void 0 : init.status) != null ? _a : 200,
-      headers: prepareResponseHeaders(init, {
-        contentType: "application/json; charset=utf-8"
-      })
-    });
-  }
-};
-var experimental_generateObject = generateObject;
-
-// core/generate-object/stream-object.ts
-var import_provider_utils5 = __nccwpck_require__(9711);
-var import_ui_utils = __nccwpck_require__(7170);
-
-// core/util/async-iterable-stream.ts
-function createAsyncIterableStream(source, transformer) {
-  const transformedStream = source.pipeThrough(
-    new TransformStream(transformer)
-  );
-  transformedStream[Symbol.asyncIterator] = () => {
-    const reader = transformedStream.getReader();
-    return {
-      async next() {
-        const { done, value } = await reader.read();
-        return done ? { done: true, value: void 0 } : { done: false, value };
-      }
-    };
-  };
-  return transformedStream;
-}
-
-// core/generate-object/stream-object.ts
-async function streamObject({
-  model,
-  schema,
-  mode,
-  system,
-  prompt,
-  messages,
-  maxRetries,
-  abortSignal,
-  headers,
-  onFinish,
-  ...settings
-}) {
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const jsonSchema = convertZodToJSONSchema(schema);
-  if (mode === "auto" || mode == null) {
-    mode = model.defaultObjectGenerationMode;
-  }
-  let callOptions;
-  let transformer;
-  switch (mode) {
-    case "json": {
-      const validatedPrompt = getValidatedPrompt({
-        system: injectJsonSchemaIntoSystem({ system, schema: jsonSchema }),
-        prompt,
-        messages
-      });
-      callOptions = {
-        mode: { type: "object-json" },
-        ...prepareCallSettings(settings),
-        inputFormat: validatedPrompt.type,
-        prompt: convertToLanguageModelPrompt(validatedPrompt),
-        abortSignal,
-        headers
-      };
-      transformer = {
-        transform: (chunk, controller) => {
-          switch (chunk.type) {
-            case "text-delta":
-              controller.enqueue(chunk.textDelta);
-              break;
-            case "finish":
-            case "error":
-              controller.enqueue(chunk);
-              break;
-          }
-        }
-      };
-      break;
-    }
-    case "grammar": {
-      const validatedPrompt = getValidatedPrompt({
-        system: injectJsonSchemaIntoSystem({ system, schema: jsonSchema }),
-        prompt,
-        messages
-      });
-      callOptions = {
-        mode: { type: "object-grammar", schema: jsonSchema },
-        ...prepareCallSettings(settings),
-        inputFormat: validatedPrompt.type,
-        prompt: convertToLanguageModelPrompt(validatedPrompt),
-        abortSignal,
-        headers
-      };
-      transformer = {
-        transform: (chunk, controller) => {
-          switch (chunk.type) {
-            case "text-delta":
-              controller.enqueue(chunk.textDelta);
-              break;
-            case "finish":
-            case "error":
-              controller.enqueue(chunk);
-              break;
-          }
-        }
-      };
-      break;
-    }
-    case "tool": {
-      const validatedPrompt = getValidatedPrompt({
-        system,
-        prompt,
-        messages
-      });
-      callOptions = {
-        mode: {
-          type: "object-tool",
-          tool: {
-            type: "function",
-            name: "json",
-            description: "Respond with a JSON object.",
-            parameters: jsonSchema
-          }
-        },
-        ...prepareCallSettings(settings),
-        inputFormat: validatedPrompt.type,
-        prompt: convertToLanguageModelPrompt(validatedPrompt),
-        abortSignal,
-        headers
-      };
-      transformer = {
-        transform(chunk, controller) {
-          switch (chunk.type) {
-            case "tool-call-delta":
-              controller.enqueue(chunk.argsTextDelta);
-              break;
-            case "finish":
-            case "error":
-              controller.enqueue(chunk);
-              break;
-          }
-        }
-      };
-      break;
-    }
-    case void 0: {
-      throw new Error("Model does not have a default object generation mode.");
-    }
-    default: {
-      const _exhaustiveCheck = mode;
-      throw new Error(`Unsupported mode: ${_exhaustiveCheck}`);
-    }
-  }
-  const result = await retry(() => model.doStream(callOptions));
-  return new StreamObjectResult({
-    stream: result.stream.pipeThrough(new TransformStream(transformer)),
-    warnings: result.warnings,
-    rawResponse: result.rawResponse,
-    schema,
-    onFinish
-  });
-}
-var StreamObjectResult = class {
-  constructor({
-    stream,
-    warnings,
-    rawResponse,
-    schema,
-    onFinish
-  }) {
-    this.warnings = warnings;
-    this.rawResponse = rawResponse;
-    let resolveObject;
-    let rejectObject;
-    this.object = new Promise((resolve, reject) => {
-      resolveObject = resolve;
-      rejectObject = reject;
-    });
-    let resolveUsage;
-    this.usage = new Promise((resolve) => {
-      resolveUsage = resolve;
-    });
-    let usage;
-    let object;
-    let error;
-    let accumulatedText = "";
-    let delta = "";
-    let latestObject = void 0;
-    this.originalStream = stream.pipeThrough(
-      new TransformStream({
-        async transform(chunk, controller) {
-          if (typeof chunk === "string") {
-            accumulatedText += chunk;
-            delta += chunk;
-            const currentObject = (0, import_ui_utils.parsePartialJson)(
-              accumulatedText
-            );
-            if (!(0, import_ui_utils.isDeepEqualData)(latestObject, currentObject)) {
-              latestObject = currentObject;
-              controller.enqueue({
-                type: "object",
-                object: currentObject
-              });
-              controller.enqueue({
-                type: "text-delta",
-                textDelta: delta
-              });
-              delta = "";
-            }
-            return;
-          }
-          switch (chunk.type) {
-            case "finish": {
-              if (delta !== "") {
-                controller.enqueue({
-                  type: "text-delta",
-                  textDelta: delta
-                });
-              }
-              usage = calculateTokenUsage(chunk.usage);
-              controller.enqueue({ ...chunk, usage });
-              resolveUsage(usage);
-              const validationResult = (0, import_provider_utils5.safeValidateTypes)({
-                value: latestObject,
-                schema
-              });
-              if (validationResult.success) {
-                object = validationResult.value;
-                resolveObject(object);
-              } else {
-                error = validationResult.error;
-                rejectObject(error);
-              }
-              break;
-            }
-            default: {
-              controller.enqueue(chunk);
-              break;
-            }
-          }
-        },
-        // invoke onFinish callback and resolve toolResults promise when the stream is about to close:
-        async flush(controller) {
-          try {
-            await (onFinish == null ? void 0 : onFinish({
-              usage: usage != null ? usage : {
-                promptTokens: NaN,
-                completionTokens: NaN,
-                totalTokens: NaN
-              },
-              object,
-              error,
-              rawResponse,
-              warnings
-            }));
-          } catch (error2) {
-            controller.error(error2);
-          }
-        }
-      })
-    );
-  }
-  /**
-  Stream of partial objects. It gets more complete as the stream progresses.
-    
-  Note that the partial object is not validated. 
-  If you want to be certain that the actual content matches your schema, you need to implement your own validation for partial results.
-     */
-  get partialObjectStream() {
-    return createAsyncIterableStream(this.originalStream, {
-      transform(chunk, controller) {
-        switch (chunk.type) {
-          case "object":
-            controller.enqueue(chunk.object);
-            break;
-          case "text-delta":
-          case "finish":
-            break;
-          case "error":
-            controller.error(chunk.error);
-            break;
-          default: {
-            const _exhaustiveCheck = chunk;
-            throw new Error(`Unsupported chunk type: ${_exhaustiveCheck}`);
-          }
-        }
-      }
-    });
-  }
-  /**
-  Text stream of the JSON representation of the generated object. It contains text chunks. 
-  When the stream is finished, the object is valid JSON that can be parsed.
-     */
-  get textStream() {
-    return createAsyncIterableStream(this.originalStream, {
-      transform(chunk, controller) {
-        switch (chunk.type) {
-          case "text-delta":
-            controller.enqueue(chunk.textDelta);
-            break;
-          case "object":
-          case "finish":
-            break;
-          case "error":
-            controller.error(chunk.error);
-            break;
-          default: {
-            const _exhaustiveCheck = chunk;
-            throw new Error(`Unsupported chunk type: ${_exhaustiveCheck}`);
-          }
-        }
-      }
-    });
-  }
-  /**
-  Stream of different types of events, including partial objects, errors, and finish events.
-     */
-  get fullStream() {
-    return createAsyncIterableStream(this.originalStream, {
-      transform(chunk, controller) {
-        controller.enqueue(chunk);
-      }
-    });
-  }
-  /**
-  Writes text delta output to a Node.js response-like object.
-  It sets a `Content-Type` header to `text/plain; charset=utf-8` and 
-  writes each text delta as a separate chunk.
-  
-  @param response A Node.js response-like object (ServerResponse).
-  @param init Optional headers and status code.
-     */
-  pipeTextStreamToResponse(response, init) {
-    var _a;
-    response.writeHead((_a = init == null ? void 0 : init.status) != null ? _a : 200, {
-      "Content-Type": "text/plain; charset=utf-8",
-      ...init == null ? void 0 : init.headers
-    });
-    const reader = this.textStream.pipeThrough(new TextEncoderStream()).getReader();
-    const read = async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done)
-            break;
-          response.write(value);
-        }
-      } catch (error) {
-        throw error;
-      } finally {
-        response.end();
-      }
-    };
-    read();
-  }
-  /**
-  Creates a simple text stream response.
-  The response has a `Content-Type` header set to `text/plain; charset=utf-8`.
-  Each text delta is encoded as UTF-8 and sent as a separate chunk.
-  Non-text-delta events are ignored.
-  
-  @param init Optional headers and status code.
-     */
-  toTextStreamResponse(init) {
-    var _a;
-    return new Response(this.textStream.pipeThrough(new TextEncoderStream()), {
-      status: (_a = init == null ? void 0 : init.status) != null ? _a : 200,
-      headers: prepareResponseHeaders(init, {
-        contentType: "text/plain; charset=utf-8"
-      })
-    });
-  }
-};
-var experimental_streamObject = streamObject;
-
-// core/util/is-non-empty-object.ts
-function isNonEmptyObject(object) {
-  return object != null && Object.keys(object).length > 0;
-}
-
-// core/prompt/prepare-tools-and-tool-choice.ts
+// src/prompt/prepare-tools-and-tool-choice.ts
 function prepareToolsAndToolChoice({
   tools,
-  toolChoice
+  toolChoice,
+  activeTools
 }) {
   if (!isNonEmptyObject(tools)) {
     return {
@@ -19738,285 +25998,3126 @@ function prepareToolsAndToolChoice({
       toolChoice: void 0
     };
   }
+  const filteredTools = activeTools != null ? Object.entries(tools).filter(
+    ([name17]) => activeTools.includes(name17)
+  ) : Object.entries(tools);
   return {
-    tools: Object.entries(tools).map(([name, tool2]) => ({
-      type: "function",
-      name,
-      description: tool2.description,
-      parameters: convertZodToJSONSchema(tool2.parameters)
-    })),
+    tools: filteredTools.map(([name17, tool3]) => {
+      const toolType = tool3.type;
+      switch (toolType) {
+        case void 0:
+        case "dynamic":
+        case "function":
+          return {
+            type: "function",
+            name: name17,
+            description: tool3.description,
+            inputSchema: (0, import_provider_utils4.asSchema)(tool3.inputSchema).jsonSchema,
+            providerOptions: tool3.providerOptions
+          };
+        case "provider-defined":
+          return {
+            type: "provider-defined",
+            name: name17,
+            id: tool3.id,
+            args: tool3.args
+          };
+        default: {
+          const exhaustiveCheck = toolType;
+          throw new Error(`Unsupported tool type: ${exhaustiveCheck}`);
+        }
+      }
+    }),
     toolChoice: toolChoice == null ? { type: "auto" } : typeof toolChoice === "string" ? { type: toolChoice } : { type: "tool", toolName: toolChoice.toolName }
   };
 }
 
-// core/generate-text/tool-call.ts
-var import_provider6 = __nccwpck_require__(131);
-var import_provider_utils6 = __nccwpck_require__(9711);
-function parseToolCall({
+// src/prompt/standardize-prompt.ts
+var import_provider19 = __nccwpck_require__(2585);
+var import_provider_utils5 = __nccwpck_require__(9033);
+var import_v46 = __nccwpck_require__(5350);
+
+// src/prompt/message.ts
+var import_v45 = __nccwpck_require__(5350);
+
+// src/types/provider-metadata.ts
+var import_v43 = __nccwpck_require__(5350);
+
+// src/types/json-value.ts
+var import_v42 = __nccwpck_require__(5350);
+var jsonValueSchema = import_v42.z.lazy(
+  () => import_v42.z.union([
+    import_v42.z.null(),
+    import_v42.z.string(),
+    import_v42.z.number(),
+    import_v42.z.boolean(),
+    import_v42.z.record(import_v42.z.string(), jsonValueSchema),
+    import_v42.z.array(jsonValueSchema)
+  ])
+);
+
+// src/types/provider-metadata.ts
+var providerMetadataSchema = import_v43.z.record(
+  import_v43.z.string(),
+  import_v43.z.record(import_v43.z.string(), jsonValueSchema)
+);
+
+// src/prompt/content-part.ts
+var import_v44 = __nccwpck_require__(5350);
+var textPartSchema = import_v44.z.object({
+  type: import_v44.z.literal("text"),
+  text: import_v44.z.string(),
+  providerOptions: providerMetadataSchema.optional()
+});
+var imagePartSchema = import_v44.z.object({
+  type: import_v44.z.literal("image"),
+  image: import_v44.z.union([dataContentSchema, import_v44.z.instanceof(URL)]),
+  mediaType: import_v44.z.string().optional(),
+  providerOptions: providerMetadataSchema.optional()
+});
+var filePartSchema = import_v44.z.object({
+  type: import_v44.z.literal("file"),
+  data: import_v44.z.union([dataContentSchema, import_v44.z.instanceof(URL)]),
+  filename: import_v44.z.string().optional(),
+  mediaType: import_v44.z.string(),
+  providerOptions: providerMetadataSchema.optional()
+});
+var reasoningPartSchema = import_v44.z.object({
+  type: import_v44.z.literal("reasoning"),
+  text: import_v44.z.string(),
+  providerOptions: providerMetadataSchema.optional()
+});
+var toolCallPartSchema = import_v44.z.object({
+  type: import_v44.z.literal("tool-call"),
+  toolCallId: import_v44.z.string(),
+  toolName: import_v44.z.string(),
+  input: import_v44.z.unknown(),
+  providerOptions: providerMetadataSchema.optional(),
+  providerExecuted: import_v44.z.boolean().optional()
+});
+var outputSchema = import_v44.z.discriminatedUnion("type", [
+  import_v44.z.object({
+    type: import_v44.z.literal("text"),
+    value: import_v44.z.string()
+  }),
+  import_v44.z.object({
+    type: import_v44.z.literal("json"),
+    value: jsonValueSchema
+  }),
+  import_v44.z.object({
+    type: import_v44.z.literal("error-text"),
+    value: import_v44.z.string()
+  }),
+  import_v44.z.object({
+    type: import_v44.z.literal("error-json"),
+    value: jsonValueSchema
+  }),
+  import_v44.z.object({
+    type: import_v44.z.literal("content"),
+    value: import_v44.z.array(
+      import_v44.z.union([
+        import_v44.z.object({
+          type: import_v44.z.literal("text"),
+          text: import_v44.z.string()
+        }),
+        import_v44.z.object({
+          type: import_v44.z.literal("media"),
+          data: import_v44.z.string(),
+          mediaType: import_v44.z.string()
+        })
+      ])
+    )
+  })
+]);
+var toolResultPartSchema = import_v44.z.object({
+  type: import_v44.z.literal("tool-result"),
+  toolCallId: import_v44.z.string(),
+  toolName: import_v44.z.string(),
+  output: outputSchema,
+  providerOptions: providerMetadataSchema.optional()
+});
+
+// src/prompt/message.ts
+var systemModelMessageSchema = import_v45.z.object(
+  {
+    role: import_v45.z.literal("system"),
+    content: import_v45.z.string(),
+    providerOptions: providerMetadataSchema.optional()
+  }
+);
+var coreSystemMessageSchema = systemModelMessageSchema;
+var userModelMessageSchema = import_v45.z.object({
+  role: import_v45.z.literal("user"),
+  content: import_v45.z.union([
+    import_v45.z.string(),
+    import_v45.z.array(import_v45.z.union([textPartSchema, imagePartSchema, filePartSchema]))
+  ]),
+  providerOptions: providerMetadataSchema.optional()
+});
+var coreUserMessageSchema = userModelMessageSchema;
+var assistantModelMessageSchema = import_v45.z.object({
+  role: import_v45.z.literal("assistant"),
+  content: import_v45.z.union([
+    import_v45.z.string(),
+    import_v45.z.array(
+      import_v45.z.union([
+        textPartSchema,
+        filePartSchema,
+        reasoningPartSchema,
+        toolCallPartSchema,
+        toolResultPartSchema
+      ])
+    )
+  ]),
+  providerOptions: providerMetadataSchema.optional()
+});
+var coreAssistantMessageSchema = assistantModelMessageSchema;
+var toolModelMessageSchema = import_v45.z.object({
+  role: import_v45.z.literal("tool"),
+  content: import_v45.z.array(toolResultPartSchema),
+  providerOptions: providerMetadataSchema.optional()
+});
+var coreToolMessageSchema = toolModelMessageSchema;
+var modelMessageSchema = import_v45.z.union([
+  systemModelMessageSchema,
+  userModelMessageSchema,
+  assistantModelMessageSchema,
+  toolModelMessageSchema
+]);
+var coreMessageSchema = modelMessageSchema;
+
+// src/prompt/standardize-prompt.ts
+async function standardizePrompt(prompt) {
+  if (prompt.prompt == null && prompt.messages == null) {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "prompt or messages must be defined"
+    });
+  }
+  if (prompt.prompt != null && prompt.messages != null) {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "prompt and messages cannot be defined at the same time"
+    });
+  }
+  if (prompt.system != null && typeof prompt.system !== "string") {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "system must be a string"
+    });
+  }
+  let messages;
+  if (prompt.prompt != null && typeof prompt.prompt === "string") {
+    messages = [{ role: "user", content: prompt.prompt }];
+  } else if (prompt.prompt != null && Array.isArray(prompt.prompt)) {
+    messages = prompt.prompt;
+  } else if (prompt.messages != null) {
+    messages = prompt.messages;
+  } else {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "prompt or messages must be defined"
+    });
+  }
+  if (messages.length === 0) {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "messages must not be empty"
+    });
+  }
+  const validationResult = await (0, import_provider_utils5.safeValidateTypes)({
+    value: messages,
+    schema: import_v46.z.array(modelMessageSchema)
+  });
+  if (!validationResult.success) {
+    throw new import_provider19.InvalidPromptError({
+      prompt,
+      message: "The messages must be a ModelMessage[]. If you have passed a UIMessage[], you can use convertToModelMessages to convert them.",
+      cause: validationResult.error
+    });
+  }
+  return {
+    messages,
+    system: prompt.system
+  };
+}
+
+// src/prompt/wrap-gateway-error.ts
+var import_gateway2 = __nccwpck_require__(7860);
+var import_provider20 = __nccwpck_require__(2585);
+function wrapGatewayError(error) {
+  if (import_gateway2.GatewayAuthenticationError.isInstance(error) || import_gateway2.GatewayModelNotFoundError.isInstance(error)) {
+    return new import_provider20.AISDKError({
+      name: "GatewayError",
+      message: "Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.",
+      cause: error
+    });
+  }
+  return error;
+}
+
+// src/telemetry/assemble-operation-name.ts
+function assembleOperationName({
+  operationId,
+  telemetry
+}) {
+  return {
+    // standardized operation and resource name:
+    "operation.name": `${operationId}${(telemetry == null ? void 0 : telemetry.functionId) != null ? ` ${telemetry.functionId}` : ""}`,
+    "resource.name": telemetry == null ? void 0 : telemetry.functionId,
+    // detailed, AI SDK specific data:
+    "ai.operationId": operationId,
+    "ai.telemetry.functionId": telemetry == null ? void 0 : telemetry.functionId
+  };
+}
+
+// src/telemetry/get-base-telemetry-attributes.ts
+function getBaseTelemetryAttributes({
+  model,
+  settings,
+  telemetry,
+  headers
+}) {
+  var _a17;
+  return {
+    "ai.model.provider": model.provider,
+    "ai.model.id": model.modelId,
+    // settings:
+    ...Object.entries(settings).reduce((attributes, [key, value]) => {
+      attributes[`ai.settings.${key}`] = value;
+      return attributes;
+    }, {}),
+    // add metadata as attributes:
+    ...Object.entries((_a17 = telemetry == null ? void 0 : telemetry.metadata) != null ? _a17 : {}).reduce(
+      (attributes, [key, value]) => {
+        attributes[`ai.telemetry.metadata.${key}`] = value;
+        return attributes;
+      },
+      {}
+    ),
+    // request headers
+    ...Object.entries(headers != null ? headers : {}).reduce((attributes, [key, value]) => {
+      if (value !== void 0) {
+        attributes[`ai.request.headers.${key}`] = value;
+      }
+      return attributes;
+    }, {})
+  };
+}
+
+// src/telemetry/get-tracer.ts
+var import_api = __nccwpck_require__(4581);
+
+// src/telemetry/noop-tracer.ts
+var noopTracer = {
+  startSpan() {
+    return noopSpan;
+  },
+  startActiveSpan(name17, arg1, arg2, arg3) {
+    if (typeof arg1 === "function") {
+      return arg1(noopSpan);
+    }
+    if (typeof arg2 === "function") {
+      return arg2(noopSpan);
+    }
+    if (typeof arg3 === "function") {
+      return arg3(noopSpan);
+    }
+  }
+};
+var noopSpan = {
+  spanContext() {
+    return noopSpanContext;
+  },
+  setAttribute() {
+    return this;
+  },
+  setAttributes() {
+    return this;
+  },
+  addEvent() {
+    return this;
+  },
+  addLink() {
+    return this;
+  },
+  addLinks() {
+    return this;
+  },
+  setStatus() {
+    return this;
+  },
+  updateName() {
+    return this;
+  },
+  end() {
+    return this;
+  },
+  isRecording() {
+    return false;
+  },
+  recordException() {
+    return this;
+  }
+};
+var noopSpanContext = {
+  traceId: "",
+  spanId: "",
+  traceFlags: 0
+};
+
+// src/telemetry/get-tracer.ts
+function getTracer({
+  isEnabled = false,
+  tracer
+} = {}) {
+  if (!isEnabled) {
+    return noopTracer;
+  }
+  if (tracer) {
+    return tracer;
+  }
+  return import_api.trace.getTracer("ai");
+}
+
+// src/telemetry/record-span.ts
+var import_api2 = __nccwpck_require__(4581);
+function recordSpan({
+  name: name17,
+  tracer,
+  attributes,
+  fn,
+  endWhenDone = true
+}) {
+  return tracer.startActiveSpan(name17, { attributes }, async (span) => {
+    try {
+      const result = await fn(span);
+      if (endWhenDone) {
+        span.end();
+      }
+      return result;
+    } catch (error) {
+      try {
+        recordErrorOnSpan(span, error);
+      } finally {
+        span.end();
+      }
+      throw error;
+    }
+  });
+}
+function recordErrorOnSpan(span, error) {
+  if (error instanceof Error) {
+    span.recordException({
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    span.setStatus({
+      code: import_api2.SpanStatusCode.ERROR,
+      message: error.message
+    });
+  } else {
+    span.setStatus({ code: import_api2.SpanStatusCode.ERROR });
+  }
+}
+
+// src/telemetry/select-telemetry-attributes.ts
+function selectTelemetryAttributes({
+  telemetry,
+  attributes
+}) {
+  if ((telemetry == null ? void 0 : telemetry.isEnabled) !== true) {
+    return {};
+  }
+  return Object.entries(attributes).reduce((attributes2, [key, value]) => {
+    if (value == null) {
+      return attributes2;
+    }
+    if (typeof value === "object" && "input" in value && typeof value.input === "function") {
+      if ((telemetry == null ? void 0 : telemetry.recordInputs) === false) {
+        return attributes2;
+      }
+      const result = value.input();
+      return result == null ? attributes2 : { ...attributes2, [key]: result };
+    }
+    if (typeof value === "object" && "output" in value && typeof value.output === "function") {
+      if ((telemetry == null ? void 0 : telemetry.recordOutputs) === false) {
+        return attributes2;
+      }
+      const result = value.output();
+      return result == null ? attributes2 : { ...attributes2, [key]: result };
+    }
+    return { ...attributes2, [key]: value };
+  }, {});
+}
+
+// src/telemetry/stringify-for-telemetry.ts
+function stringifyForTelemetry(prompt) {
+  return JSON.stringify(
+    prompt.map((message) => ({
+      ...message,
+      content: typeof message.content === "string" ? message.content : message.content.map(
+        (part) => part.type === "file" ? {
+          ...part,
+          data: part.data instanceof Uint8Array ? convertDataContentToBase64String(part.data) : part.data
+        } : part
+      )
+    }))
+  );
+}
+
+// src/types/usage.ts
+function addLanguageModelUsage(usage1, usage2) {
+  return {
+    inputTokens: addTokenCounts(usage1.inputTokens, usage2.inputTokens),
+    outputTokens: addTokenCounts(usage1.outputTokens, usage2.outputTokens),
+    totalTokens: addTokenCounts(usage1.totalTokens, usage2.totalTokens),
+    reasoningTokens: addTokenCounts(
+      usage1.reasoningTokens,
+      usage2.reasoningTokens
+    ),
+    cachedInputTokens: addTokenCounts(
+      usage1.cachedInputTokens,
+      usage2.cachedInputTokens
+    )
+  };
+}
+function addTokenCounts(tokenCount1, tokenCount2) {
+  return tokenCount1 == null && tokenCount2 == null ? void 0 : (tokenCount1 != null ? tokenCount1 : 0) + (tokenCount2 != null ? tokenCount2 : 0);
+}
+
+// src/util/as-array.ts
+function asArray(value) {
+  return value === void 0 ? [] : Array.isArray(value) ? value : [value];
+}
+
+// src/util/retry-with-exponential-backoff.ts
+var import_provider21 = __nccwpck_require__(2585);
+var import_provider_utils6 = __nccwpck_require__(9033);
+function getRetryDelayInMs({
+  error,
+  exponentialBackoffDelay
+}) {
+  const headers = error.responseHeaders;
+  if (!headers)
+    return exponentialBackoffDelay;
+  let ms;
+  const retryAfterMs = headers["retry-after-ms"];
+  if (retryAfterMs) {
+    const timeoutMs = parseFloat(retryAfterMs);
+    if (!Number.isNaN(timeoutMs)) {
+      ms = timeoutMs;
+    }
+  }
+  const retryAfter = headers["retry-after"];
+  if (retryAfter && ms === void 0) {
+    const timeoutSeconds = parseFloat(retryAfter);
+    if (!Number.isNaN(timeoutSeconds)) {
+      ms = timeoutSeconds * 1e3;
+    } else {
+      ms = Date.parse(retryAfter) - Date.now();
+    }
+  }
+  if (ms != null && !Number.isNaN(ms) && 0 <= ms && (ms < 60 * 1e3 || ms < exponentialBackoffDelay)) {
+    return ms;
+  }
+  return exponentialBackoffDelay;
+}
+var retryWithExponentialBackoffRespectingRetryHeaders = ({
+  maxRetries = 2,
+  initialDelayInMs = 2e3,
+  backoffFactor = 2,
+  abortSignal
+} = {}) => async (f) => _retryWithExponentialBackoff(f, {
+  maxRetries,
+  delayInMs: initialDelayInMs,
+  backoffFactor,
+  abortSignal
+});
+async function _retryWithExponentialBackoff(f, {
+  maxRetries,
+  delayInMs,
+  backoffFactor,
+  abortSignal
+}, errors = []) {
+  try {
+    return await f();
+  } catch (error) {
+    if ((0, import_provider_utils6.isAbortError)(error)) {
+      throw error;
+    }
+    if (maxRetries === 0) {
+      throw error;
+    }
+    const errorMessage = (0, import_provider_utils6.getErrorMessage)(error);
+    const newErrors = [...errors, error];
+    const tryNumber = newErrors.length;
+    if (tryNumber > maxRetries) {
+      throw new RetryError({
+        message: `Failed after ${tryNumber} attempts. Last error: ${errorMessage}`,
+        reason: "maxRetriesExceeded",
+        errors: newErrors
+      });
+    }
+    if (error instanceof Error && import_provider21.APICallError.isInstance(error) && error.isRetryable === true && tryNumber <= maxRetries) {
+      await (0, import_provider_utils6.delay)(
+        getRetryDelayInMs({
+          error,
+          exponentialBackoffDelay: delayInMs
+        }),
+        { abortSignal }
+      );
+      return _retryWithExponentialBackoff(
+        f,
+        {
+          maxRetries,
+          delayInMs: backoffFactor * delayInMs,
+          backoffFactor,
+          abortSignal
+        },
+        newErrors
+      );
+    }
+    if (tryNumber === 1) {
+      throw error;
+    }
+    throw new RetryError({
+      message: `Failed after ${tryNumber} attempts with non-retryable error: '${errorMessage}'`,
+      reason: "errorNotRetryable",
+      errors: newErrors
+    });
+  }
+}
+
+// src/util/prepare-retries.ts
+function prepareRetries({
+  maxRetries,
+  abortSignal
+}) {
+  if (maxRetries != null) {
+    if (!Number.isInteger(maxRetries)) {
+      throw new InvalidArgumentError({
+        parameter: "maxRetries",
+        value: maxRetries,
+        message: "maxRetries must be an integer"
+      });
+    }
+    if (maxRetries < 0) {
+      throw new InvalidArgumentError({
+        parameter: "maxRetries",
+        value: maxRetries,
+        message: "maxRetries must be >= 0"
+      });
+    }
+  }
+  const maxRetriesResult = maxRetries != null ? maxRetries : 2;
+  return {
+    maxRetries: maxRetriesResult,
+    retry: retryWithExponentialBackoffRespectingRetryHeaders({
+      maxRetries: maxRetriesResult,
+      abortSignal
+    })
+  };
+}
+
+// src/generate-text/extract-text-content.ts
+function extractTextContent(content) {
+  const parts = content.filter(
+    (content2) => content2.type === "text"
+  );
+  if (parts.length === 0) {
+    return void 0;
+  }
+  return parts.map((content2) => content2.text).join("");
+}
+
+// src/generate-text/generated-file.ts
+var import_provider_utils7 = __nccwpck_require__(9033);
+var DefaultGeneratedFile = class {
+  constructor({
+    data,
+    mediaType
+  }) {
+    const isUint8Array = data instanceof Uint8Array;
+    this.base64Data = isUint8Array ? void 0 : data;
+    this.uint8ArrayData = isUint8Array ? data : void 0;
+    this.mediaType = mediaType;
+  }
+  // lazy conversion with caching to avoid unnecessary conversion overhead:
+  get base64() {
+    if (this.base64Data == null) {
+      this.base64Data = (0, import_provider_utils7.convertUint8ArrayToBase64)(this.uint8ArrayData);
+    }
+    return this.base64Data;
+  }
+  // lazy conversion with caching to avoid unnecessary conversion overhead:
+  get uint8Array() {
+    if (this.uint8ArrayData == null) {
+      this.uint8ArrayData = (0, import_provider_utils7.convertBase64ToUint8Array)(this.base64Data);
+    }
+    return this.uint8ArrayData;
+  }
+};
+var DefaultGeneratedFileWithType = class extends DefaultGeneratedFile {
+  constructor(options) {
+    super(options);
+    this.type = "file";
+  }
+};
+
+// src/generate-text/parse-tool-call.ts
+var import_provider_utils8 = __nccwpck_require__(9033);
+async function parseToolCall({
+  toolCall,
+  tools,
+  repairToolCall,
+  system,
+  messages
+}) {
+  try {
+    if (tools == null) {
+      throw new NoSuchToolError({ toolName: toolCall.toolName });
+    }
+    try {
+      return await doParseToolCall({ toolCall, tools });
+    } catch (error) {
+      if (repairToolCall == null || !(NoSuchToolError.isInstance(error) || InvalidToolInputError.isInstance(error))) {
+        throw error;
+      }
+      let repairedToolCall = null;
+      try {
+        repairedToolCall = await repairToolCall({
+          toolCall,
+          tools,
+          inputSchema: ({ toolName }) => {
+            const { inputSchema } = tools[toolName];
+            return (0, import_provider_utils8.asSchema)(inputSchema).jsonSchema;
+          },
+          system,
+          messages,
+          error
+        });
+      } catch (repairError) {
+        throw new ToolCallRepairError({
+          cause: repairError,
+          originalError: error
+        });
+      }
+      if (repairedToolCall == null) {
+        throw error;
+      }
+      return await doParseToolCall({ toolCall: repairedToolCall, tools });
+    }
+  } catch (error) {
+    const parsedInput = await (0, import_provider_utils8.safeParseJSON)({ text: toolCall.input });
+    const input = parsedInput.success ? parsedInput.value : toolCall.input;
+    return {
+      type: "tool-call",
+      toolCallId: toolCall.toolCallId,
+      toolName: toolCall.toolName,
+      input,
+      dynamic: true,
+      invalid: true,
+      error
+    };
+  }
+}
+async function doParseToolCall({
   toolCall,
   tools
 }) {
   const toolName = toolCall.toolName;
-  if (tools == null) {
-    throw new import_provider6.NoSuchToolError({ toolName: toolCall.toolName });
-  }
-  const tool2 = tools[toolName];
-  if (tool2 == null) {
-    throw new import_provider6.NoSuchToolError({
+  const tool3 = tools[toolName];
+  if (tool3 == null) {
+    throw new NoSuchToolError({
       toolName: toolCall.toolName,
       availableTools: Object.keys(tools)
     });
   }
-  const parseResult = (0, import_provider_utils6.safeParseJSON)({
-    text: toolCall.args,
-    schema: tool2.parameters
-  });
+  const schema = (0, import_provider_utils8.asSchema)(tool3.inputSchema);
+  const parseResult = toolCall.input.trim() === "" ? await (0, import_provider_utils8.safeValidateTypes)({ value: {}, schema }) : await (0, import_provider_utils8.safeParseJSON)({ text: toolCall.input, schema });
   if (parseResult.success === false) {
-    throw new import_provider6.InvalidToolArgumentsError({
+    throw new InvalidToolInputError({
       toolName,
-      toolArgs: toolCall.args,
+      toolInput: toolCall.input,
       cause: parseResult.error
     });
   }
-  return {
+  return tool3.type === "dynamic" ? {
+    type: "tool-call",
+    toolCallId: toolCall.toolCallId,
+    toolName: toolCall.toolName,
+    input: parseResult.value,
+    providerExecuted: toolCall.providerExecuted,
+    providerMetadata: toolCall.providerMetadata,
+    dynamic: true
+  } : {
     type: "tool-call",
     toolCallId: toolCall.toolCallId,
     toolName,
-    args: parseResult.value
+    input: parseResult.value,
+    providerExecuted: toolCall.providerExecuted,
+    providerMetadata: toolCall.providerMetadata
   };
 }
 
-// core/generate-text/generate-text.ts
+// src/generate-text/step-result.ts
+var DefaultStepResult = class {
+  constructor({
+    content,
+    finishReason,
+    usage,
+    warnings,
+    request,
+    response,
+    providerMetadata
+  }) {
+    this.content = content;
+    this.finishReason = finishReason;
+    this.usage = usage;
+    this.warnings = warnings;
+    this.request = request;
+    this.response = response;
+    this.providerMetadata = providerMetadata;
+  }
+  get text() {
+    return this.content.filter((part) => part.type === "text").map((part) => part.text).join("");
+  }
+  get reasoning() {
+    return this.content.filter((part) => part.type === "reasoning");
+  }
+  get reasoningText() {
+    return this.reasoning.length === 0 ? void 0 : this.reasoning.map((part) => part.text).join("");
+  }
+  get files() {
+    return this.content.filter((part) => part.type === "file").map((part) => part.file);
+  }
+  get sources() {
+    return this.content.filter((part) => part.type === "source");
+  }
+  get toolCalls() {
+    return this.content.filter((part) => part.type === "tool-call");
+  }
+  get staticToolCalls() {
+    return this.toolCalls.filter(
+      (toolCall) => toolCall.dynamic === false
+    );
+  }
+  get dynamicToolCalls() {
+    return this.toolCalls.filter(
+      (toolCall) => toolCall.dynamic === true
+    );
+  }
+  get toolResults() {
+    return this.content.filter((part) => part.type === "tool-result");
+  }
+  get staticToolResults() {
+    return this.toolResults.filter(
+      (toolResult) => toolResult.dynamic === false
+    );
+  }
+  get dynamicToolResults() {
+    return this.toolResults.filter(
+      (toolResult) => toolResult.dynamic === true
+    );
+  }
+};
+
+// src/generate-text/stop-condition.ts
+function stepCountIs(stepCount) {
+  return ({ steps }) => steps.length === stepCount;
+}
+function hasToolCall(toolName) {
+  return ({ steps }) => {
+    var _a17, _b, _c;
+    return (_c = (_b = (_a17 = steps[steps.length - 1]) == null ? void 0 : _a17.toolCalls) == null ? void 0 : _b.some(
+      (toolCall) => toolCall.toolName === toolName
+    )) != null ? _c : false;
+  };
+}
+async function isStopConditionMet({
+  stopConditions,
+  steps
+}) {
+  return (await Promise.all(stopConditions.map((condition) => condition({ steps })))).some((result) => result);
+}
+
+// src/prompt/create-tool-model-output.ts
+var import_provider22 = __nccwpck_require__(2585);
+function createToolModelOutput({
+  output,
+  tool: tool3,
+  errorMode
+}) {
+  if (errorMode === "text") {
+    return { type: "error-text", value: (0, import_provider22.getErrorMessage)(output) };
+  } else if (errorMode === "json") {
+    return { type: "error-json", value: toJSONValue(output) };
+  }
+  if (tool3 == null ? void 0 : tool3.toModelOutput) {
+    return tool3.toModelOutput(output);
+  }
+  return typeof output === "string" ? { type: "text", value: output } : { type: "json", value: toJSONValue(output) };
+}
+function toJSONValue(value) {
+  return value === void 0 ? null : value;
+}
+
+// src/generate-text/to-response-messages.ts
+function toResponseMessages({
+  content: inputContent,
+  tools
+}) {
+  const responseMessages = [];
+  const content = inputContent.filter((part) => part.type !== "source").filter(
+    (part) => (part.type !== "tool-result" || part.providerExecuted) && (part.type !== "tool-error" || part.providerExecuted)
+  ).filter((part) => part.type !== "text" || part.text.length > 0).map((part) => {
+    switch (part.type) {
+      case "text":
+        return {
+          type: "text",
+          text: part.text,
+          providerOptions: part.providerMetadata
+        };
+      case "reasoning":
+        return {
+          type: "reasoning",
+          text: part.text,
+          providerOptions: part.providerMetadata
+        };
+      case "file":
+        return {
+          type: "file",
+          data: part.file.base64,
+          mediaType: part.file.mediaType,
+          providerOptions: part.providerMetadata
+        };
+      case "tool-call":
+        return {
+          type: "tool-call",
+          toolCallId: part.toolCallId,
+          toolName: part.toolName,
+          input: part.input,
+          providerExecuted: part.providerExecuted,
+          providerOptions: part.providerMetadata
+        };
+      case "tool-result":
+        return {
+          type: "tool-result",
+          toolCallId: part.toolCallId,
+          toolName: part.toolName,
+          output: createToolModelOutput({
+            tool: tools == null ? void 0 : tools[part.toolName],
+            output: part.output,
+            errorMode: "none"
+          }),
+          providerExecuted: true,
+          providerOptions: part.providerMetadata
+        };
+      case "tool-error":
+        return {
+          type: "tool-result",
+          toolCallId: part.toolCallId,
+          toolName: part.toolName,
+          output: createToolModelOutput({
+            tool: tools == null ? void 0 : tools[part.toolName],
+            output: part.error,
+            errorMode: "json"
+          }),
+          providerOptions: part.providerMetadata
+        };
+    }
+  });
+  if (content.length > 0) {
+    responseMessages.push({
+      role: "assistant",
+      content
+    });
+  }
+  const toolResultContent = inputContent.filter((part) => part.type === "tool-result" || part.type === "tool-error").filter((part) => !part.providerExecuted).map((toolResult) => ({
+    type: "tool-result",
+    toolCallId: toolResult.toolCallId,
+    toolName: toolResult.toolName,
+    output: createToolModelOutput({
+      tool: tools == null ? void 0 : tools[toolResult.toolName],
+      output: toolResult.type === "tool-result" ? toolResult.output : toolResult.error,
+      errorMode: toolResult.type === "tool-error" ? "text" : "none"
+    })
+  }));
+  if (toolResultContent.length > 0) {
+    responseMessages.push({
+      role: "tool",
+      content: toolResultContent
+    });
+  }
+  return responseMessages;
+}
+
+// src/generate-text/generate-text.ts
+var originalGenerateId = (0, import_provider_utils9.createIdGenerator)({
+  prefix: "aitxt",
+  size: 24
+});
 async function generateText({
-  model,
+  model: modelArg,
   tools,
   toolChoice,
   system,
   prompt,
   messages,
-  maxRetries,
+  maxRetries: maxRetriesArg,
   abortSignal,
   headers,
-  maxAutomaticRoundtrips = 0,
-  maxToolRoundtrips = maxAutomaticRoundtrips,
+  stopWhen = stepCountIs(1),
+  experimental_output: output,
+  experimental_telemetry: telemetry,
+  providerOptions,
+  experimental_activeTools,
+  activeTools = experimental_activeTools,
+  experimental_prepareStep,
+  prepareStep = experimental_prepareStep,
+  experimental_repairToolCall: repairToolCall,
+  experimental_context,
+  _internal: {
+    generateId: generateId3 = originalGenerateId,
+    currentDate = () => /* @__PURE__ */ new Date()
+  } = {},
+  onStepFinish,
   ...settings
 }) {
-  var _a, _b, _c;
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const validatedPrompt = getValidatedPrompt({ system, prompt, messages });
-  const mode = {
-    type: "regular",
-    ...prepareToolsAndToolChoice({ tools, toolChoice })
-  };
-  const callSettings = prepareCallSettings(settings);
-  const promptMessages = convertToLanguageModelPrompt(validatedPrompt);
-  let currentModelResponse;
-  let currentToolCalls = [];
-  let currentToolResults = [];
-  let roundtrips = 0;
-  const responseMessages = [];
-  do {
-    currentModelResponse = await retry(() => {
-      return model.doGenerate({
-        mode,
-        ...callSettings,
-        // once we have a roundtrip, we need to switch to messages format:
-        inputFormat: roundtrips === 0 ? validatedPrompt.type : "messages",
-        prompt: promptMessages,
-        abortSignal,
-        headers
-      });
-    });
-    currentToolCalls = ((_a = currentModelResponse.toolCalls) != null ? _a : []).map(
-      (modelToolCall) => parseToolCall({ toolCall: modelToolCall, tools })
-    );
-    currentToolResults = tools == null ? [] : await executeTools({ toolCalls: currentToolCalls, tools });
-    const newResponseMessages = toResponseMessages({
-      text: (_b = currentModelResponse.text) != null ? _b : "",
-      toolCalls: currentToolCalls,
-      toolResults: currentToolResults
-    });
-    responseMessages.push(...newResponseMessages);
-    promptMessages.push(
-      ...newResponseMessages.map(convertToLanguageModelMessage)
-    );
-  } while (
-    // there are tool calls:
-    currentToolCalls.length > 0 && // all current tool calls have results:
-    currentToolResults.length === currentToolCalls.length && // the number of roundtrips is less than the maximum:
-    roundtrips++ < maxToolRoundtrips
-  );
-  return new GenerateTextResult({
-    // Always return a string so that the caller doesn't have to check for undefined.
-    // If they need to check if the model did not return any text,
-    // they can check the length of the string:
-    text: (_c = currentModelResponse.text) != null ? _c : "",
-    toolCalls: currentToolCalls,
-    toolResults: currentToolResults,
-    finishReason: currentModelResponse.finishReason,
-    usage: calculateTokenUsage(currentModelResponse.usage),
-    warnings: currentModelResponse.warnings,
-    rawResponse: currentModelResponse.rawResponse,
-    logprobs: currentModelResponse.logprobs,
-    responseMessages
+  const model = resolveLanguageModel(modelArg);
+  const stopConditions = asArray(stopWhen);
+  const { maxRetries, retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
   });
+  const callSettings = prepareCallSettings(settings);
+  const baseTelemetryAttributes = getBaseTelemetryAttributes({
+    model,
+    telemetry,
+    headers,
+    settings: { ...callSettings, maxRetries }
+  });
+  const initialPrompt = await standardizePrompt({
+    system,
+    prompt,
+    messages
+  });
+  const tracer = getTracer(telemetry);
+  try {
+    return await recordSpan({
+      name: "ai.generateText",
+      attributes: selectTelemetryAttributes({
+        telemetry,
+        attributes: {
+          ...assembleOperationName({
+            operationId: "ai.generateText",
+            telemetry
+          }),
+          ...baseTelemetryAttributes,
+          // model:
+          "ai.model.provider": model.provider,
+          "ai.model.id": model.modelId,
+          // specific settings that only make sense on the outer level:
+          "ai.prompt": {
+            input: () => JSON.stringify({ system, prompt, messages })
+          }
+        }
+      }),
+      tracer,
+      fn: async (span) => {
+        var _a17, _b, _c, _d, _e, _f;
+        const callSettings2 = prepareCallSettings(settings);
+        let currentModelResponse;
+        let clientToolCalls = [];
+        let clientToolOutputs = [];
+        const responseMessages = [];
+        const steps = [];
+        do {
+          const stepInputMessages = [
+            ...initialPrompt.messages,
+            ...responseMessages
+          ];
+          const prepareStepResult = await (prepareStep == null ? void 0 : prepareStep({
+            model,
+            steps,
+            stepNumber: steps.length,
+            messages: stepInputMessages
+          }));
+          const promptMessages = await convertToLanguageModelPrompt({
+            prompt: {
+              system: (_a17 = prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _a17 : initialPrompt.system,
+              messages: (_b = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _b : stepInputMessages
+            },
+            supportedUrls: await model.supportedUrls
+          });
+          const stepModel = resolveLanguageModel(
+            (_c = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _c : model
+          );
+          const { toolChoice: stepToolChoice, tools: stepTools } = prepareToolsAndToolChoice({
+            tools,
+            toolChoice: (_d = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _d : toolChoice,
+            activeTools: (_e = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _e : activeTools
+          });
+          currentModelResponse = await retry(
+            () => {
+              var _a18;
+              return recordSpan({
+                name: "ai.generateText.doGenerate",
+                attributes: selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    ...assembleOperationName({
+                      operationId: "ai.generateText.doGenerate",
+                      telemetry
+                    }),
+                    ...baseTelemetryAttributes,
+                    // model:
+                    "ai.model.provider": stepModel.provider,
+                    "ai.model.id": stepModel.modelId,
+                    // prompt:
+                    "ai.prompt.messages": {
+                      input: () => stringifyForTelemetry(promptMessages)
+                    },
+                    "ai.prompt.tools": {
+                      // convert the language model level tools:
+                      input: () => stepTools == null ? void 0 : stepTools.map((tool3) => JSON.stringify(tool3))
+                    },
+                    "ai.prompt.toolChoice": {
+                      input: () => stepToolChoice != null ? JSON.stringify(stepToolChoice) : void 0
+                    },
+                    // standardized gen-ai llm span attributes:
+                    "gen_ai.system": stepModel.provider,
+                    "gen_ai.request.model": stepModel.modelId,
+                    "gen_ai.request.frequency_penalty": settings.frequencyPenalty,
+                    "gen_ai.request.max_tokens": settings.maxOutputTokens,
+                    "gen_ai.request.presence_penalty": settings.presencePenalty,
+                    "gen_ai.request.stop_sequences": settings.stopSequences,
+                    "gen_ai.request.temperature": (_a18 = settings.temperature) != null ? _a18 : void 0,
+                    "gen_ai.request.top_k": settings.topK,
+                    "gen_ai.request.top_p": settings.topP
+                  }
+                }),
+                tracer,
+                fn: async (span2) => {
+                  var _a19, _b2, _c2, _d2, _e2, _f2, _g, _h;
+                  const result = await stepModel.doGenerate({
+                    ...callSettings2,
+                    tools: stepTools,
+                    toolChoice: stepToolChoice,
+                    responseFormat: output == null ? void 0 : output.responseFormat,
+                    prompt: promptMessages,
+                    providerOptions,
+                    abortSignal,
+                    headers
+                  });
+                  const responseData = {
+                    id: (_b2 = (_a19 = result.response) == null ? void 0 : _a19.id) != null ? _b2 : generateId3(),
+                    timestamp: (_d2 = (_c2 = result.response) == null ? void 0 : _c2.timestamp) != null ? _d2 : currentDate(),
+                    modelId: (_f2 = (_e2 = result.response) == null ? void 0 : _e2.modelId) != null ? _f2 : stepModel.modelId,
+                    headers: (_g = result.response) == null ? void 0 : _g.headers,
+                    body: (_h = result.response) == null ? void 0 : _h.body
+                  };
+                  span2.setAttributes(
+                    selectTelemetryAttributes({
+                      telemetry,
+                      attributes: {
+                        "ai.response.finishReason": result.finishReason,
+                        "ai.response.text": {
+                          output: () => extractTextContent(result.content)
+                        },
+                        "ai.response.toolCalls": {
+                          output: () => {
+                            const toolCalls = asToolCalls(result.content);
+                            return toolCalls == null ? void 0 : JSON.stringify(toolCalls);
+                          }
+                        },
+                        "ai.response.id": responseData.id,
+                        "ai.response.model": responseData.modelId,
+                        "ai.response.timestamp": responseData.timestamp.toISOString(),
+                        "ai.response.providerMetadata": JSON.stringify(
+                          result.providerMetadata
+                        ),
+                        // TODO rename telemetry attributes to inputTokens and outputTokens
+                        "ai.usage.promptTokens": result.usage.inputTokens,
+                        "ai.usage.completionTokens": result.usage.outputTokens,
+                        // standardized gen-ai llm span attributes:
+                        "gen_ai.response.finish_reasons": [result.finishReason],
+                        "gen_ai.response.id": responseData.id,
+                        "gen_ai.response.model": responseData.modelId,
+                        "gen_ai.usage.input_tokens": result.usage.inputTokens,
+                        "gen_ai.usage.output_tokens": result.usage.outputTokens
+                      }
+                    })
+                  );
+                  return { ...result, response: responseData };
+                }
+              });
+            }
+          );
+          const stepToolCalls = await Promise.all(
+            currentModelResponse.content.filter(
+              (part) => part.type === "tool-call"
+            ).map(
+              (toolCall) => parseToolCall({
+                toolCall,
+                tools,
+                repairToolCall,
+                system,
+                messages: stepInputMessages
+              })
+            )
+          );
+          for (const toolCall of stepToolCalls) {
+            if (toolCall.invalid) {
+              continue;
+            }
+            const tool3 = tools[toolCall.toolName];
+            if ((tool3 == null ? void 0 : tool3.onInputAvailable) != null) {
+              await tool3.onInputAvailable({
+                input: toolCall.input,
+                toolCallId: toolCall.toolCallId,
+                messages: stepInputMessages,
+                abortSignal,
+                experimental_context
+              });
+            }
+          }
+          const invalidToolCalls = stepToolCalls.filter(
+            (toolCall) => toolCall.invalid && toolCall.dynamic
+          );
+          clientToolOutputs = [];
+          for (const toolCall of invalidToolCalls) {
+            clientToolOutputs.push({
+              type: "tool-error",
+              toolCallId: toolCall.toolCallId,
+              toolName: toolCall.toolName,
+              input: toolCall.input,
+              error: (0, import_provider_utils9.getErrorMessage)(toolCall.error),
+              dynamic: true
+            });
+          }
+          clientToolCalls = stepToolCalls.filter(
+            (toolCall) => !toolCall.providerExecuted
+          );
+          if (tools != null) {
+            clientToolOutputs.push(
+              ...await executeTools({
+                toolCalls: clientToolCalls.filter(
+                  (toolCall) => !toolCall.invalid
+                ),
+                tools,
+                tracer,
+                telemetry,
+                messages: stepInputMessages,
+                abortSignal,
+                experimental_context
+              })
+            );
+          }
+          const stepContent = asContent({
+            content: currentModelResponse.content,
+            toolCalls: stepToolCalls,
+            toolOutputs: clientToolOutputs
+          });
+          responseMessages.push(
+            ...toResponseMessages({
+              content: stepContent,
+              tools
+            })
+          );
+          const currentStepResult = new DefaultStepResult({
+            content: stepContent,
+            finishReason: currentModelResponse.finishReason,
+            usage: currentModelResponse.usage,
+            warnings: currentModelResponse.warnings,
+            providerMetadata: currentModelResponse.providerMetadata,
+            request: (_f = currentModelResponse.request) != null ? _f : {},
+            response: {
+              ...currentModelResponse.response,
+              // deep clone msgs to avoid mutating past messages in multi-step:
+              messages: structuredClone(responseMessages)
+            }
+          });
+          steps.push(currentStepResult);
+          await (onStepFinish == null ? void 0 : onStepFinish(currentStepResult));
+        } while (
+          // there are tool calls:
+          clientToolCalls.length > 0 && // all current tool calls have outputs (incl. execution errors):
+          clientToolOutputs.length === clientToolCalls.length && // continue until a stop condition is met:
+          !await isStopConditionMet({ stopConditions, steps })
+        );
+        span.setAttributes(
+          selectTelemetryAttributes({
+            telemetry,
+            attributes: {
+              "ai.response.finishReason": currentModelResponse.finishReason,
+              "ai.response.text": {
+                output: () => extractTextContent(currentModelResponse.content)
+              },
+              "ai.response.toolCalls": {
+                output: () => {
+                  const toolCalls = asToolCalls(currentModelResponse.content);
+                  return toolCalls == null ? void 0 : JSON.stringify(toolCalls);
+                }
+              },
+              "ai.response.providerMetadata": JSON.stringify(
+                currentModelResponse.providerMetadata
+              ),
+              // TODO rename telemetry attributes to inputTokens and outputTokens
+              "ai.usage.promptTokens": currentModelResponse.usage.inputTokens,
+              "ai.usage.completionTokens": currentModelResponse.usage.outputTokens
+            }
+          })
+        );
+        const lastStep = steps[steps.length - 1];
+        return new DefaultGenerateTextResult({
+          steps,
+          resolvedOutput: await (output == null ? void 0 : output.parseOutput(
+            { text: lastStep.text },
+            {
+              response: lastStep.response,
+              usage: lastStep.usage,
+              finishReason: lastStep.finishReason
+            }
+          ))
+        });
+      }
+    });
+  } catch (error) {
+    throw wrapGatewayError(error);
+  }
 }
 async function executeTools({
   toolCalls,
-  tools
+  tools,
+  tracer,
+  telemetry,
+  messages,
+  abortSignal,
+  experimental_context
 }) {
-  const toolResults = await Promise.all(
-    toolCalls.map(async (toolCall) => {
-      const tool2 = tools[toolCall.toolName];
-      if ((tool2 == null ? void 0 : tool2.execute) == null) {
+  const toolOutputs = await Promise.all(
+    toolCalls.map(async ({ toolCallId, toolName, input }) => {
+      const tool3 = tools[toolName];
+      if ((tool3 == null ? void 0 : tool3.execute) == null) {
         return void 0;
       }
-      const result = await tool2.execute(toolCall.args);
-      return {
-        toolCallId: toolCall.toolCallId,
-        toolName: toolCall.toolName,
-        args: toolCall.args,
-        result
-      };
+      return recordSpan({
+        name: "ai.toolCall",
+        attributes: selectTelemetryAttributes({
+          telemetry,
+          attributes: {
+            ...assembleOperationName({
+              operationId: "ai.toolCall",
+              telemetry
+            }),
+            "ai.toolCall.name": toolName,
+            "ai.toolCall.id": toolCallId,
+            "ai.toolCall.args": {
+              output: () => JSON.stringify(input)
+            }
+          }
+        }),
+        tracer,
+        fn: async (span) => {
+          try {
+            const stream = (0, import_provider_utils9.executeTool)({
+              execute: tool3.execute.bind(tool3),
+              input,
+              options: {
+                toolCallId,
+                messages,
+                abortSignal,
+                experimental_context
+              }
+            });
+            let output;
+            for await (const part of stream) {
+              if (part.type === "final") {
+                output = part.output;
+              }
+            }
+            try {
+              span.setAttributes(
+                selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    "ai.toolCall.result": {
+                      output: () => JSON.stringify(output)
+                    }
+                  }
+                })
+              );
+            } catch (ignored) {
+            }
+            return {
+              type: "tool-result",
+              toolCallId,
+              toolName,
+              input,
+              output,
+              dynamic: tool3.type === "dynamic"
+            };
+          } catch (error) {
+            recordErrorOnSpan(span, error);
+            return {
+              type: "tool-error",
+              toolCallId,
+              toolName,
+              input,
+              error,
+              dynamic: tool3.type === "dynamic"
+            };
+          }
+        }
+      });
     })
   );
-  return toolResults.filter(
-    (result) => result != null
+  return toolOutputs.filter(
+    (output) => output != null
   );
 }
-var GenerateTextResult = class {
+var DefaultGenerateTextResult = class {
   constructor(options) {
-    this.text = options.text;
-    this.toolCalls = options.toolCalls;
-    this.toolResults = options.toolResults;
-    this.finishReason = options.finishReason;
-    this.usage = options.usage;
-    this.warnings = options.warnings;
-    this.rawResponse = options.rawResponse;
-    this.logprobs = options.logprobs;
-    this.responseMessages = options.responseMessages;
+    this.steps = options.steps;
+    this.resolvedOutput = options.resolvedOutput;
+  }
+  get finalStep() {
+    return this.steps[this.steps.length - 1];
+  }
+  get content() {
+    return this.finalStep.content;
+  }
+  get text() {
+    return this.finalStep.text;
+  }
+  get files() {
+    return this.finalStep.files;
+  }
+  get reasoningText() {
+    return this.finalStep.reasoningText;
+  }
+  get reasoning() {
+    return this.finalStep.reasoning;
+  }
+  get toolCalls() {
+    return this.finalStep.toolCalls;
+  }
+  get staticToolCalls() {
+    return this.finalStep.staticToolCalls;
+  }
+  get dynamicToolCalls() {
+    return this.finalStep.dynamicToolCalls;
+  }
+  get toolResults() {
+    return this.finalStep.toolResults;
+  }
+  get staticToolResults() {
+    return this.finalStep.staticToolResults;
+  }
+  get dynamicToolResults() {
+    return this.finalStep.dynamicToolResults;
+  }
+  get sources() {
+    return this.finalStep.sources;
+  }
+  get finishReason() {
+    return this.finalStep.finishReason;
+  }
+  get warnings() {
+    return this.finalStep.warnings;
+  }
+  get providerMetadata() {
+    return this.finalStep.providerMetadata;
+  }
+  get response() {
+    return this.finalStep.response;
+  }
+  get request() {
+    return this.finalStep.request;
+  }
+  get usage() {
+    return this.finalStep.usage;
+  }
+  get totalUsage() {
+    return this.steps.reduce(
+      (totalUsage, step) => {
+        return addLanguageModelUsage(totalUsage, step.usage);
+      },
+      {
+        inputTokens: void 0,
+        outputTokens: void 0,
+        totalTokens: void 0,
+        reasoningTokens: void 0,
+        cachedInputTokens: void 0
+      }
+    );
+  }
+  get experimental_output() {
+    if (this.resolvedOutput == null) {
+      throw new NoOutputSpecifiedError();
+    }
+    return this.resolvedOutput;
   }
 };
-function toResponseMessages({
-  text,
+function asToolCalls(content) {
+  const parts = content.filter(
+    (part) => part.type === "tool-call"
+  );
+  if (parts.length === 0) {
+    return void 0;
+  }
+  return parts.map((toolCall) => ({
+    toolCallId: toolCall.toolCallId,
+    toolName: toolCall.toolName,
+    input: toolCall.input
+  }));
+}
+function asContent({
+  content,
   toolCalls,
-  toolResults
+  toolOutputs
 }) {
-  const responseMessages = [];
-  responseMessages.push({
-    role: "assistant",
-    content: [{ type: "text", text }, ...toolCalls]
+  return [
+    ...content.map((part) => {
+      switch (part.type) {
+        case "text":
+        case "reasoning":
+        case "source":
+          return part;
+        case "file": {
+          return {
+            type: "file",
+            file: new DefaultGeneratedFile(part)
+          };
+        }
+        case "tool-call": {
+          return toolCalls.find(
+            (toolCall) => toolCall.toolCallId === part.toolCallId
+          );
+        }
+        case "tool-result": {
+          const toolCall = toolCalls.find(
+            (toolCall2) => toolCall2.toolCallId === part.toolCallId
+          );
+          if (toolCall == null) {
+            throw new Error(`Tool call ${part.toolCallId} not found.`);
+          }
+          if (part.isError) {
+            return {
+              type: "tool-error",
+              toolCallId: part.toolCallId,
+              toolName: part.toolName,
+              input: toolCall.input,
+              error: part.result,
+              providerExecuted: true,
+              dynamic: toolCall.dynamic
+            };
+          }
+          return {
+            type: "tool-result",
+            toolCallId: part.toolCallId,
+            toolName: part.toolName,
+            input: toolCall.input,
+            output: part.result,
+            providerExecuted: true,
+            dynamic: toolCall.dynamic
+          };
+        }
+      }
+    }),
+    ...toolOutputs
+  ];
+}
+
+// src/generate-text/stream-text.ts
+var import_provider23 = __nccwpck_require__(2585);
+var import_provider_utils13 = __nccwpck_require__(9033);
+
+// src/util/prepare-headers.ts
+function prepareHeaders(headers, defaultHeaders) {
+  const responseHeaders = new Headers(headers != null ? headers : {});
+  for (const [key, value] of Object.entries(defaultHeaders)) {
+    if (!responseHeaders.has(key)) {
+      responseHeaders.set(key, value);
+    }
+  }
+  return responseHeaders;
+}
+
+// src/text-stream/create-text-stream-response.ts
+function createTextStreamResponse({
+  status,
+  statusText,
+  headers,
+  textStream
+}) {
+  return new Response(textStream.pipeThrough(new TextEncoderStream()), {
+    status: status != null ? status : 200,
+    statusText,
+    headers: prepareHeaders(headers, {
+      "content-type": "text/plain; charset=utf-8"
+    })
   });
-  if (toolResults.length > 0) {
-    responseMessages.push({
-      role: "tool",
-      content: toolResults.map((result) => ({
-        type: "tool-result",
-        toolCallId: result.toolCallId,
-        toolName: result.toolName,
-        result: result.result
-      }))
+}
+
+// src/util/write-to-server-response.ts
+function writeToServerResponse({
+  response,
+  status,
+  statusText,
+  headers,
+  stream
+}) {
+  response.writeHead(status != null ? status : 200, statusText, headers);
+  const reader = stream.getReader();
+  const read = async () => {
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done)
+          break;
+        response.write(value);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      response.end();
+    }
+  };
+  read();
+}
+
+// src/text-stream/pipe-text-stream-to-response.ts
+function pipeTextStreamToResponse({
+  response,
+  status,
+  statusText,
+  headers,
+  textStream
+}) {
+  writeToServerResponse({
+    response,
+    status,
+    statusText,
+    headers: Object.fromEntries(
+      prepareHeaders(headers, {
+        "content-type": "text/plain; charset=utf-8"
+      }).entries()
+    ),
+    stream: textStream.pipeThrough(new TextEncoderStream())
+  });
+}
+
+// src/ui-message-stream/json-to-sse-transform-stream.ts
+var JsonToSseTransformStream = class extends TransformStream {
+  constructor() {
+    super({
+      transform(part, controller) {
+        controller.enqueue(`data: ${JSON.stringify(part)}
+
+`);
+      },
+      flush(controller) {
+        controller.enqueue("data: [DONE]\n\n");
+      }
     });
   }
-  return responseMessages;
-}
-var experimental_generateText = generateText;
+};
 
-// core/generate-text/run-tools-transformation.ts
-var import_provider7 = __nccwpck_require__(131);
-var import_ui_utils2 = __nccwpck_require__(7170);
+// src/ui-message-stream/ui-message-stream-headers.ts
+var UI_MESSAGE_STREAM_HEADERS = {
+  "content-type": "text/event-stream",
+  "cache-control": "no-cache",
+  connection: "keep-alive",
+  "x-vercel-ai-ui-message-stream": "v1",
+  "x-accel-buffering": "no"
+  // disable nginx buffering
+};
+
+// src/ui-message-stream/create-ui-message-stream-response.ts
+function createUIMessageStreamResponse({
+  status,
+  statusText,
+  headers,
+  stream,
+  consumeSseStream
+}) {
+  let sseStream = stream.pipeThrough(new JsonToSseTransformStream());
+  if (consumeSseStream) {
+    const [stream1, stream2] = sseStream.tee();
+    sseStream = stream1;
+    consumeSseStream({ stream: stream2 });
+  }
+  return new Response(sseStream.pipeThrough(new TextEncoderStream()), {
+    status,
+    statusText,
+    headers: prepareHeaders(headers, UI_MESSAGE_STREAM_HEADERS)
+  });
+}
+
+// src/ui-message-stream/get-response-ui-message-id.ts
+function getResponseUIMessageId({
+  originalMessages,
+  responseMessageId
+}) {
+  if (originalMessages == null) {
+    return void 0;
+  }
+  const lastMessage = originalMessages[originalMessages.length - 1];
+  return (lastMessage == null ? void 0 : lastMessage.role) === "assistant" ? lastMessage.id : typeof responseMessageId === "function" ? responseMessageId() : responseMessageId;
+}
+
+// src/ui/process-ui-message-stream.ts
+var import_provider_utils11 = __nccwpck_require__(9033);
+
+// src/ui-message-stream/ui-message-chunks.ts
+var import_v47 = __nccwpck_require__(5350);
+var uiMessageChunkSchema = import_v47.z.union([
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("text-start"),
+    id: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("text-delta"),
+    id: import_v47.z.string(),
+    delta: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("text-end"),
+    id: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("error"),
+    errorText: import_v47.z.string()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-input-start"),
+    toolCallId: import_v47.z.string(),
+    toolName: import_v47.z.string(),
+    providerExecuted: import_v47.z.boolean().optional(),
+    dynamic: import_v47.z.boolean().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-input-delta"),
+    toolCallId: import_v47.z.string(),
+    inputTextDelta: import_v47.z.string()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-input-available"),
+    toolCallId: import_v47.z.string(),
+    toolName: import_v47.z.string(),
+    input: import_v47.z.unknown(),
+    providerExecuted: import_v47.z.boolean().optional(),
+    providerMetadata: providerMetadataSchema.optional(),
+    dynamic: import_v47.z.boolean().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-input-error"),
+    toolCallId: import_v47.z.string(),
+    toolName: import_v47.z.string(),
+    input: import_v47.z.unknown(),
+    providerExecuted: import_v47.z.boolean().optional(),
+    providerMetadata: providerMetadataSchema.optional(),
+    dynamic: import_v47.z.boolean().optional(),
+    errorText: import_v47.z.string()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-output-available"),
+    toolCallId: import_v47.z.string(),
+    output: import_v47.z.unknown(),
+    providerExecuted: import_v47.z.boolean().optional(),
+    dynamic: import_v47.z.boolean().optional(),
+    preliminary: import_v47.z.boolean().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("tool-output-error"),
+    toolCallId: import_v47.z.string(),
+    errorText: import_v47.z.string(),
+    providerExecuted: import_v47.z.boolean().optional(),
+    dynamic: import_v47.z.boolean().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("reasoning"),
+    text: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("reasoning-start"),
+    id: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("reasoning-delta"),
+    id: import_v47.z.string(),
+    delta: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("reasoning-end"),
+    id: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("reasoning-part-finish")
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("source-url"),
+    sourceId: import_v47.z.string(),
+    url: import_v47.z.string(),
+    title: import_v47.z.string().optional(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("source-document"),
+    sourceId: import_v47.z.string(),
+    mediaType: import_v47.z.string(),
+    title: import_v47.z.string(),
+    filename: import_v47.z.string().optional(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("file"),
+    url: import_v47.z.string(),
+    mediaType: import_v47.z.string(),
+    providerMetadata: providerMetadataSchema.optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.string().startsWith("data-"),
+    id: import_v47.z.string().optional(),
+    data: import_v47.z.unknown(),
+    transient: import_v47.z.boolean().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("start-step")
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("finish-step")
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("start"),
+    messageId: import_v47.z.string().optional(),
+    messageMetadata: import_v47.z.unknown().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("finish"),
+    messageMetadata: import_v47.z.unknown().optional()
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("abort")
+  }),
+  import_v47.z.strictObject({
+    type: import_v47.z.literal("message-metadata"),
+    messageMetadata: import_v47.z.unknown()
+  })
+]);
+function isDataUIMessageChunk(chunk) {
+  return chunk.type.startsWith("data-");
+}
+
+// src/util/merge-objects.ts
+function mergeObjects(base, overrides) {
+  if (base === void 0 && overrides === void 0) {
+    return void 0;
+  }
+  if (base === void 0) {
+    return overrides;
+  }
+  if (overrides === void 0) {
+    return base;
+  }
+  const result = { ...base };
+  for (const key in overrides) {
+    if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+      const overridesValue = overrides[key];
+      if (overridesValue === void 0)
+        continue;
+      const baseValue = key in base ? base[key] : void 0;
+      const isSourceObject = overridesValue !== null && typeof overridesValue === "object" && !Array.isArray(overridesValue) && !(overridesValue instanceof Date) && !(overridesValue instanceof RegExp);
+      const isTargetObject = baseValue !== null && baseValue !== void 0 && typeof baseValue === "object" && !Array.isArray(baseValue) && !(baseValue instanceof Date) && !(baseValue instanceof RegExp);
+      if (isSourceObject && isTargetObject) {
+        result[key] = mergeObjects(
+          baseValue,
+          overridesValue
+        );
+      } else {
+        result[key] = overridesValue;
+      }
+    }
+  }
+  return result;
+}
+
+// src/util/parse-partial-json.ts
+var import_provider_utils10 = __nccwpck_require__(9033);
+
+// src/util/fix-json.ts
+function fixJson(input) {
+  const stack = ["ROOT"];
+  let lastValidIndex = -1;
+  let literalStart = null;
+  function processValueStart(char, i, swapState) {
+    {
+      switch (char) {
+        case '"': {
+          lastValidIndex = i;
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_STRING");
+          break;
+        }
+        case "f":
+        case "t":
+        case "n": {
+          lastValidIndex = i;
+          literalStart = i;
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_LITERAL");
+          break;
+        }
+        case "-": {
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_NUMBER");
+          break;
+        }
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9": {
+          lastValidIndex = i;
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_NUMBER");
+          break;
+        }
+        case "{": {
+          lastValidIndex = i;
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_OBJECT_START");
+          break;
+        }
+        case "[": {
+          lastValidIndex = i;
+          stack.pop();
+          stack.push(swapState);
+          stack.push("INSIDE_ARRAY_START");
+          break;
+        }
+      }
+    }
+  }
+  function processAfterObjectValue(char, i) {
+    switch (char) {
+      case ",": {
+        stack.pop();
+        stack.push("INSIDE_OBJECT_AFTER_COMMA");
+        break;
+      }
+      case "}": {
+        lastValidIndex = i;
+        stack.pop();
+        break;
+      }
+    }
+  }
+  function processAfterArrayValue(char, i) {
+    switch (char) {
+      case ",": {
+        stack.pop();
+        stack.push("INSIDE_ARRAY_AFTER_COMMA");
+        break;
+      }
+      case "]": {
+        lastValidIndex = i;
+        stack.pop();
+        break;
+      }
+    }
+  }
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    const currentState = stack[stack.length - 1];
+    switch (currentState) {
+      case "ROOT":
+        processValueStart(char, i, "FINISH");
+        break;
+      case "INSIDE_OBJECT_START": {
+        switch (char) {
+          case '"': {
+            stack.pop();
+            stack.push("INSIDE_OBJECT_KEY");
+            break;
+          }
+          case "}": {
+            lastValidIndex = i;
+            stack.pop();
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_OBJECT_AFTER_COMMA": {
+        switch (char) {
+          case '"': {
+            stack.pop();
+            stack.push("INSIDE_OBJECT_KEY");
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_OBJECT_KEY": {
+        switch (char) {
+          case '"': {
+            stack.pop();
+            stack.push("INSIDE_OBJECT_AFTER_KEY");
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_OBJECT_AFTER_KEY": {
+        switch (char) {
+          case ":": {
+            stack.pop();
+            stack.push("INSIDE_OBJECT_BEFORE_VALUE");
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_OBJECT_BEFORE_VALUE": {
+        processValueStart(char, i, "INSIDE_OBJECT_AFTER_VALUE");
+        break;
+      }
+      case "INSIDE_OBJECT_AFTER_VALUE": {
+        processAfterObjectValue(char, i);
+        break;
+      }
+      case "INSIDE_STRING": {
+        switch (char) {
+          case '"': {
+            stack.pop();
+            lastValidIndex = i;
+            break;
+          }
+          case "\\": {
+            stack.push("INSIDE_STRING_ESCAPE");
+            break;
+          }
+          default: {
+            lastValidIndex = i;
+          }
+        }
+        break;
+      }
+      case "INSIDE_ARRAY_START": {
+        switch (char) {
+          case "]": {
+            lastValidIndex = i;
+            stack.pop();
+            break;
+          }
+          default: {
+            lastValidIndex = i;
+            processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_ARRAY_AFTER_VALUE": {
+        switch (char) {
+          case ",": {
+            stack.pop();
+            stack.push("INSIDE_ARRAY_AFTER_COMMA");
+            break;
+          }
+          case "]": {
+            lastValidIndex = i;
+            stack.pop();
+            break;
+          }
+          default: {
+            lastValidIndex = i;
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_ARRAY_AFTER_COMMA": {
+        processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
+        break;
+      }
+      case "INSIDE_STRING_ESCAPE": {
+        stack.pop();
+        lastValidIndex = i;
+        break;
+      }
+      case "INSIDE_NUMBER": {
+        switch (char) {
+          case "0":
+          case "1":
+          case "2":
+          case "3":
+          case "4":
+          case "5":
+          case "6":
+          case "7":
+          case "8":
+          case "9": {
+            lastValidIndex = i;
+            break;
+          }
+          case "e":
+          case "E":
+          case "-":
+          case ".": {
+            break;
+          }
+          case ",": {
+            stack.pop();
+            if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
+              processAfterArrayValue(char, i);
+            }
+            if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
+              processAfterObjectValue(char, i);
+            }
+            break;
+          }
+          case "}": {
+            stack.pop();
+            if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
+              processAfterObjectValue(char, i);
+            }
+            break;
+          }
+          case "]": {
+            stack.pop();
+            if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
+              processAfterArrayValue(char, i);
+            }
+            break;
+          }
+          default: {
+            stack.pop();
+            break;
+          }
+        }
+        break;
+      }
+      case "INSIDE_LITERAL": {
+        const partialLiteral = input.substring(literalStart, i + 1);
+        if (!"false".startsWith(partialLiteral) && !"true".startsWith(partialLiteral) && !"null".startsWith(partialLiteral)) {
+          stack.pop();
+          if (stack[stack.length - 1] === "INSIDE_OBJECT_AFTER_VALUE") {
+            processAfterObjectValue(char, i);
+          } else if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") {
+            processAfterArrayValue(char, i);
+          }
+        } else {
+          lastValidIndex = i;
+        }
+        break;
+      }
+    }
+  }
+  let result = input.slice(0, lastValidIndex + 1);
+  for (let i = stack.length - 1; i >= 0; i--) {
+    const state = stack[i];
+    switch (state) {
+      case "INSIDE_STRING": {
+        result += '"';
+        break;
+      }
+      case "INSIDE_OBJECT_KEY":
+      case "INSIDE_OBJECT_AFTER_KEY":
+      case "INSIDE_OBJECT_AFTER_COMMA":
+      case "INSIDE_OBJECT_START":
+      case "INSIDE_OBJECT_BEFORE_VALUE":
+      case "INSIDE_OBJECT_AFTER_VALUE": {
+        result += "}";
+        break;
+      }
+      case "INSIDE_ARRAY_START":
+      case "INSIDE_ARRAY_AFTER_COMMA":
+      case "INSIDE_ARRAY_AFTER_VALUE": {
+        result += "]";
+        break;
+      }
+      case "INSIDE_LITERAL": {
+        const partialLiteral = input.substring(literalStart, input.length);
+        if ("true".startsWith(partialLiteral)) {
+          result += "true".slice(partialLiteral.length);
+        } else if ("false".startsWith(partialLiteral)) {
+          result += "false".slice(partialLiteral.length);
+        } else if ("null".startsWith(partialLiteral)) {
+          result += "null".slice(partialLiteral.length);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+// src/util/parse-partial-json.ts
+async function parsePartialJson(jsonText) {
+  if (jsonText === void 0) {
+    return { value: void 0, state: "undefined-input" };
+  }
+  let result = await (0, import_provider_utils10.safeParseJSON)({ text: jsonText });
+  if (result.success) {
+    return { value: result.value, state: "successful-parse" };
+  }
+  result = await (0, import_provider_utils10.safeParseJSON)({ text: fixJson(jsonText) });
+  if (result.success) {
+    return { value: result.value, state: "repaired-parse" };
+  }
+  return { value: void 0, state: "failed-parse" };
+}
+
+// src/ui/ui-messages.ts
+function isToolUIPart(part) {
+  return part.type.startsWith("tool-");
+}
+function getToolName(part) {
+  return part.type.split("-").slice(1).join("-");
+}
+
+// src/ui/process-ui-message-stream.ts
+function createStreamingUIMessageState({
+  lastMessage,
+  messageId
+}) {
+  return {
+    message: (lastMessage == null ? void 0 : lastMessage.role) === "assistant" ? lastMessage : {
+      id: messageId,
+      metadata: void 0,
+      role: "assistant",
+      parts: []
+    },
+    activeTextParts: {},
+    activeReasoningParts: {},
+    partialToolCalls: {}
+  };
+}
+function processUIMessageStream({
+  stream,
+  messageMetadataSchema,
+  dataPartSchemas,
+  runUpdateMessageJob,
+  onError,
+  onToolCall,
+  onData
+}) {
+  return stream.pipeThrough(
+    new TransformStream({
+      async transform(chunk, controller) {
+        await runUpdateMessageJob(async ({ state, write }) => {
+          var _a17, _b, _c, _d;
+          function getToolInvocation(toolCallId) {
+            const toolInvocations = state.message.parts.filter(isToolUIPart);
+            const toolInvocation = toolInvocations.find(
+              (invocation) => invocation.toolCallId === toolCallId
+            );
+            if (toolInvocation == null) {
+              throw new Error(
+                "tool-output-error must be preceded by a tool-input-available"
+              );
+            }
+            return toolInvocation;
+          }
+          function getDynamicToolInvocation(toolCallId) {
+            const toolInvocations = state.message.parts.filter(
+              (part) => part.type === "dynamic-tool"
+            );
+            const toolInvocation = toolInvocations.find(
+              (invocation) => invocation.toolCallId === toolCallId
+            );
+            if (toolInvocation == null) {
+              throw new Error(
+                "tool-output-error must be preceded by a tool-input-available"
+              );
+            }
+            return toolInvocation;
+          }
+          function updateToolPart(options) {
+            var _a18;
+            const part = state.message.parts.find(
+              (part2) => isToolUIPart(part2) && part2.toolCallId === options.toolCallId
+            );
+            const anyOptions = options;
+            const anyPart = part;
+            if (part != null) {
+              part.state = options.state;
+              anyPart.input = anyOptions.input;
+              anyPart.output = anyOptions.output;
+              anyPart.errorText = anyOptions.errorText;
+              anyPart.rawInput = anyOptions.rawInput;
+              anyPart.preliminary = anyOptions.preliminary;
+              anyPart.providerExecuted = (_a18 = anyOptions.providerExecuted) != null ? _a18 : part.providerExecuted;
+              if (anyOptions.providerMetadata != null && part.state === "input-available") {
+                part.callProviderMetadata = anyOptions.providerMetadata;
+              }
+            } else {
+              state.message.parts.push({
+                type: `tool-${options.toolName}`,
+                toolCallId: options.toolCallId,
+                state: options.state,
+                input: anyOptions.input,
+                output: anyOptions.output,
+                rawInput: anyOptions.rawInput,
+                errorText: anyOptions.errorText,
+                providerExecuted: anyOptions.providerExecuted,
+                preliminary: anyOptions.preliminary,
+                ...anyOptions.providerMetadata != null ? { callProviderMetadata: anyOptions.providerMetadata } : {}
+              });
+            }
+          }
+          function updateDynamicToolPart(options) {
+            var _a18;
+            const part = state.message.parts.find(
+              (part2) => part2.type === "dynamic-tool" && part2.toolCallId === options.toolCallId
+            );
+            const anyOptions = options;
+            const anyPart = part;
+            if (part != null) {
+              part.state = options.state;
+              anyPart.toolName = options.toolName;
+              anyPart.input = anyOptions.input;
+              anyPart.output = anyOptions.output;
+              anyPart.errorText = anyOptions.errorText;
+              anyPart.rawInput = (_a18 = anyOptions.rawInput) != null ? _a18 : anyPart.rawInput;
+              anyPart.preliminary = anyOptions.preliminary;
+              if (anyOptions.providerMetadata != null && part.state === "input-available") {
+                part.callProviderMetadata = anyOptions.providerMetadata;
+              }
+            } else {
+              state.message.parts.push({
+                type: "dynamic-tool",
+                toolName: options.toolName,
+                toolCallId: options.toolCallId,
+                state: options.state,
+                input: anyOptions.input,
+                output: anyOptions.output,
+                errorText: anyOptions.errorText,
+                preliminary: anyOptions.preliminary,
+                ...anyOptions.providerMetadata != null ? { callProviderMetadata: anyOptions.providerMetadata } : {}
+              });
+            }
+          }
+          async function updateMessageMetadata(metadata) {
+            if (metadata != null) {
+              const mergedMetadata = state.message.metadata != null ? mergeObjects(state.message.metadata, metadata) : metadata;
+              if (messageMetadataSchema != null) {
+                await (0, import_provider_utils11.validateTypes)({
+                  value: mergedMetadata,
+                  schema: messageMetadataSchema
+                });
+              }
+              state.message.metadata = mergedMetadata;
+            }
+          }
+          switch (chunk.type) {
+            case "text-start": {
+              const textPart = {
+                type: "text",
+                text: "",
+                providerMetadata: chunk.providerMetadata,
+                state: "streaming"
+              };
+              state.activeTextParts[chunk.id] = textPart;
+              state.message.parts.push(textPart);
+              write();
+              break;
+            }
+            case "text-delta": {
+              const textPart = state.activeTextParts[chunk.id];
+              textPart.text += chunk.delta;
+              textPart.providerMetadata = (_a17 = chunk.providerMetadata) != null ? _a17 : textPart.providerMetadata;
+              write();
+              break;
+            }
+            case "text-end": {
+              const textPart = state.activeTextParts[chunk.id];
+              textPart.state = "done";
+              textPart.providerMetadata = (_b = chunk.providerMetadata) != null ? _b : textPart.providerMetadata;
+              delete state.activeTextParts[chunk.id];
+              write();
+              break;
+            }
+            case "reasoning-start": {
+              const reasoningPart = {
+                type: "reasoning",
+                text: "",
+                providerMetadata: chunk.providerMetadata,
+                state: "streaming"
+              };
+              state.activeReasoningParts[chunk.id] = reasoningPart;
+              state.message.parts.push(reasoningPart);
+              write();
+              break;
+            }
+            case "reasoning-delta": {
+              const reasoningPart = state.activeReasoningParts[chunk.id];
+              reasoningPart.text += chunk.delta;
+              reasoningPart.providerMetadata = (_c = chunk.providerMetadata) != null ? _c : reasoningPart.providerMetadata;
+              write();
+              break;
+            }
+            case "reasoning-end": {
+              const reasoningPart = state.activeReasoningParts[chunk.id];
+              reasoningPart.providerMetadata = (_d = chunk.providerMetadata) != null ? _d : reasoningPart.providerMetadata;
+              reasoningPart.state = "done";
+              delete state.activeReasoningParts[chunk.id];
+              write();
+              break;
+            }
+            case "file": {
+              state.message.parts.push({
+                type: "file",
+                mediaType: chunk.mediaType,
+                url: chunk.url
+              });
+              write();
+              break;
+            }
+            case "source-url": {
+              state.message.parts.push({
+                type: "source-url",
+                sourceId: chunk.sourceId,
+                url: chunk.url,
+                title: chunk.title,
+                providerMetadata: chunk.providerMetadata
+              });
+              write();
+              break;
+            }
+            case "source-document": {
+              state.message.parts.push({
+                type: "source-document",
+                sourceId: chunk.sourceId,
+                mediaType: chunk.mediaType,
+                title: chunk.title,
+                filename: chunk.filename,
+                providerMetadata: chunk.providerMetadata
+              });
+              write();
+              break;
+            }
+            case "tool-input-start": {
+              const toolInvocations = state.message.parts.filter(isToolUIPart);
+              state.partialToolCalls[chunk.toolCallId] = {
+                text: "",
+                toolName: chunk.toolName,
+                index: toolInvocations.length,
+                dynamic: chunk.dynamic
+              };
+              if (chunk.dynamic) {
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "input-streaming",
+                  input: void 0
+                });
+              } else {
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "input-streaming",
+                  input: void 0,
+                  providerExecuted: chunk.providerExecuted
+                });
+              }
+              write();
+              break;
+            }
+            case "tool-input-delta": {
+              const partialToolCall = state.partialToolCalls[chunk.toolCallId];
+              partialToolCall.text += chunk.inputTextDelta;
+              const { value: partialArgs } = await parsePartialJson(
+                partialToolCall.text
+              );
+              if (partialToolCall.dynamic) {
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: partialToolCall.toolName,
+                  state: "input-streaming",
+                  input: partialArgs
+                });
+              } else {
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: partialToolCall.toolName,
+                  state: "input-streaming",
+                  input: partialArgs
+                });
+              }
+              write();
+              break;
+            }
+            case "tool-input-available": {
+              if (chunk.dynamic) {
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "input-available",
+                  input: chunk.input,
+                  providerMetadata: chunk.providerMetadata
+                });
+              } else {
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "input-available",
+                  input: chunk.input,
+                  providerExecuted: chunk.providerExecuted,
+                  providerMetadata: chunk.providerMetadata
+                });
+              }
+              write();
+              if (onToolCall && !chunk.providerExecuted) {
+                await onToolCall({
+                  toolCall: chunk
+                });
+              }
+              break;
+            }
+            case "tool-input-error": {
+              if (chunk.dynamic) {
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "output-error",
+                  input: chunk.input,
+                  errorText: chunk.errorText,
+                  providerMetadata: chunk.providerMetadata
+                });
+              } else {
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: chunk.toolName,
+                  state: "output-error",
+                  input: void 0,
+                  rawInput: chunk.input,
+                  errorText: chunk.errorText,
+                  providerExecuted: chunk.providerExecuted,
+                  providerMetadata: chunk.providerMetadata
+                });
+              }
+              write();
+              break;
+            }
+            case "tool-output-available": {
+              if (chunk.dynamic) {
+                const toolInvocation = getDynamicToolInvocation(
+                  chunk.toolCallId
+                );
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: toolInvocation.toolName,
+                  state: "output-available",
+                  input: toolInvocation.input,
+                  output: chunk.output,
+                  preliminary: chunk.preliminary
+                });
+              } else {
+                const toolInvocation = getToolInvocation(chunk.toolCallId);
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: getToolName(toolInvocation),
+                  state: "output-available",
+                  input: toolInvocation.input,
+                  output: chunk.output,
+                  providerExecuted: chunk.providerExecuted,
+                  preliminary: chunk.preliminary
+                });
+              }
+              write();
+              break;
+            }
+            case "tool-output-error": {
+              if (chunk.dynamic) {
+                const toolInvocation = getDynamicToolInvocation(
+                  chunk.toolCallId
+                );
+                updateDynamicToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: toolInvocation.toolName,
+                  state: "output-error",
+                  input: toolInvocation.input,
+                  errorText: chunk.errorText
+                });
+              } else {
+                const toolInvocation = getToolInvocation(chunk.toolCallId);
+                updateToolPart({
+                  toolCallId: chunk.toolCallId,
+                  toolName: getToolName(toolInvocation),
+                  state: "output-error",
+                  input: toolInvocation.input,
+                  rawInput: toolInvocation.rawInput,
+                  errorText: chunk.errorText
+                });
+              }
+              write();
+              break;
+            }
+            case "start-step": {
+              state.message.parts.push({ type: "step-start" });
+              break;
+            }
+            case "finish-step": {
+              state.activeTextParts = {};
+              state.activeReasoningParts = {};
+              break;
+            }
+            case "start": {
+              if (chunk.messageId != null) {
+                state.message.id = chunk.messageId;
+              }
+              await updateMessageMetadata(chunk.messageMetadata);
+              if (chunk.messageId != null || chunk.messageMetadata != null) {
+                write();
+              }
+              break;
+            }
+            case "finish": {
+              await updateMessageMetadata(chunk.messageMetadata);
+              if (chunk.messageMetadata != null) {
+                write();
+              }
+              break;
+            }
+            case "message-metadata": {
+              await updateMessageMetadata(chunk.messageMetadata);
+              if (chunk.messageMetadata != null) {
+                write();
+              }
+              break;
+            }
+            case "error": {
+              onError == null ? void 0 : onError(new Error(chunk.errorText));
+              break;
+            }
+            default: {
+              if (isDataUIMessageChunk(chunk)) {
+                if ((dataPartSchemas == null ? void 0 : dataPartSchemas[chunk.type]) != null) {
+                  await (0, import_provider_utils11.validateTypes)({
+                    value: chunk.data,
+                    schema: dataPartSchemas[chunk.type]
+                  });
+                }
+                const dataChunk = chunk;
+                if (dataChunk.transient) {
+                  onData == null ? void 0 : onData(dataChunk);
+                  break;
+                }
+                const existingUIPart = dataChunk.id != null ? state.message.parts.find(
+                  (chunkArg) => dataChunk.type === chunkArg.type && dataChunk.id === chunkArg.id
+                ) : void 0;
+                if (existingUIPart != null) {
+                  existingUIPart.data = dataChunk.data;
+                } else {
+                  state.message.parts.push(dataChunk);
+                }
+                onData == null ? void 0 : onData(dataChunk);
+                write();
+              }
+            }
+          }
+          controller.enqueue(chunk);
+        });
+      }
+    })
+  );
+}
+
+// src/ui-message-stream/handle-ui-message-stream-finish.ts
+function handleUIMessageStreamFinish({
+  messageId,
+  originalMessages = [],
+  onFinish,
+  onError,
+  stream
+}) {
+  let lastMessage = originalMessages == null ? void 0 : originalMessages[originalMessages.length - 1];
+  if ((lastMessage == null ? void 0 : lastMessage.role) !== "assistant") {
+    lastMessage = void 0;
+  } else {
+    messageId = lastMessage.id;
+  }
+  let isAborted = false;
+  const idInjectedStream = stream.pipeThrough(
+    new TransformStream({
+      transform(chunk, controller) {
+        if (chunk.type === "start") {
+          const startChunk = chunk;
+          if (startChunk.messageId == null && messageId != null) {
+            startChunk.messageId = messageId;
+          }
+        }
+        if (chunk.type === "abort") {
+          isAborted = true;
+        }
+        controller.enqueue(chunk);
+      }
+    })
+  );
+  if (onFinish == null) {
+    return idInjectedStream;
+  }
+  const state = createStreamingUIMessageState({
+    lastMessage: lastMessage ? structuredClone(lastMessage) : void 0,
+    messageId: messageId != null ? messageId : ""
+    // will be overridden by the stream
+  });
+  const runUpdateMessageJob = async (job) => {
+    await job({ state, write: () => {
+    } });
+  };
+  return processUIMessageStream({
+    stream: idInjectedStream,
+    runUpdateMessageJob,
+    onError
+  }).pipeThrough(
+    new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk);
+      },
+      async flush() {
+        const isContinuation = state.message.id === (lastMessage == null ? void 0 : lastMessage.id);
+        await onFinish({
+          isAborted,
+          isContinuation,
+          responseMessage: state.message,
+          messages: [
+            ...isContinuation ? originalMessages.slice(0, -1) : originalMessages,
+            state.message
+          ]
+        });
+      }
+    })
+  );
+}
+
+// src/ui-message-stream/pipe-ui-message-stream-to-response.ts
+function pipeUIMessageStreamToResponse({
+  response,
+  status,
+  statusText,
+  headers,
+  stream,
+  consumeSseStream
+}) {
+  let sseStream = stream.pipeThrough(new JsonToSseTransformStream());
+  if (consumeSseStream) {
+    const [stream1, stream2] = sseStream.tee();
+    sseStream = stream1;
+    consumeSseStream({ stream: stream2 });
+  }
+  writeToServerResponse({
+    response,
+    status,
+    statusText,
+    headers: Object.fromEntries(
+      prepareHeaders(headers, UI_MESSAGE_STREAM_HEADERS).entries()
+    ),
+    stream: sseStream.pipeThrough(new TextEncoderStream())
+  });
+}
+
+// src/util/async-iterable-stream.ts
+function createAsyncIterableStream(source) {
+  const stream = source.pipeThrough(new TransformStream());
+  stream[Symbol.asyncIterator] = () => {
+    const reader = stream.getReader();
+    return {
+      async next() {
+        const { done, value } = await reader.read();
+        return done ? { done: true, value: void 0 } : { done: false, value };
+      }
+    };
+  };
+  return stream;
+}
+
+// src/util/consume-stream.ts
+async function consumeStream({
+  stream,
+  onError
+}) {
+  const reader = stream.getReader();
+  try {
+    while (true) {
+      const { done } = await reader.read();
+      if (done)
+        break;
+    }
+  } catch (error) {
+    onError == null ? void 0 : onError(error);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+// src/util/create-resolvable-promise.ts
+function createResolvablePromise() {
+  let resolve2;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve2 = res;
+    reject = rej;
+  });
+  return {
+    promise,
+    resolve: resolve2,
+    reject
+  };
+}
+
+// src/util/create-stitchable-stream.ts
+function createStitchableStream() {
+  let innerStreamReaders = [];
+  let controller = null;
+  let isClosed = false;
+  let waitForNewStream = createResolvablePromise();
+  const terminate = () => {
+    isClosed = true;
+    waitForNewStream.resolve();
+    innerStreamReaders.forEach((reader) => reader.cancel());
+    innerStreamReaders = [];
+    controller == null ? void 0 : controller.close();
+  };
+  const processPull = async () => {
+    if (isClosed && innerStreamReaders.length === 0) {
+      controller == null ? void 0 : controller.close();
+      return;
+    }
+    if (innerStreamReaders.length === 0) {
+      waitForNewStream = createResolvablePromise();
+      await waitForNewStream.promise;
+      return processPull();
+    }
+    try {
+      const { value, done } = await innerStreamReaders[0].read();
+      if (done) {
+        innerStreamReaders.shift();
+        if (innerStreamReaders.length > 0) {
+          await processPull();
+        } else if (isClosed) {
+          controller == null ? void 0 : controller.close();
+        }
+      } else {
+        controller == null ? void 0 : controller.enqueue(value);
+      }
+    } catch (error) {
+      controller == null ? void 0 : controller.error(error);
+      innerStreamReaders.shift();
+      terminate();
+    }
+  };
+  return {
+    stream: new ReadableStream({
+      start(controllerParam) {
+        controller = controllerParam;
+      },
+      pull: processPull,
+      async cancel() {
+        for (const reader of innerStreamReaders) {
+          await reader.cancel();
+        }
+        innerStreamReaders = [];
+        isClosed = true;
+      }
+    }),
+    addStream: (innerStream) => {
+      if (isClosed) {
+        throw new Error("Cannot add inner stream: outer stream is closed");
+      }
+      innerStreamReaders.push(innerStream.getReader());
+      waitForNewStream.resolve();
+    },
+    /**
+     * Gracefully close the outer stream. This will let the inner streams
+     * finish processing and then close the outer stream.
+     */
+    close: () => {
+      isClosed = true;
+      waitForNewStream.resolve();
+      if (innerStreamReaders.length === 0) {
+        controller == null ? void 0 : controller.close();
+      }
+    },
+    /**
+     * Immediately close the outer stream. This will cancel all inner streams
+     * and close the outer stream.
+     */
+    terminate
+  };
+}
+
+// src/util/delayed-promise.ts
+var DelayedPromise = class {
+  constructor() {
+    this.status = { type: "pending" };
+    this._resolve = void 0;
+    this._reject = void 0;
+  }
+  get promise() {
+    if (this._promise) {
+      return this._promise;
+    }
+    this._promise = new Promise((resolve2, reject) => {
+      if (this.status.type === "resolved") {
+        resolve2(this.status.value);
+      } else if (this.status.type === "rejected") {
+        reject(this.status.error);
+      }
+      this._resolve = resolve2;
+      this._reject = reject;
+    });
+    return this._promise;
+  }
+  resolve(value) {
+    var _a17;
+    this.status = { type: "resolved", value };
+    if (this._promise) {
+      (_a17 = this._resolve) == null ? void 0 : _a17.call(this, value);
+    }
+  }
+  reject(error) {
+    var _a17;
+    this.status = { type: "rejected", error };
+    if (this._promise) {
+      (_a17 = this._reject) == null ? void 0 : _a17.call(this, error);
+    }
+  }
+};
+
+// src/util/now.ts
+function now() {
+  var _a17, _b;
+  return (_b = (_a17 = globalThis == null ? void 0 : globalThis.performance) == null ? void 0 : _a17.now()) != null ? _b : Date.now();
+}
+
+// src/generate-text/run-tools-transformation.ts
+var import_provider_utils12 = __nccwpck_require__(9033);
 function runToolsTransformation({
   tools,
-  generatorStream
+  generatorStream,
+  tracer,
+  telemetry,
+  system,
+  messages,
+  abortSignal,
+  repairToolCall,
+  experimental_context
 }) {
-  let canClose = false;
-  const outstandingToolCalls = /* @__PURE__ */ new Set();
   let toolResultsStreamController = null;
   const toolResultsStream = new ReadableStream({
     start(controller) {
       toolResultsStreamController = controller;
     }
   });
+  const outstandingToolResults = /* @__PURE__ */ new Set();
+  const toolInputs = /* @__PURE__ */ new Map();
+  let canClose = false;
+  let finishChunk = void 0;
+  function attemptClose() {
+    if (canClose && outstandingToolResults.size === 0) {
+      if (finishChunk != null) {
+        toolResultsStreamController.enqueue(finishChunk);
+      }
+      toolResultsStreamController.close();
+    }
+  }
   const forwardStream = new TransformStream({
-    transform(chunk, controller) {
+    async transform(chunk, controller) {
       const chunkType = chunk.type;
       switch (chunkType) {
+        case "stream-start":
+        case "text-start":
         case "text-delta":
-        case "error": {
+        case "text-end":
+        case "reasoning-start":
+        case "reasoning-delta":
+        case "reasoning-end":
+        case "tool-input-start":
+        case "tool-input-delta":
+        case "tool-input-end":
+        case "source":
+        case "response-metadata":
+        case "error":
+        case "raw": {
           controller.enqueue(chunk);
           break;
         }
-        case "tool-call": {
-          const toolName = chunk.toolName;
-          if (tools == null) {
-            toolResultsStreamController.enqueue({
-              type: "error",
-              error: new import_provider7.NoSuchToolError({ toolName: chunk.toolName })
-            });
-            break;
-          }
-          const tool2 = tools[toolName];
-          if (tool2 == null) {
-            toolResultsStreamController.enqueue({
-              type: "error",
-              error: new import_provider7.NoSuchToolError({
-                toolName: chunk.toolName,
-                availableTools: Object.keys(tools)
-              })
-            });
-            break;
-          }
-          try {
-            const toolCall = parseToolCall({
-              toolCall: chunk,
-              tools
-            });
-            controller.enqueue(toolCall);
-            if (tool2.execute != null) {
-              const toolExecutionId = (0, import_ui_utils2.generateId)();
-              outstandingToolCalls.add(toolExecutionId);
-              tool2.execute(toolCall.args).then(
-                (result) => {
-                  toolResultsStreamController.enqueue({
-                    ...toolCall,
-                    type: "tool-result",
-                    result
-                  });
-                  outstandingToolCalls.delete(toolExecutionId);
-                  if (canClose && outstandingToolCalls.size === 0) {
-                    toolResultsStreamController.close();
-                  }
-                },
-                (error) => {
-                  toolResultsStreamController.enqueue({
-                    type: "error",
-                    error
-                  });
-                  outstandingToolCalls.delete(toolExecutionId);
-                  if (canClose && outstandingToolCalls.size === 0) {
-                    toolResultsStreamController.close();
-                  }
-                }
-              );
-            }
-          } catch (error) {
-            toolResultsStreamController.enqueue({
-              type: "error",
-              error
-            });
-          }
-          break;
-        }
-        case "finish": {
+        case "file": {
           controller.enqueue({
-            type: "finish",
-            finishReason: chunk.finishReason,
-            logprobs: chunk.logprobs,
-            usage: calculateTokenUsage(chunk.usage)
+            type: "file",
+            file: new DefaultGeneratedFileWithType({
+              data: chunk.data,
+              mediaType: chunk.mediaType
+            })
           });
           break;
         }
-        case "tool-call-delta": {
+        case "finish": {
+          finishChunk = {
+            type: "finish",
+            finishReason: chunk.finishReason,
+            usage: chunk.usage,
+            providerMetadata: chunk.providerMetadata
+          };
+          break;
+        }
+        case "tool-call": {
+          try {
+            const toolCall = await parseToolCall({
+              toolCall: chunk,
+              tools,
+              repairToolCall,
+              system,
+              messages
+            });
+            controller.enqueue(toolCall);
+            if (toolCall.invalid) {
+              toolResultsStreamController.enqueue({
+                type: "tool-error",
+                toolCallId: toolCall.toolCallId,
+                toolName: toolCall.toolName,
+                input: toolCall.input,
+                error: (0, import_provider_utils12.getErrorMessage)(toolCall.error),
+                dynamic: true
+              });
+              break;
+            }
+            const tool3 = tools[toolCall.toolName];
+            toolInputs.set(toolCall.toolCallId, toolCall.input);
+            if (tool3.onInputAvailable != null) {
+              await tool3.onInputAvailable({
+                input: toolCall.input,
+                toolCallId: toolCall.toolCallId,
+                messages,
+                abortSignal,
+                experimental_context
+              });
+            }
+            if (tool3.execute != null && toolCall.providerExecuted !== true) {
+              const toolExecutionId = (0, import_provider_utils12.generateId)();
+              outstandingToolResults.add(toolExecutionId);
+              recordSpan({
+                name: "ai.toolCall",
+                attributes: selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    ...assembleOperationName({
+                      operationId: "ai.toolCall",
+                      telemetry
+                    }),
+                    "ai.toolCall.name": toolCall.toolName,
+                    "ai.toolCall.id": toolCall.toolCallId,
+                    "ai.toolCall.args": {
+                      output: () => JSON.stringify(toolCall.input)
+                    }
+                  }
+                }),
+                tracer,
+                fn: async (span) => {
+                  let output;
+                  try {
+                    const stream = (0, import_provider_utils12.executeTool)({
+                      execute: tool3.execute.bind(tool3),
+                      input: toolCall.input,
+                      options: {
+                        toolCallId: toolCall.toolCallId,
+                        messages,
+                        abortSignal,
+                        experimental_context
+                      }
+                    });
+                    for await (const part of stream) {
+                      toolResultsStreamController.enqueue({
+                        ...toolCall,
+                        type: "tool-result",
+                        output: part.output,
+                        ...part.type === "preliminary" && {
+                          preliminary: true
+                        }
+                      });
+                      if (part.type === "final") {
+                        output = part.output;
+                      }
+                    }
+                  } catch (error) {
+                    recordErrorOnSpan(span, error);
+                    toolResultsStreamController.enqueue({
+                      ...toolCall,
+                      type: "tool-error",
+                      error
+                    });
+                    outstandingToolResults.delete(toolExecutionId);
+                    attemptClose();
+                    return;
+                  }
+                  outstandingToolResults.delete(toolExecutionId);
+                  attemptClose();
+                  try {
+                    span.setAttributes(
+                      selectTelemetryAttributes({
+                        telemetry,
+                        attributes: {
+                          "ai.toolCall.result": {
+                            output: () => JSON.stringify(output)
+                          }
+                        }
+                      })
+                    );
+                  } catch (ignored) {
+                  }
+                }
+              });
+            }
+          } catch (error) {
+            toolResultsStreamController.enqueue({ type: "error", error });
+          }
+          break;
+        }
+        case "tool-result": {
+          const toolName = chunk.toolName;
+          if (chunk.isError) {
+            toolResultsStreamController.enqueue({
+              type: "tool-error",
+              toolCallId: chunk.toolCallId,
+              toolName,
+              input: toolInputs.get(chunk.toolCallId),
+              providerExecuted: chunk.providerExecuted,
+              error: chunk.result
+            });
+          } else {
+            controller.enqueue({
+              type: "tool-result",
+              toolCallId: chunk.toolCallId,
+              toolName,
+              input: toolInputs.get(chunk.toolCallId),
+              output: chunk.result,
+              providerExecuted: chunk.providerExecuted
+            });
+          }
           break;
         }
         default: {
@@ -20027,9 +29128,7 @@ function runToolsTransformation({
     },
     flush() {
       canClose = true;
-      if (outstandingToolCalls.size === 0) {
-        toolResultsStreamController.close();
-      }
+      attemptClose();
     }
   });
   return new ReadableStream({
@@ -20059,8 +29158,12 @@ function runToolsTransformation({
   });
 }
 
-// core/generate-text/stream-text.ts
-async function streamText({
+// src/generate-text/stream-text.ts
+var originalGenerateId2 = (0, import_provider_utils13.createIdGenerator)({
+  prefix: "aitxt",
+  size: 24
+});
+function streamText({
   model,
   tools,
   toolChoice,
@@ -20070,120 +29173,920 @@ async function streamText({
   maxRetries,
   abortSignal,
   headers,
+  stopWhen = stepCountIs(1),
+  experimental_output: output,
+  experimental_telemetry: telemetry,
+  prepareStep,
+  providerOptions,
+  experimental_activeTools,
+  activeTools = experimental_activeTools,
+  experimental_repairToolCall: repairToolCall,
+  experimental_transform: transform,
+  includeRawChunks = false,
+  onChunk,
+  onError = ({ error }) => {
+    console.error(error);
+  },
   onFinish,
+  onAbort,
+  onStepFinish,
+  experimental_context,
+  _internal: {
+    now: now2 = now,
+    generateId: generateId3 = originalGenerateId2,
+    currentDate = () => /* @__PURE__ */ new Date()
+  } = {},
   ...settings
 }) {
-  const retry = retryWithExponentialBackoff({ maxRetries });
-  const validatedPrompt = getValidatedPrompt({ system, prompt, messages });
-  const { stream, warnings, rawResponse } = await retry(
-    () => model.doStream({
-      mode: {
-        type: "regular",
-        ...prepareToolsAndToolChoice({ tools, toolChoice })
-      },
-      ...prepareCallSettings(settings),
-      inputFormat: validatedPrompt.type,
-      prompt: convertToLanguageModelPrompt(validatedPrompt),
-      abortSignal,
-      headers
-    })
-  );
-  return new StreamTextResult({
-    stream: runToolsTransformation({
-      tools,
-      generatorStream: stream
-    }),
-    warnings,
-    rawResponse,
-    onFinish
+  return new DefaultStreamTextResult({
+    model: resolveLanguageModel(model),
+    telemetry,
+    headers,
+    settings,
+    maxRetries,
+    abortSignal,
+    system,
+    prompt,
+    messages,
+    tools,
+    toolChoice,
+    transforms: asArray(transform),
+    activeTools,
+    repairToolCall,
+    stopConditions: asArray(stopWhen),
+    output,
+    providerOptions,
+    prepareStep,
+    includeRawChunks,
+    onChunk,
+    onError,
+    onFinish,
+    onAbort,
+    onStepFinish,
+    now: now2,
+    currentDate,
+    generateId: generateId3,
+    experimental_context
   });
 }
-var StreamTextResult = class {
-  constructor({
-    stream,
-    warnings,
-    rawResponse,
-    onFinish
+function createOutputTransformStream(output) {
+  if (!output) {
+    return new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue({ part: chunk, partialOutput: void 0 });
+      }
+    });
+  }
+  let firstTextChunkId = void 0;
+  let text2 = "";
+  let textChunk = "";
+  let lastPublishedJson = "";
+  function publishTextChunk({
+    controller,
+    partialOutput = void 0
   }) {
-    this.warnings = warnings;
-    this.rawResponse = rawResponse;
-    this.onFinish = onFinish;
-    let resolveUsage;
-    this.usage = new Promise((resolve) => {
-      resolveUsage = resolve;
+    controller.enqueue({
+      part: {
+        type: "text-delta",
+        id: firstTextChunkId,
+        text: textChunk
+      },
+      partialOutput
     });
-    let resolveFinishReason;
-    this.finishReason = new Promise((resolve) => {
-      resolveFinishReason = resolve;
-    });
-    let resolveText;
-    this.text = new Promise((resolve) => {
-      resolveText = resolve;
-    });
-    let resolveToolCalls;
-    this.toolCalls = new Promise((resolve) => {
-      resolveToolCalls = resolve;
-    });
-    let resolveToolResults;
-    this.toolResults = new Promise((resolve) => {
-      resolveToolResults = resolve;
-    });
-    let finishReason;
-    let usage;
-    let text = "";
-    const toolCalls = [];
-    const toolResults = [];
-    const self = this;
-    this.originalStream = stream.pipeThrough(
-      new TransformStream({
-        async transform(chunk, controller) {
-          controller.enqueue(chunk);
-          if (chunk.type === "text-delta") {
-            text += chunk.textDelta;
-          }
-          if (chunk.type === "tool-call") {
-            toolCalls.push(chunk);
-          }
-          if (chunk.type === "tool-result") {
-            toolResults.push(chunk);
-          }
-          if (chunk.type === "finish") {
-            usage = chunk.usage;
-            finishReason = chunk.finishReason;
-            resolveUsage(usage);
-            resolveFinishReason(finishReason);
-            resolveText(text);
-            resolveToolCalls(toolCalls);
-          }
-        },
-        // invoke onFinish callback and resolve toolResults promise when the stream is about to close:
-        async flush(controller) {
-          var _a;
-          try {
-            resolveToolResults(toolResults);
-            await ((_a = self.onFinish) == null ? void 0 : _a.call(self, {
-              finishReason: finishReason != null ? finishReason : "unknown",
-              usage: usage != null ? usage : {
-                promptTokens: NaN,
-                completionTokens: NaN,
-                totalTokens: NaN
+    textChunk = "";
+  }
+  return new TransformStream({
+    async transform(chunk, controller) {
+      if (chunk.type === "finish-step" && textChunk.length > 0) {
+        publishTextChunk({ controller });
+      }
+      if (chunk.type !== "text-delta" && chunk.type !== "text-start" && chunk.type !== "text-end") {
+        controller.enqueue({ part: chunk, partialOutput: void 0 });
+        return;
+      }
+      if (firstTextChunkId == null) {
+        firstTextChunkId = chunk.id;
+      } else if (chunk.id !== firstTextChunkId) {
+        controller.enqueue({ part: chunk, partialOutput: void 0 });
+        return;
+      }
+      if (chunk.type === "text-start") {
+        controller.enqueue({ part: chunk, partialOutput: void 0 });
+        return;
+      }
+      if (chunk.type === "text-end") {
+        if (textChunk.length > 0) {
+          publishTextChunk({ controller });
+        }
+        controller.enqueue({ part: chunk, partialOutput: void 0 });
+        return;
+      }
+      text2 += chunk.text;
+      textChunk += chunk.text;
+      const result = await output.parsePartial({ text: text2 });
+      if (result != null) {
+        const currentJson = JSON.stringify(result.partial);
+        if (currentJson !== lastPublishedJson) {
+          publishTextChunk({ controller, partialOutput: result.partial });
+          lastPublishedJson = currentJson;
+        }
+      }
+    }
+  });
+}
+var DefaultStreamTextResult = class {
+  constructor({
+    model,
+    telemetry,
+    headers,
+    settings,
+    maxRetries: maxRetriesArg,
+    abortSignal,
+    system,
+    prompt,
+    messages,
+    tools,
+    toolChoice,
+    transforms,
+    activeTools,
+    repairToolCall,
+    stopConditions,
+    output,
+    providerOptions,
+    prepareStep,
+    includeRawChunks,
+    now: now2,
+    currentDate,
+    generateId: generateId3,
+    onChunk,
+    onError,
+    onFinish,
+    onAbort,
+    onStepFinish,
+    experimental_context
+  }) {
+    this._totalUsage = new DelayedPromise();
+    this._finishReason = new DelayedPromise();
+    this._steps = new DelayedPromise();
+    this.output = output;
+    this.includeRawChunks = includeRawChunks;
+    this.tools = tools;
+    let stepFinish;
+    let recordedContent = [];
+    const recordedResponseMessages = [];
+    let recordedFinishReason = void 0;
+    let recordedTotalUsage = void 0;
+    let recordedRequest = {};
+    let recordedWarnings = [];
+    const recordedSteps = [];
+    let rootSpan;
+    let activeTextContent = {};
+    let activeReasoningContent = {};
+    const eventProcessor = new TransformStream({
+      async transform(chunk, controller) {
+        var _a17, _b, _c;
+        controller.enqueue(chunk);
+        const { part } = chunk;
+        if (part.type === "text-delta" || part.type === "reasoning-delta" || part.type === "source" || part.type === "tool-call" || part.type === "tool-result" || part.type === "tool-input-start" || part.type === "tool-input-delta" || part.type === "raw") {
+          await (onChunk == null ? void 0 : onChunk({ chunk: part }));
+        }
+        if (part.type === "error") {
+          await onError({ error: wrapGatewayError(part.error) });
+        }
+        if (part.type === "text-start") {
+          activeTextContent[part.id] = {
+            type: "text",
+            text: "",
+            providerMetadata: part.providerMetadata
+          };
+          recordedContent.push(activeTextContent[part.id]);
+        }
+        if (part.type === "text-delta") {
+          const activeText = activeTextContent[part.id];
+          if (activeText == null) {
+            controller.enqueue({
+              part: {
+                type: "error",
+                error: `text part ${part.id} not found`
               },
-              text,
-              toolCalls,
-              // The tool results are inferred as a never[] type, because they are
-              // optional and the execute method with an inferred result type is
-              // optional as well. Therefore we need to cast the toolResults to any.
-              // The type exposed to the users will be correctly inferred.
-              toolResults,
-              rawResponse,
-              warnings
-            }));
-          } catch (error) {
+              partialOutput: void 0
+            });
+            return;
+          }
+          activeText.text += part.text;
+          activeText.providerMetadata = (_a17 = part.providerMetadata) != null ? _a17 : activeText.providerMetadata;
+        }
+        if (part.type === "text-end") {
+          delete activeTextContent[part.id];
+        }
+        if (part.type === "reasoning-start") {
+          activeReasoningContent[part.id] = {
+            type: "reasoning",
+            text: "",
+            providerMetadata: part.providerMetadata
+          };
+          recordedContent.push(activeReasoningContent[part.id]);
+        }
+        if (part.type === "reasoning-delta") {
+          const activeReasoning = activeReasoningContent[part.id];
+          if (activeReasoning == null) {
+            controller.enqueue({
+              part: {
+                type: "error",
+                error: `reasoning part ${part.id} not found`
+              },
+              partialOutput: void 0
+            });
+            return;
+          }
+          activeReasoning.text += part.text;
+          activeReasoning.providerMetadata = (_b = part.providerMetadata) != null ? _b : activeReasoning.providerMetadata;
+        }
+        if (part.type === "reasoning-end") {
+          const activeReasoning = activeReasoningContent[part.id];
+          if (activeReasoning == null) {
+            controller.enqueue({
+              part: {
+                type: "error",
+                error: `reasoning part ${part.id} not found`
+              },
+              partialOutput: void 0
+            });
+            return;
+          }
+          activeReasoning.providerMetadata = (_c = part.providerMetadata) != null ? _c : activeReasoning.providerMetadata;
+          delete activeReasoningContent[part.id];
+        }
+        if (part.type === "file") {
+          recordedContent.push({ type: "file", file: part.file });
+        }
+        if (part.type === "source") {
+          recordedContent.push(part);
+        }
+        if (part.type === "tool-call") {
+          recordedContent.push(part);
+        }
+        if (part.type === "tool-result" && !part.preliminary) {
+          recordedContent.push(part);
+        }
+        if (part.type === "tool-error") {
+          recordedContent.push(part);
+        }
+        if (part.type === "start-step") {
+          recordedRequest = part.request;
+          recordedWarnings = part.warnings;
+        }
+        if (part.type === "finish-step") {
+          const stepMessages = toResponseMessages({
+            content: recordedContent,
+            tools
+          });
+          const currentStepResult = new DefaultStepResult({
+            content: recordedContent,
+            finishReason: part.finishReason,
+            usage: part.usage,
+            warnings: recordedWarnings,
+            request: recordedRequest,
+            response: {
+              ...part.response,
+              messages: [...recordedResponseMessages, ...stepMessages]
+            },
+            providerMetadata: part.providerMetadata
+          });
+          await (onStepFinish == null ? void 0 : onStepFinish(currentStepResult));
+          recordedSteps.push(currentStepResult);
+          recordedContent = [];
+          activeReasoningContent = {};
+          activeTextContent = {};
+          recordedResponseMessages.push(...stepMessages);
+          stepFinish.resolve();
+        }
+        if (part.type === "finish") {
+          recordedTotalUsage = part.totalUsage;
+          recordedFinishReason = part.finishReason;
+        }
+      },
+      async flush(controller) {
+        try {
+          if (recordedSteps.length === 0) {
+            const error = new NoOutputGeneratedError({
+              message: "No output generated. Check the stream for errors."
+            });
+            self._finishReason.reject(error);
+            self._totalUsage.reject(error);
+            self._steps.reject(error);
+            return;
+          }
+          const finishReason = recordedFinishReason != null ? recordedFinishReason : "unknown";
+          const totalUsage = recordedTotalUsage != null ? recordedTotalUsage : {
+            inputTokens: void 0,
+            outputTokens: void 0,
+            totalTokens: void 0
+          };
+          self._finishReason.resolve(finishReason);
+          self._totalUsage.resolve(totalUsage);
+          self._steps.resolve(recordedSteps);
+          const finalStep = recordedSteps[recordedSteps.length - 1];
+          await (onFinish == null ? void 0 : onFinish({
+            finishReason,
+            totalUsage,
+            usage: finalStep.usage,
+            content: finalStep.content,
+            text: finalStep.text,
+            reasoningText: finalStep.reasoningText,
+            reasoning: finalStep.reasoning,
+            files: finalStep.files,
+            sources: finalStep.sources,
+            toolCalls: finalStep.toolCalls,
+            staticToolCalls: finalStep.staticToolCalls,
+            dynamicToolCalls: finalStep.dynamicToolCalls,
+            toolResults: finalStep.toolResults,
+            staticToolResults: finalStep.staticToolResults,
+            dynamicToolResults: finalStep.dynamicToolResults,
+            request: finalStep.request,
+            response: finalStep.response,
+            warnings: finalStep.warnings,
+            providerMetadata: finalStep.providerMetadata,
+            steps: recordedSteps
+          }));
+          rootSpan.setAttributes(
+            selectTelemetryAttributes({
+              telemetry,
+              attributes: {
+                "ai.response.finishReason": finishReason,
+                "ai.response.text": { output: () => finalStep.text },
+                "ai.response.toolCalls": {
+                  output: () => {
+                    var _a17;
+                    return ((_a17 = finalStep.toolCalls) == null ? void 0 : _a17.length) ? JSON.stringify(finalStep.toolCalls) : void 0;
+                  }
+                },
+                "ai.response.providerMetadata": JSON.stringify(
+                  finalStep.providerMetadata
+                ),
+                "ai.usage.inputTokens": totalUsage.inputTokens,
+                "ai.usage.outputTokens": totalUsage.outputTokens,
+                "ai.usage.totalTokens": totalUsage.totalTokens,
+                "ai.usage.reasoningTokens": totalUsage.reasoningTokens,
+                "ai.usage.cachedInputTokens": totalUsage.cachedInputTokens
+              }
+            })
+          );
+        } catch (error) {
+          controller.error(error);
+        } finally {
+          rootSpan.end();
+        }
+      }
+    });
+    const stitchableStream = createStitchableStream();
+    this.addStream = stitchableStream.addStream;
+    this.closeStream = stitchableStream.close;
+    const reader = stitchableStream.stream.getReader();
+    let stream = new ReadableStream({
+      async start(controller) {
+        controller.enqueue({ type: "start" });
+      },
+      async pull(controller) {
+        function abort() {
+          onAbort == null ? void 0 : onAbort({ steps: recordedSteps });
+          controller.enqueue({ type: "abort" });
+          controller.close();
+        }
+        try {
+          const { done, value } = await reader.read();
+          if (done) {
+            controller.close();
+            return;
+          }
+          if (abortSignal == null ? void 0 : abortSignal.aborted) {
+            abort();
+            return;
+          }
+          controller.enqueue(value);
+        } catch (error) {
+          if ((0, import_provider_utils13.isAbortError)(error) && (abortSignal == null ? void 0 : abortSignal.aborted)) {
+            abort();
+          } else {
             controller.error(error);
           }
         }
-      })
-    );
+      },
+      cancel(reason) {
+        return stitchableStream.stream.cancel(reason);
+      }
+    });
+    for (const transform of transforms) {
+      stream = stream.pipeThrough(
+        transform({
+          tools,
+          stopStream() {
+            stitchableStream.terminate();
+          }
+        })
+      );
+    }
+    this.baseStream = stream.pipeThrough(createOutputTransformStream(output)).pipeThrough(eventProcessor);
+    const { maxRetries, retry } = prepareRetries({
+      maxRetries: maxRetriesArg,
+      abortSignal
+    });
+    const tracer = getTracer(telemetry);
+    const callSettings = prepareCallSettings(settings);
+    const baseTelemetryAttributes = getBaseTelemetryAttributes({
+      model,
+      telemetry,
+      headers,
+      settings: { ...callSettings, maxRetries }
+    });
+    const self = this;
+    recordSpan({
+      name: "ai.streamText",
+      attributes: selectTelemetryAttributes({
+        telemetry,
+        attributes: {
+          ...assembleOperationName({ operationId: "ai.streamText", telemetry }),
+          ...baseTelemetryAttributes,
+          // specific settings that only make sense on the outer level:
+          "ai.prompt": {
+            input: () => JSON.stringify({ system, prompt, messages })
+          }
+        }
+      }),
+      tracer,
+      endWhenDone: false,
+      fn: async (rootSpanArg) => {
+        rootSpan = rootSpanArg;
+        async function streamStep({
+          currentStep,
+          responseMessages,
+          usage
+        }) {
+          var _a17, _b, _c, _d, _e;
+          const includeRawChunks2 = self.includeRawChunks;
+          stepFinish = new DelayedPromise();
+          const initialPrompt = await standardizePrompt({
+            system,
+            prompt,
+            messages
+          });
+          const stepInputMessages = [
+            ...initialPrompt.messages,
+            ...responseMessages
+          ];
+          const prepareStepResult = await (prepareStep == null ? void 0 : prepareStep({
+            model,
+            steps: recordedSteps,
+            stepNumber: recordedSteps.length,
+            messages: stepInputMessages
+          }));
+          const promptMessages = await convertToLanguageModelPrompt({
+            prompt: {
+              system: (_a17 = prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _a17 : initialPrompt.system,
+              messages: (_b = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _b : stepInputMessages
+            },
+            supportedUrls: await model.supportedUrls
+          });
+          const stepModel = resolveLanguageModel(
+            (_c = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _c : model
+          );
+          const { toolChoice: stepToolChoice, tools: stepTools } = prepareToolsAndToolChoice({
+            tools,
+            toolChoice: (_d = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _d : toolChoice,
+            activeTools: (_e = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _e : activeTools
+          });
+          const {
+            result: { stream: stream2, response, request },
+            doStreamSpan,
+            startTimestampMs
+          } = await retry(
+            () => recordSpan({
+              name: "ai.streamText.doStream",
+              attributes: selectTelemetryAttributes({
+                telemetry,
+                attributes: {
+                  ...assembleOperationName({
+                    operationId: "ai.streamText.doStream",
+                    telemetry
+                  }),
+                  ...baseTelemetryAttributes,
+                  // model:
+                  "ai.model.provider": stepModel.provider,
+                  "ai.model.id": stepModel.modelId,
+                  // prompt:
+                  "ai.prompt.messages": {
+                    input: () => stringifyForTelemetry(promptMessages)
+                  },
+                  "ai.prompt.tools": {
+                    // convert the language model level tools:
+                    input: () => stepTools == null ? void 0 : stepTools.map((tool3) => JSON.stringify(tool3))
+                  },
+                  "ai.prompt.toolChoice": {
+                    input: () => stepToolChoice != null ? JSON.stringify(stepToolChoice) : void 0
+                  },
+                  // standardized gen-ai llm span attributes:
+                  "gen_ai.system": stepModel.provider,
+                  "gen_ai.request.model": stepModel.modelId,
+                  "gen_ai.request.frequency_penalty": callSettings.frequencyPenalty,
+                  "gen_ai.request.max_tokens": callSettings.maxOutputTokens,
+                  "gen_ai.request.presence_penalty": callSettings.presencePenalty,
+                  "gen_ai.request.stop_sequences": callSettings.stopSequences,
+                  "gen_ai.request.temperature": callSettings.temperature,
+                  "gen_ai.request.top_k": callSettings.topK,
+                  "gen_ai.request.top_p": callSettings.topP
+                }
+              }),
+              tracer,
+              endWhenDone: false,
+              fn: async (doStreamSpan2) => {
+                return {
+                  startTimestampMs: now2(),
+                  // get before the call
+                  doStreamSpan: doStreamSpan2,
+                  result: await stepModel.doStream({
+                    ...callSettings,
+                    tools: stepTools,
+                    toolChoice: stepToolChoice,
+                    responseFormat: output == null ? void 0 : output.responseFormat,
+                    prompt: promptMessages,
+                    providerOptions,
+                    abortSignal,
+                    headers,
+                    includeRawChunks: includeRawChunks2
+                  })
+                };
+              }
+            })
+          );
+          const streamWithToolResults = runToolsTransformation({
+            tools,
+            generatorStream: stream2,
+            tracer,
+            telemetry,
+            system,
+            messages: stepInputMessages,
+            repairToolCall,
+            abortSignal,
+            experimental_context
+          });
+          const stepRequest = request != null ? request : {};
+          const stepToolCalls = [];
+          const stepToolOutputs = [];
+          let warnings;
+          const activeToolCallToolNames = {};
+          let stepFinishReason = "unknown";
+          let stepUsage = {
+            inputTokens: void 0,
+            outputTokens: void 0,
+            totalTokens: void 0
+          };
+          let stepProviderMetadata;
+          let stepFirstChunk = true;
+          let stepResponse = {
+            id: generateId3(),
+            timestamp: currentDate(),
+            modelId: model.modelId
+          };
+          let activeText = "";
+          self.addStream(
+            streamWithToolResults.pipeThrough(
+              new TransformStream({
+                async transform(chunk, controller) {
+                  var _a18, _b2, _c2, _d2;
+                  if (chunk.type === "stream-start") {
+                    warnings = chunk.warnings;
+                    return;
+                  }
+                  if (stepFirstChunk) {
+                    const msToFirstChunk = now2() - startTimestampMs;
+                    stepFirstChunk = false;
+                    doStreamSpan.addEvent("ai.stream.firstChunk", {
+                      "ai.response.msToFirstChunk": msToFirstChunk
+                    });
+                    doStreamSpan.setAttributes({
+                      "ai.response.msToFirstChunk": msToFirstChunk
+                    });
+                    controller.enqueue({
+                      type: "start-step",
+                      request: stepRequest,
+                      warnings: warnings != null ? warnings : []
+                    });
+                  }
+                  const chunkType = chunk.type;
+                  switch (chunkType) {
+                    case "text-start":
+                    case "text-end": {
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "text-delta": {
+                      if (chunk.delta.length > 0) {
+                        controller.enqueue({
+                          type: "text-delta",
+                          id: chunk.id,
+                          text: chunk.delta,
+                          providerMetadata: chunk.providerMetadata
+                        });
+                        activeText += chunk.delta;
+                      }
+                      break;
+                    }
+                    case "reasoning-start":
+                    case "reasoning-end": {
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "reasoning-delta": {
+                      controller.enqueue({
+                        type: "reasoning-delta",
+                        id: chunk.id,
+                        text: chunk.delta,
+                        providerMetadata: chunk.providerMetadata
+                      });
+                      break;
+                    }
+                    case "tool-call": {
+                      controller.enqueue(chunk);
+                      stepToolCalls.push(chunk);
+                      break;
+                    }
+                    case "tool-result": {
+                      controller.enqueue(chunk);
+                      if (!chunk.preliminary) {
+                        stepToolOutputs.push(chunk);
+                      }
+                      break;
+                    }
+                    case "tool-error": {
+                      controller.enqueue(chunk);
+                      stepToolOutputs.push(chunk);
+                      break;
+                    }
+                    case "response-metadata": {
+                      stepResponse = {
+                        id: (_a18 = chunk.id) != null ? _a18 : stepResponse.id,
+                        timestamp: (_b2 = chunk.timestamp) != null ? _b2 : stepResponse.timestamp,
+                        modelId: (_c2 = chunk.modelId) != null ? _c2 : stepResponse.modelId
+                      };
+                      break;
+                    }
+                    case "finish": {
+                      stepUsage = chunk.usage;
+                      stepFinishReason = chunk.finishReason;
+                      stepProviderMetadata = chunk.providerMetadata;
+                      const msToFinish = now2() - startTimestampMs;
+                      doStreamSpan.addEvent("ai.stream.finish");
+                      doStreamSpan.setAttributes({
+                        "ai.response.msToFinish": msToFinish,
+                        "ai.response.avgOutputTokensPerSecond": 1e3 * ((_d2 = stepUsage.outputTokens) != null ? _d2 : 0) / msToFinish
+                      });
+                      break;
+                    }
+                    case "file": {
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "source": {
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "tool-input-start": {
+                      activeToolCallToolNames[chunk.id] = chunk.toolName;
+                      const tool3 = tools == null ? void 0 : tools[chunk.toolName];
+                      if ((tool3 == null ? void 0 : tool3.onInputStart) != null) {
+                        await tool3.onInputStart({
+                          toolCallId: chunk.id,
+                          messages: stepInputMessages,
+                          abortSignal,
+                          experimental_context
+                        });
+                      }
+                      controller.enqueue({
+                        ...chunk,
+                        dynamic: (tool3 == null ? void 0 : tool3.type) === "dynamic"
+                      });
+                      break;
+                    }
+                    case "tool-input-end": {
+                      delete activeToolCallToolNames[chunk.id];
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "tool-input-delta": {
+                      const toolName = activeToolCallToolNames[chunk.id];
+                      const tool3 = tools == null ? void 0 : tools[toolName];
+                      if ((tool3 == null ? void 0 : tool3.onInputDelta) != null) {
+                        await tool3.onInputDelta({
+                          inputTextDelta: chunk.delta,
+                          toolCallId: chunk.id,
+                          messages: stepInputMessages,
+                          abortSignal,
+                          experimental_context
+                        });
+                      }
+                      controller.enqueue(chunk);
+                      break;
+                    }
+                    case "error": {
+                      controller.enqueue(chunk);
+                      stepFinishReason = "error";
+                      break;
+                    }
+                    case "raw": {
+                      if (includeRawChunks2) {
+                        controller.enqueue(chunk);
+                      }
+                      break;
+                    }
+                    default: {
+                      const exhaustiveCheck = chunkType;
+                      throw new Error(`Unknown chunk type: ${exhaustiveCheck}`);
+                    }
+                  }
+                },
+                // invoke onFinish callback and resolve toolResults promise when the stream is about to close:
+                async flush(controller) {
+                  const stepToolCallsJson = stepToolCalls.length > 0 ? JSON.stringify(stepToolCalls) : void 0;
+                  try {
+                    doStreamSpan.setAttributes(
+                      selectTelemetryAttributes({
+                        telemetry,
+                        attributes: {
+                          "ai.response.finishReason": stepFinishReason,
+                          "ai.response.text": {
+                            output: () => activeText
+                          },
+                          "ai.response.toolCalls": {
+                            output: () => stepToolCallsJson
+                          },
+                          "ai.response.id": stepResponse.id,
+                          "ai.response.model": stepResponse.modelId,
+                          "ai.response.timestamp": stepResponse.timestamp.toISOString(),
+                          "ai.response.providerMetadata": JSON.stringify(stepProviderMetadata),
+                          "ai.usage.inputTokens": stepUsage.inputTokens,
+                          "ai.usage.outputTokens": stepUsage.outputTokens,
+                          "ai.usage.totalTokens": stepUsage.totalTokens,
+                          "ai.usage.reasoningTokens": stepUsage.reasoningTokens,
+                          "ai.usage.cachedInputTokens": stepUsage.cachedInputTokens,
+                          // standardized gen-ai llm span attributes:
+                          "gen_ai.response.finish_reasons": [stepFinishReason],
+                          "gen_ai.response.id": stepResponse.id,
+                          "gen_ai.response.model": stepResponse.modelId,
+                          "gen_ai.usage.input_tokens": stepUsage.inputTokens,
+                          "gen_ai.usage.output_tokens": stepUsage.outputTokens
+                        }
+                      })
+                    );
+                  } catch (error) {
+                  } finally {
+                    doStreamSpan.end();
+                  }
+                  controller.enqueue({
+                    type: "finish-step",
+                    finishReason: stepFinishReason,
+                    usage: stepUsage,
+                    providerMetadata: stepProviderMetadata,
+                    response: {
+                      ...stepResponse,
+                      headers: response == null ? void 0 : response.headers
+                    }
+                  });
+                  const combinedUsage = addLanguageModelUsage(usage, stepUsage);
+                  await stepFinish.promise;
+                  const clientToolCalls = stepToolCalls.filter(
+                    (toolCall) => toolCall.providerExecuted !== true
+                  );
+                  const clientToolOutputs = stepToolOutputs.filter(
+                    (toolOutput) => toolOutput.providerExecuted !== true
+                  );
+                  if (clientToolCalls.length > 0 && // all current tool calls have outputs (incl. execution errors):
+                  clientToolOutputs.length === clientToolCalls.length && // continue until a stop condition is met:
+                  !await isStopConditionMet({
+                    stopConditions,
+                    steps: recordedSteps
+                  })) {
+                    responseMessages.push(
+                      ...toResponseMessages({
+                        content: (
+                          // use transformed content to create the messages for the next step:
+                          recordedSteps[recordedSteps.length - 1].content
+                        ),
+                        tools
+                      })
+                    );
+                    try {
+                      await streamStep({
+                        currentStep: currentStep + 1,
+                        responseMessages,
+                        usage: combinedUsage
+                      });
+                    } catch (error) {
+                      controller.enqueue({
+                        type: "error",
+                        error
+                      });
+                      self.closeStream();
+                    }
+                  } else {
+                    controller.enqueue({
+                      type: "finish",
+                      finishReason: stepFinishReason,
+                      totalUsage: combinedUsage
+                    });
+                    self.closeStream();
+                  }
+                }
+              })
+            )
+          );
+        }
+        await streamStep({
+          currentStep: 0,
+          responseMessages: [],
+          usage: {
+            inputTokens: void 0,
+            outputTokens: void 0,
+            totalTokens: void 0
+          }
+        });
+      }
+    }).catch((error) => {
+      self.addStream(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue({ type: "error", error });
+            controller.close();
+          }
+        })
+      );
+      self.closeStream();
+    });
+  }
+  get steps() {
+    this.consumeStream();
+    return this._steps.promise;
+  }
+  get finalStep() {
+    return this.steps.then((steps) => steps[steps.length - 1]);
+  }
+  get content() {
+    return this.finalStep.then((step) => step.content);
+  }
+  get warnings() {
+    return this.finalStep.then((step) => step.warnings);
+  }
+  get providerMetadata() {
+    return this.finalStep.then((step) => step.providerMetadata);
+  }
+  get text() {
+    return this.finalStep.then((step) => step.text);
+  }
+  get reasoningText() {
+    return this.finalStep.then((step) => step.reasoningText);
+  }
+  get reasoning() {
+    return this.finalStep.then((step) => step.reasoning);
+  }
+  get sources() {
+    return this.finalStep.then((step) => step.sources);
+  }
+  get files() {
+    return this.finalStep.then((step) => step.files);
+  }
+  get toolCalls() {
+    return this.finalStep.then((step) => step.toolCalls);
+  }
+  get staticToolCalls() {
+    return this.finalStep.then((step) => step.staticToolCalls);
+  }
+  get dynamicToolCalls() {
+    return this.finalStep.then((step) => step.dynamicToolCalls);
+  }
+  get toolResults() {
+    return this.finalStep.then((step) => step.toolResults);
+  }
+  get staticToolResults() {
+    return this.finalStep.then((step) => step.staticToolResults);
+  }
+  get dynamicToolResults() {
+    return this.finalStep.then((step) => step.dynamicToolResults);
+  }
+  get usage() {
+    return this.finalStep.then((step) => step.usage);
+  }
+  get request() {
+    return this.finalStep.then((step) => step.request);
+  }
+  get response() {
+    return this.finalStep.then((step) => step.response);
+  }
+  get totalUsage() {
+    this.consumeStream();
+    return this._totalUsage.promise;
+  }
+  get finishReason() {
+    this.consumeStream();
+    return this._finishReason.promise;
   }
   /**
   Split out a new stream from the original stream.
@@ -20194,1508 +30097,6415 @@ var StreamTextResult = class {
   However, the LLM results are expected to be small enough to not cause issues.
      */
   teeStream() {
-    const [stream1, stream2] = this.originalStream.tee();
-    this.originalStream = stream2;
+    const [stream1, stream2] = this.baseStream.tee();
+    this.baseStream = stream2;
     return stream1;
   }
-  /**
-  A text stream that returns only the generated text deltas. You can use it
-  as either an AsyncIterable or a ReadableStream. When an error occurs, the
-  stream will throw the error.
-     */
   get textStream() {
-    return createAsyncIterableStream(this.teeStream(), {
-      transform(chunk, controller) {
-        if (chunk.type === "text-delta") {
-          if (chunk.textDelta.length > 0) {
-            controller.enqueue(chunk.textDelta);
+    return createAsyncIterableStream(
+      this.teeStream().pipeThrough(
+        new TransformStream({
+          transform({ part }, controller) {
+            if (part.type === "text-delta") {
+              controller.enqueue(part.text);
+            }
           }
-        } else if (chunk.type === "error") {
-          throw chunk.error;
-        }
-      }
-    });
+        })
+      )
+    );
   }
-  /**
-  A stream with all events, including text deltas, tool calls, tool results, and
-  errors.
-  You can use it as either an AsyncIterable or a ReadableStream. When an error occurs, the
-  stream will throw the error.
-     */
   get fullStream() {
-    return createAsyncIterableStream(this.teeStream(), {
-      transform(chunk, controller) {
-        if (chunk.type === "text-delta") {
-          if (chunk.textDelta.length > 0) {
-            controller.enqueue(chunk);
+    return createAsyncIterableStream(
+      this.teeStream().pipeThrough(
+        new TransformStream({
+          transform({ part }, controller) {
+            controller.enqueue(part);
           }
-        } else {
-          controller.enqueue(chunk);
-        }
-      }
-    });
+        })
+      )
+    );
   }
-  /**
-  Converts the result to an `AIStream` object that is compatible with `StreamingTextResponse`.
-  It can be used with the `useChat` and `useCompletion` hooks.
-  
-  @param callbacks 
-  Stream callbacks that will be called when the stream emits events.
-  
-  @returns an `AIStream` object.
-     */
-  toAIStream(callbacks = {}) {
-    let aggregatedResponse = "";
-    const callbackTransformer = new TransformStream({
-      async start() {
-        if (callbacks.onStart)
-          await callbacks.onStart();
-      },
-      async transform(chunk, controller) {
-        controller.enqueue(chunk);
-        if (chunk.type === "text-delta") {
-          const textDelta = chunk.textDelta;
-          aggregatedResponse += textDelta;
-          if (callbacks.onToken)
-            await callbacks.onToken(textDelta);
-          if (callbacks.onText)
-            await callbacks.onText(textDelta);
-        }
-      },
-      async flush() {
-        if (callbacks.onCompletion)
-          await callbacks.onCompletion(aggregatedResponse);
-        if (callbacks.onFinal)
-          await callbacks.onFinal(aggregatedResponse);
-      }
-    });
-    const streamDataTransformer = new TransformStream({
-      transform: async (chunk, controller) => {
-        switch (chunk.type) {
-          case "text-delta":
-            controller.enqueue((0, import_ui_utils6.formatStreamPart)("text", chunk.textDelta));
-            break;
-          case "tool-call":
-            controller.enqueue(
-              (0, import_ui_utils6.formatStreamPart)("tool_call", {
-                toolCallId: chunk.toolCallId,
-                toolName: chunk.toolName,
-                args: chunk.args
-              })
-            );
-            break;
-          case "tool-result":
-            controller.enqueue(
-              (0, import_ui_utils6.formatStreamPart)("tool_result", {
-                toolCallId: chunk.toolCallId,
-                toolName: chunk.toolName,
-                args: chunk.args,
-                result: chunk.result
-              })
-            );
-            break;
-          case "error":
-            controller.enqueue(
-              (0, import_ui_utils6.formatStreamPart)("error", JSON.stringify(chunk.error))
-            );
-            break;
-        }
-      }
-    });
-    return this.fullStream.pipeThrough(callbackTransformer).pipeThrough(streamDataTransformer).pipeThrough(new TextEncoderStream());
+  async consumeStream(options) {
+    var _a17;
+    try {
+      await consumeStream({
+        stream: this.fullStream,
+        onError: options == null ? void 0 : options.onError
+      });
+    } catch (error) {
+      (_a17 = options == null ? void 0 : options.onError) == null ? void 0 : _a17.call(options, error);
+    }
   }
-  /**
-  Writes stream data output to a Node.js response-like object.
-  It sets a `Content-Type` header to `text/plain; charset=utf-8` and 
-  writes each stream data part as a separate chunk.
-  
-  @param response A Node.js response-like object (ServerResponse).
-  @param init Optional headers and status code.
-     */
-  pipeAIStreamToResponse(response, init) {
-    var _a;
-    response.writeHead((_a = init == null ? void 0 : init.status) != null ? _a : 200, {
-      "Content-Type": "text/plain; charset=utf-8",
-      ...init == null ? void 0 : init.headers
-    });
-    const reader = this.toAIStream().getReader();
-    const read = async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done)
-            break;
-          response.write(value);
-        }
-      } catch (error) {
-        throw error;
-      } finally {
-        response.end();
-      }
+  get experimental_partialOutputStream() {
+    if (this.output == null) {
+      throw new NoOutputSpecifiedError();
+    }
+    return createAsyncIterableStream(
+      this.teeStream().pipeThrough(
+        new TransformStream({
+          transform({ partialOutput }, controller) {
+            if (partialOutput != null) {
+              controller.enqueue(partialOutput);
+            }
+          }
+        })
+      )
+    );
+  }
+  toUIMessageStream({
+    originalMessages,
+    generateMessageId,
+    onFinish,
+    messageMetadata,
+    sendReasoning = true,
+    sendSources = false,
+    sendStart = true,
+    sendFinish = true,
+    onError = import_provider23.getErrorMessage
+  } = {}) {
+    const responseMessageId = generateMessageId != null ? getResponseUIMessageId({
+      originalMessages,
+      responseMessageId: generateMessageId
+    }) : void 0;
+    const toolNamesByCallId = {};
+    const isDynamic = (toolCallId) => {
+      var _a17, _b;
+      const toolName = toolNamesByCallId[toolCallId];
+      const dynamic = ((_b = (_a17 = this.tools) == null ? void 0 : _a17[toolName]) == null ? void 0 : _b.type) === "dynamic";
+      return dynamic ? true : void 0;
     };
-    read();
+    const baseStream = this.fullStream.pipeThrough(
+      new TransformStream({
+        transform: async (part, controller) => {
+          const messageMetadataValue = messageMetadata == null ? void 0 : messageMetadata({ part });
+          const partType = part.type;
+          switch (partType) {
+            case "text-start": {
+              controller.enqueue({
+                type: "text-start",
+                id: part.id,
+                ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+              });
+              break;
+            }
+            case "text-delta": {
+              controller.enqueue({
+                type: "text-delta",
+                id: part.id,
+                delta: part.text,
+                ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+              });
+              break;
+            }
+            case "text-end": {
+              controller.enqueue({
+                type: "text-end",
+                id: part.id,
+                ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+              });
+              break;
+            }
+            case "reasoning-start": {
+              controller.enqueue({
+                type: "reasoning-start",
+                id: part.id,
+                ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+              });
+              break;
+            }
+            case "reasoning-delta": {
+              if (sendReasoning) {
+                controller.enqueue({
+                  type: "reasoning-delta",
+                  id: part.id,
+                  delta: part.text,
+                  ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+                });
+              }
+              break;
+            }
+            case "reasoning-end": {
+              controller.enqueue({
+                type: "reasoning-end",
+                id: part.id,
+                ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+              });
+              break;
+            }
+            case "file": {
+              controller.enqueue({
+                type: "file",
+                mediaType: part.file.mediaType,
+                url: `data:${part.file.mediaType};base64,${part.file.base64}`
+              });
+              break;
+            }
+            case "source": {
+              if (sendSources && part.sourceType === "url") {
+                controller.enqueue({
+                  type: "source-url",
+                  sourceId: part.id,
+                  url: part.url,
+                  title: part.title,
+                  ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+                });
+              }
+              if (sendSources && part.sourceType === "document") {
+                controller.enqueue({
+                  type: "source-document",
+                  sourceId: part.id,
+                  mediaType: part.mediaType,
+                  title: part.title,
+                  filename: part.filename,
+                  ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+                });
+              }
+              break;
+            }
+            case "tool-input-start": {
+              toolNamesByCallId[part.id] = part.toolName;
+              const dynamic = isDynamic(part.id);
+              controller.enqueue({
+                type: "tool-input-start",
+                toolCallId: part.id,
+                toolName: part.toolName,
+                ...part.providerExecuted != null ? { providerExecuted: part.providerExecuted } : {},
+                ...dynamic != null ? { dynamic } : {}
+              });
+              break;
+            }
+            case "tool-input-delta": {
+              controller.enqueue({
+                type: "tool-input-delta",
+                toolCallId: part.id,
+                inputTextDelta: part.delta
+              });
+              break;
+            }
+            case "tool-call": {
+              toolNamesByCallId[part.toolCallId] = part.toolName;
+              const dynamic = isDynamic(part.toolCallId);
+              if (part.invalid) {
+                controller.enqueue({
+                  type: "tool-input-error",
+                  toolCallId: part.toolCallId,
+                  toolName: part.toolName,
+                  input: part.input,
+                  ...part.providerExecuted != null ? { providerExecuted: part.providerExecuted } : {},
+                  ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+                  ...dynamic != null ? { dynamic } : {},
+                  errorText: onError(part.error)
+                });
+              } else {
+                controller.enqueue({
+                  type: "tool-input-available",
+                  toolCallId: part.toolCallId,
+                  toolName: part.toolName,
+                  input: part.input,
+                  ...part.providerExecuted != null ? { providerExecuted: part.providerExecuted } : {},
+                  ...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+                  ...dynamic != null ? { dynamic } : {}
+                });
+              }
+              break;
+            }
+            case "tool-result": {
+              const dynamic = isDynamic(part.toolCallId);
+              controller.enqueue({
+                type: "tool-output-available",
+                toolCallId: part.toolCallId,
+                output: part.output,
+                ...part.providerExecuted != null ? { providerExecuted: part.providerExecuted } : {},
+                ...part.preliminary != null ? { preliminary: part.preliminary } : {},
+                ...dynamic != null ? { dynamic } : {}
+              });
+              break;
+            }
+            case "tool-error": {
+              const dynamic = isDynamic(part.toolCallId);
+              controller.enqueue({
+                type: "tool-output-error",
+                toolCallId: part.toolCallId,
+                errorText: onError(part.error),
+                ...part.providerExecuted != null ? { providerExecuted: part.providerExecuted } : {},
+                ...dynamic != null ? { dynamic } : {}
+              });
+              break;
+            }
+            case "error": {
+              controller.enqueue({
+                type: "error",
+                errorText: onError(part.error)
+              });
+              break;
+            }
+            case "start-step": {
+              controller.enqueue({ type: "start-step" });
+              break;
+            }
+            case "finish-step": {
+              controller.enqueue({ type: "finish-step" });
+              break;
+            }
+            case "start": {
+              if (sendStart) {
+                controller.enqueue({
+                  type: "start",
+                  ...messageMetadataValue != null ? { messageMetadata: messageMetadataValue } : {},
+                  ...responseMessageId != null ? { messageId: responseMessageId } : {}
+                });
+              }
+              break;
+            }
+            case "finish": {
+              if (sendFinish) {
+                controller.enqueue({
+                  type: "finish",
+                  ...messageMetadataValue != null ? { messageMetadata: messageMetadataValue } : {}
+                });
+              }
+              break;
+            }
+            case "abort": {
+              controller.enqueue(part);
+              break;
+            }
+            case "tool-input-end": {
+              break;
+            }
+            case "raw": {
+              break;
+            }
+            default: {
+              const exhaustiveCheck = partType;
+              throw new Error(`Unknown chunk type: ${exhaustiveCheck}`);
+            }
+          }
+          if (messageMetadataValue != null && partType !== "start" && partType !== "finish") {
+            controller.enqueue({
+              type: "message-metadata",
+              messageMetadata: messageMetadataValue
+            });
+          }
+        }
+      })
+    );
+    return createAsyncIterableStream(
+      handleUIMessageStreamFinish({
+        stream: baseStream,
+        messageId: responseMessageId != null ? responseMessageId : generateMessageId == null ? void 0 : generateMessageId(),
+        originalMessages,
+        onFinish,
+        onError
+      })
+    );
   }
-  /**
-  Writes text delta output to a Node.js response-like object.
-  It sets a `Content-Type` header to `text/plain; charset=utf-8` and 
-  writes each text delta as a separate chunk.
-  
-  @param response A Node.js response-like object (ServerResponse).
-  @param init Optional headers and status code.
-     */
+  pipeUIMessageStreamToResponse(response, {
+    originalMessages,
+    generateMessageId,
+    onFinish,
+    messageMetadata,
+    sendReasoning,
+    sendSources,
+    sendFinish,
+    sendStart,
+    onError,
+    ...init
+  } = {}) {
+    pipeUIMessageStreamToResponse({
+      response,
+      stream: this.toUIMessageStream({
+        originalMessages,
+        generateMessageId,
+        onFinish,
+        messageMetadata,
+        sendReasoning,
+        sendSources,
+        sendFinish,
+        sendStart,
+        onError
+      }),
+      ...init
+    });
+  }
   pipeTextStreamToResponse(response, init) {
-    var _a;
-    response.writeHead((_a = init == null ? void 0 : init.status) != null ? _a : 200, {
-      "Content-Type": "text/plain; charset=utf-8",
-      ...init == null ? void 0 : init.headers
+    pipeTextStreamToResponse({
+      response,
+      textStream: this.textStream,
+      ...init
     });
-    const reader = this.textStream.pipeThrough(new TextEncoderStream()).getReader();
-    const read = async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done)
-            break;
-          response.write(value);
+  }
+  toUIMessageStreamResponse({
+    originalMessages,
+    generateMessageId,
+    onFinish,
+    messageMetadata,
+    sendReasoning,
+    sendSources,
+    sendFinish,
+    sendStart,
+    onError,
+    ...init
+  } = {}) {
+    return createUIMessageStreamResponse({
+      stream: this.toUIMessageStream({
+        originalMessages,
+        generateMessageId,
+        onFinish,
+        messageMetadata,
+        sendReasoning,
+        sendSources,
+        sendFinish,
+        sendStart,
+        onError
+      }),
+      ...init
+    });
+  }
+  toTextStreamResponse(init) {
+    return createTextStreamResponse({
+      textStream: this.textStream,
+      ...init
+    });
+  }
+};
+
+// src/agent/agent.ts
+var Agent = class {
+  constructor(settings) {
+    this.settings = settings;
+  }
+  async generate(options) {
+    return generateText({ ...this.settings, ...options });
+  }
+  stream(options) {
+    return streamText({ ...this.settings, ...options });
+  }
+};
+
+// src/embed/embed.ts
+async function embed({
+  model: modelArg,
+  value,
+  providerOptions,
+  maxRetries: maxRetriesArg,
+  abortSignal,
+  headers,
+  experimental_telemetry: telemetry
+}) {
+  const model = resolveEmbeddingModel(modelArg);
+  const { maxRetries, retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const baseTelemetryAttributes = getBaseTelemetryAttributes({
+    model,
+    telemetry,
+    headers,
+    settings: { maxRetries }
+  });
+  const tracer = getTracer(telemetry);
+  return recordSpan({
+    name: "ai.embed",
+    attributes: selectTelemetryAttributes({
+      telemetry,
+      attributes: {
+        ...assembleOperationName({ operationId: "ai.embed", telemetry }),
+        ...baseTelemetryAttributes,
+        "ai.value": { input: () => JSON.stringify(value) }
+      }
+    }),
+    tracer,
+    fn: async (span) => {
+      const { embedding, usage, response, providerMetadata } = await retry(
+        () => (
+          // nested spans to align with the embedMany telemetry data:
+          recordSpan({
+            name: "ai.embed.doEmbed",
+            attributes: selectTelemetryAttributes({
+              telemetry,
+              attributes: {
+                ...assembleOperationName({
+                  operationId: "ai.embed.doEmbed",
+                  telemetry
+                }),
+                ...baseTelemetryAttributes,
+                // specific settings that only make sense on the outer level:
+                "ai.values": { input: () => [JSON.stringify(value)] }
+              }
+            }),
+            tracer,
+            fn: async (doEmbedSpan) => {
+              var _a17;
+              const modelResponse = await model.doEmbed({
+                values: [value],
+                abortSignal,
+                headers,
+                providerOptions
+              });
+              const embedding2 = modelResponse.embeddings[0];
+              const usage2 = (_a17 = modelResponse.usage) != null ? _a17 : { tokens: NaN };
+              doEmbedSpan.setAttributes(
+                selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    "ai.embeddings": {
+                      output: () => modelResponse.embeddings.map(
+                        (embedding3) => JSON.stringify(embedding3)
+                      )
+                    },
+                    "ai.usage.tokens": usage2.tokens
+                  }
+                })
+              );
+              return {
+                embedding: embedding2,
+                usage: usage2,
+                providerMetadata: modelResponse.providerMetadata,
+                response: modelResponse.response
+              };
+            }
+          })
+        )
+      );
+      span.setAttributes(
+        selectTelemetryAttributes({
+          telemetry,
+          attributes: {
+            "ai.embedding": { output: () => JSON.stringify(embedding) },
+            "ai.usage.tokens": usage.tokens
+          }
+        })
+      );
+      return new DefaultEmbedResult({
+        value,
+        embedding,
+        usage,
+        providerMetadata,
+        response
+      });
+    }
+  });
+}
+var DefaultEmbedResult = class {
+  constructor(options) {
+    this.value = options.value;
+    this.embedding = options.embedding;
+    this.usage = options.usage;
+    this.providerMetadata = options.providerMetadata;
+    this.response = options.response;
+  }
+};
+
+// src/util/split-array.ts
+function splitArray(array, chunkSize) {
+  if (chunkSize <= 0) {
+    throw new Error("chunkSize must be greater than 0");
+  }
+  const result = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  return result;
+}
+
+// src/embed/embed-many.ts
+async function embedMany({
+  model: modelArg,
+  values,
+  maxParallelCalls = Infinity,
+  maxRetries: maxRetriesArg,
+  abortSignal,
+  headers,
+  providerOptions,
+  experimental_telemetry: telemetry
+}) {
+  const model = resolveEmbeddingModel(modelArg);
+  const { maxRetries, retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const baseTelemetryAttributes = getBaseTelemetryAttributes({
+    model,
+    telemetry,
+    headers,
+    settings: { maxRetries }
+  });
+  const tracer = getTracer(telemetry);
+  return recordSpan({
+    name: "ai.embedMany",
+    attributes: selectTelemetryAttributes({
+      telemetry,
+      attributes: {
+        ...assembleOperationName({ operationId: "ai.embedMany", telemetry }),
+        ...baseTelemetryAttributes,
+        // specific settings that only make sense on the outer level:
+        "ai.values": {
+          input: () => values.map((value) => JSON.stringify(value))
         }
-      } catch (error) {
-        throw error;
-      } finally {
-        response.end();
+      }
+    }),
+    tracer,
+    fn: async (span) => {
+      var _a17;
+      const [maxEmbeddingsPerCall, supportsParallelCalls] = await Promise.all([
+        model.maxEmbeddingsPerCall,
+        model.supportsParallelCalls
+      ]);
+      if (maxEmbeddingsPerCall == null || maxEmbeddingsPerCall === Infinity) {
+        const { embeddings: embeddings2, usage, response, providerMetadata: providerMetadata2 } = await retry(
+          () => {
+            return recordSpan({
+              name: "ai.embedMany.doEmbed",
+              attributes: selectTelemetryAttributes({
+                telemetry,
+                attributes: {
+                  ...assembleOperationName({
+                    operationId: "ai.embedMany.doEmbed",
+                    telemetry
+                  }),
+                  ...baseTelemetryAttributes,
+                  // specific settings that only make sense on the outer level:
+                  "ai.values": {
+                    input: () => values.map((value) => JSON.stringify(value))
+                  }
+                }
+              }),
+              tracer,
+              fn: async (doEmbedSpan) => {
+                var _a18;
+                const modelResponse = await model.doEmbed({
+                  values,
+                  abortSignal,
+                  headers,
+                  providerOptions
+                });
+                const embeddings3 = modelResponse.embeddings;
+                const usage2 = (_a18 = modelResponse.usage) != null ? _a18 : { tokens: NaN };
+                doEmbedSpan.setAttributes(
+                  selectTelemetryAttributes({
+                    telemetry,
+                    attributes: {
+                      "ai.embeddings": {
+                        output: () => embeddings3.map(
+                          (embedding) => JSON.stringify(embedding)
+                        )
+                      },
+                      "ai.usage.tokens": usage2.tokens
+                    }
+                  })
+                );
+                return {
+                  embeddings: embeddings3,
+                  usage: usage2,
+                  providerMetadata: modelResponse.providerMetadata,
+                  response: modelResponse.response
+                };
+              }
+            });
+          }
+        );
+        span.setAttributes(
+          selectTelemetryAttributes({
+            telemetry,
+            attributes: {
+              "ai.embeddings": {
+                output: () => embeddings2.map((embedding) => JSON.stringify(embedding))
+              },
+              "ai.usage.tokens": usage.tokens
+            }
+          })
+        );
+        return new DefaultEmbedManyResult({
+          values,
+          embeddings: embeddings2,
+          usage,
+          providerMetadata: providerMetadata2,
+          responses: [response]
+        });
+      }
+      const valueChunks = splitArray(values, maxEmbeddingsPerCall);
+      const embeddings = [];
+      const responses = [];
+      let tokens = 0;
+      let providerMetadata;
+      const parallelChunks = splitArray(
+        valueChunks,
+        supportsParallelCalls ? maxParallelCalls : 1
+      );
+      for (const parallelChunk of parallelChunks) {
+        const results = await Promise.all(
+          parallelChunk.map((chunk) => {
+            return retry(() => {
+              return recordSpan({
+                name: "ai.embedMany.doEmbed",
+                attributes: selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    ...assembleOperationName({
+                      operationId: "ai.embedMany.doEmbed",
+                      telemetry
+                    }),
+                    ...baseTelemetryAttributes,
+                    // specific settings that only make sense on the outer level:
+                    "ai.values": {
+                      input: () => chunk.map((value) => JSON.stringify(value))
+                    }
+                  }
+                }),
+                tracer,
+                fn: async (doEmbedSpan) => {
+                  var _a18;
+                  const modelResponse = await model.doEmbed({
+                    values: chunk,
+                    abortSignal,
+                    headers,
+                    providerOptions
+                  });
+                  const embeddings2 = modelResponse.embeddings;
+                  const usage = (_a18 = modelResponse.usage) != null ? _a18 : { tokens: NaN };
+                  doEmbedSpan.setAttributes(
+                    selectTelemetryAttributes({
+                      telemetry,
+                      attributes: {
+                        "ai.embeddings": {
+                          output: () => embeddings2.map(
+                            (embedding) => JSON.stringify(embedding)
+                          )
+                        },
+                        "ai.usage.tokens": usage.tokens
+                      }
+                    })
+                  );
+                  return {
+                    embeddings: embeddings2,
+                    usage,
+                    providerMetadata: modelResponse.providerMetadata,
+                    response: modelResponse.response
+                  };
+                }
+              });
+            });
+          })
+        );
+        for (const result of results) {
+          embeddings.push(...result.embeddings);
+          responses.push(result.response);
+          tokens += result.usage.tokens;
+          if (result.providerMetadata) {
+            if (!providerMetadata) {
+              providerMetadata = { ...result.providerMetadata };
+            } else {
+              for (const [providerName, metadata] of Object.entries(
+                result.providerMetadata
+              )) {
+                providerMetadata[providerName] = {
+                  ...(_a17 = providerMetadata[providerName]) != null ? _a17 : {},
+                  ...metadata
+                };
+              }
+            }
+          }
+        }
+      }
+      span.setAttributes(
+        selectTelemetryAttributes({
+          telemetry,
+          attributes: {
+            "ai.embeddings": {
+              output: () => embeddings.map((embedding) => JSON.stringify(embedding))
+            },
+            "ai.usage.tokens": tokens
+          }
+        })
+      );
+      return new DefaultEmbedManyResult({
+        values,
+        embeddings,
+        usage: { tokens },
+        providerMetadata,
+        responses
+      });
+    }
+  });
+}
+var DefaultEmbedManyResult = class {
+  constructor(options) {
+    this.values = options.values;
+    this.embeddings = options.embeddings;
+    this.usage = options.usage;
+    this.providerMetadata = options.providerMetadata;
+    this.responses = options.responses;
+  }
+};
+
+// src/generate-image/generate-image.ts
+async function generateImage({
+  model,
+  prompt,
+  n = 1,
+  maxImagesPerCall,
+  size,
+  aspectRatio,
+  seed,
+  providerOptions,
+  maxRetries: maxRetriesArg,
+  abortSignal,
+  headers
+}) {
+  var _a17, _b;
+  if (model.specificationVersion !== "v2") {
+    throw new UnsupportedModelVersionError({
+      version: model.specificationVersion,
+      provider: model.provider,
+      modelId: model.modelId
+    });
+  }
+  const { retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const maxImagesPerCallWithDefault = (_a17 = maxImagesPerCall != null ? maxImagesPerCall : await invokeModelMaxImagesPerCall(model)) != null ? _a17 : 1;
+  const callCount = Math.ceil(n / maxImagesPerCallWithDefault);
+  const callImageCounts = Array.from({ length: callCount }, (_, i) => {
+    if (i < callCount - 1) {
+      return maxImagesPerCallWithDefault;
+    }
+    const remainder = n % maxImagesPerCallWithDefault;
+    return remainder === 0 ? maxImagesPerCallWithDefault : remainder;
+  });
+  const results = await Promise.all(
+    callImageCounts.map(
+      async (callImageCount) => retry(
+        () => model.doGenerate({
+          prompt,
+          n: callImageCount,
+          abortSignal,
+          headers,
+          size,
+          aspectRatio,
+          seed,
+          providerOptions: providerOptions != null ? providerOptions : {}
+        })
+      )
+    )
+  );
+  const images = [];
+  const warnings = [];
+  const responses = [];
+  const providerMetadata = {};
+  for (const result of results) {
+    images.push(
+      ...result.images.map(
+        (image) => {
+          var _a18;
+          return new DefaultGeneratedFile({
+            data: image,
+            mediaType: (_a18 = detectMediaType({
+              data: image,
+              signatures: imageMediaTypeSignatures
+            })) != null ? _a18 : "image/png"
+          });
+        }
+      )
+    );
+    warnings.push(...result.warnings);
+    if (result.providerMetadata) {
+      for (const [providerName, metadata] of Object.entries(result.providerMetadata)) {
+        (_b = providerMetadata[providerName]) != null ? _b : providerMetadata[providerName] = { images: [] };
+        providerMetadata[providerName].images.push(
+          ...result.providerMetadata[providerName].images
+        );
+      }
+    }
+    responses.push(result.response);
+  }
+  if (!images.length) {
+    throw new NoImageGeneratedError({ responses });
+  }
+  return new DefaultGenerateImageResult({
+    images,
+    warnings,
+    responses,
+    providerMetadata
+  });
+}
+var DefaultGenerateImageResult = class {
+  constructor(options) {
+    this.images = options.images;
+    this.warnings = options.warnings;
+    this.responses = options.responses;
+    this.providerMetadata = options.providerMetadata;
+  }
+  get image() {
+    return this.images[0];
+  }
+};
+async function invokeModelMaxImagesPerCall(model) {
+  const isFunction = model.maxImagesPerCall instanceof Function;
+  if (!isFunction) {
+    return model.maxImagesPerCall;
+  }
+  return model.maxImagesPerCall({
+    modelId: model.modelId
+  });
+}
+
+// src/generate-object/generate-object.ts
+var import_provider_utils16 = __nccwpck_require__(9033);
+
+// src/generate-text/extract-reasoning-content.ts
+function extractReasoningContent(content) {
+  const parts = content.filter(
+    (content2) => content2.type === "reasoning"
+  );
+  return parts.length === 0 ? void 0 : parts.map((content2) => content2.text).join("\n");
+}
+
+// src/generate-object/output-strategy.ts
+var import_provider24 = __nccwpck_require__(2585);
+var import_provider_utils14 = __nccwpck_require__(9033);
+var noSchemaOutputStrategy = {
+  type: "no-schema",
+  jsonSchema: void 0,
+  async validatePartialResult({ value, textDelta }) {
+    return { success: true, value: { partial: value, textDelta } };
+  },
+  async validateFinalResult(value, context) {
+    return value === void 0 ? {
+      success: false,
+      error: new NoObjectGeneratedError({
+        message: "No object generated: response did not match schema.",
+        text: context.text,
+        response: context.response,
+        usage: context.usage,
+        finishReason: context.finishReason
+      })
+    } : { success: true, value };
+  },
+  createElementStream() {
+    throw new import_provider24.UnsupportedFunctionalityError({
+      functionality: "element streams in no-schema mode"
+    });
+  }
+};
+var objectOutputStrategy = (schema) => ({
+  type: "object",
+  jsonSchema: schema.jsonSchema,
+  async validatePartialResult({ value, textDelta }) {
+    return {
+      success: true,
+      value: {
+        // Note: currently no validation of partial results:
+        partial: value,
+        textDelta
       }
     };
-    read();
+  },
+  async validateFinalResult(value) {
+    return (0, import_provider_utils14.safeValidateTypes)({ value, schema });
+  },
+  createElementStream() {
+    throw new import_provider24.UnsupportedFunctionalityError({
+      functionality: "element streams in object mode"
+    });
   }
-  /**
-  Converts the result to a streamed response object with a stream data part stream.
-  It can be used with the `useChat` and `useCompletion` hooks.
-  
-  @param init Optional headers.
-  
-  @return A response object.
-     */
-  toAIStreamResponse(init) {
-    return new StreamingTextResponse(this.toAIStream(), init);
+});
+var arrayOutputStrategy = (schema) => {
+  const { $schema, ...itemSchema } = schema.jsonSchema;
+  return {
+    type: "enum",
+    // wrap in object that contains array of elements, since most LLMs will not
+    // be able to generate an array directly:
+    // possible future optimization: use arrays directly when model supports grammar-guided generation
+    jsonSchema: {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        elements: { type: "array", items: itemSchema }
+      },
+      required: ["elements"],
+      additionalProperties: false
+    },
+    async validatePartialResult({
+      value,
+      latestObject,
+      isFirstDelta,
+      isFinalDelta
+    }) {
+      var _a17;
+      if (!(0, import_provider24.isJSONObject)(value) || !(0, import_provider24.isJSONArray)(value.elements)) {
+        return {
+          success: false,
+          error: new import_provider24.TypeValidationError({
+            value,
+            cause: "value must be an object that contains an array of elements"
+          })
+        };
+      }
+      const inputArray = value.elements;
+      const resultArray = [];
+      for (let i = 0; i < inputArray.length; i++) {
+        const element = inputArray[i];
+        const result = await (0, import_provider_utils14.safeValidateTypes)({ value: element, schema });
+        if (i === inputArray.length - 1 && !isFinalDelta) {
+          continue;
+        }
+        if (!result.success) {
+          return result;
+        }
+        resultArray.push(result.value);
+      }
+      const publishedElementCount = (_a17 = latestObject == null ? void 0 : latestObject.length) != null ? _a17 : 0;
+      let textDelta = "";
+      if (isFirstDelta) {
+        textDelta += "[";
+      }
+      if (publishedElementCount > 0) {
+        textDelta += ",";
+      }
+      textDelta += resultArray.slice(publishedElementCount).map((element) => JSON.stringify(element)).join(",");
+      if (isFinalDelta) {
+        textDelta += "]";
+      }
+      return {
+        success: true,
+        value: {
+          partial: resultArray,
+          textDelta
+        }
+      };
+    },
+    async validateFinalResult(value) {
+      if (!(0, import_provider24.isJSONObject)(value) || !(0, import_provider24.isJSONArray)(value.elements)) {
+        return {
+          success: false,
+          error: new import_provider24.TypeValidationError({
+            value,
+            cause: "value must be an object that contains an array of elements"
+          })
+        };
+      }
+      const inputArray = value.elements;
+      for (const element of inputArray) {
+        const result = await (0, import_provider_utils14.safeValidateTypes)({ value: element, schema });
+        if (!result.success) {
+          return result;
+        }
+      }
+      return { success: true, value: inputArray };
+    },
+    createElementStream(originalStream) {
+      let publishedElements = 0;
+      return createAsyncIterableStream(
+        originalStream.pipeThrough(
+          new TransformStream({
+            transform(chunk, controller) {
+              switch (chunk.type) {
+                case "object": {
+                  const array = chunk.object;
+                  for (; publishedElements < array.length; publishedElements++) {
+                    controller.enqueue(array[publishedElements]);
+                  }
+                  break;
+                }
+                case "text-delta":
+                case "finish":
+                case "error":
+                  break;
+                default: {
+                  const _exhaustiveCheck = chunk;
+                  throw new Error(
+                    `Unsupported chunk type: ${_exhaustiveCheck}`
+                  );
+                }
+              }
+            }
+          })
+        )
+      );
+    }
+  };
+};
+var enumOutputStrategy = (enumValues) => {
+  return {
+    type: "enum",
+    // wrap in object that contains result, since most LLMs will not
+    // be able to generate an enum value directly:
+    // possible future optimization: use enums directly when model supports top-level enums
+    jsonSchema: {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        result: { type: "string", enum: enumValues }
+      },
+      required: ["result"],
+      additionalProperties: false
+    },
+    async validateFinalResult(value) {
+      if (!(0, import_provider24.isJSONObject)(value) || typeof value.result !== "string") {
+        return {
+          success: false,
+          error: new import_provider24.TypeValidationError({
+            value,
+            cause: 'value must be an object that contains a string in the "result" property.'
+          })
+        };
+      }
+      const result = value.result;
+      return enumValues.includes(result) ? { success: true, value: result } : {
+        success: false,
+        error: new import_provider24.TypeValidationError({
+          value,
+          cause: "value must be a string in the enum"
+        })
+      };
+    },
+    async validatePartialResult({ value, textDelta }) {
+      if (!(0, import_provider24.isJSONObject)(value) || typeof value.result !== "string") {
+        return {
+          success: false,
+          error: new import_provider24.TypeValidationError({
+            value,
+            cause: 'value must be an object that contains a string in the "result" property.'
+          })
+        };
+      }
+      const result = value.result;
+      const possibleEnumValues = enumValues.filter(
+        (enumValue) => enumValue.startsWith(result)
+      );
+      if (value.result.length === 0 || possibleEnumValues.length === 0) {
+        return {
+          success: false,
+          error: new import_provider24.TypeValidationError({
+            value,
+            cause: "value must be a string in the enum"
+          })
+        };
+      }
+      return {
+        success: true,
+        value: {
+          partial: possibleEnumValues.length > 1 ? result : possibleEnumValues[0],
+          textDelta
+        }
+      };
+    },
+    createElementStream() {
+      throw new import_provider24.UnsupportedFunctionalityError({
+        functionality: "element streams in enum mode"
+      });
+    }
+  };
+};
+function getOutputStrategy({
+  output,
+  schema,
+  enumValues
+}) {
+  switch (output) {
+    case "object":
+      return objectOutputStrategy((0, import_provider_utils14.asSchema)(schema));
+    case "array":
+      return arrayOutputStrategy((0, import_provider_utils14.asSchema)(schema));
+    case "enum":
+      return enumOutputStrategy(enumValues);
+    case "no-schema":
+      return noSchemaOutputStrategy;
+    default: {
+      const _exhaustiveCheck = output;
+      throw new Error(`Unsupported output: ${_exhaustiveCheck}`);
+    }
   }
-  /**
-  Creates a simple text stream response.
-  Each text delta is encoded as UTF-8 and sent as a separate chunk.
-  Non-text-delta events are ignored.
-  
-  @param init Optional headers and status code.
-     */
-  toTextStreamResponse(init) {
-    var _a;
-    return new Response(this.textStream.pipeThrough(new TextEncoderStream()), {
-      status: (_a = init == null ? void 0 : init.status) != null ? _a : 200,
-      headers: prepareResponseHeaders(init, {
-        contentType: "text/plain; charset=utf-8"
+}
+
+// src/generate-object/parse-and-validate-object-result.ts
+var import_provider25 = __nccwpck_require__(2585);
+var import_provider_utils15 = __nccwpck_require__(9033);
+async function parseAndValidateObjectResult(result, outputStrategy, context) {
+  const parseResult = await (0, import_provider_utils15.safeParseJSON)({ text: result });
+  if (!parseResult.success) {
+    throw new NoObjectGeneratedError({
+      message: "No object generated: could not parse the response.",
+      cause: parseResult.error,
+      text: result,
+      response: context.response,
+      usage: context.usage,
+      finishReason: context.finishReason
+    });
+  }
+  const validationResult = await outputStrategy.validateFinalResult(
+    parseResult.value,
+    {
+      text: result,
+      response: context.response,
+      usage: context.usage
+    }
+  );
+  if (!validationResult.success) {
+    throw new NoObjectGeneratedError({
+      message: "No object generated: response did not match schema.",
+      cause: validationResult.error,
+      text: result,
+      response: context.response,
+      usage: context.usage,
+      finishReason: context.finishReason
+    });
+  }
+  return validationResult.value;
+}
+async function parseAndValidateObjectResultWithRepair(result, outputStrategy, repairText, context) {
+  try {
+    return await parseAndValidateObjectResult(result, outputStrategy, context);
+  } catch (error) {
+    if (repairText != null && NoObjectGeneratedError.isInstance(error) && (import_provider25.JSONParseError.isInstance(error.cause) || import_provider25.TypeValidationError.isInstance(error.cause))) {
+      const repairedText = await repairText({
+        text: result,
+        error: error.cause
+      });
+      if (repairedText === null) {
+        throw error;
+      }
+      return await parseAndValidateObjectResult(
+        repairedText,
+        outputStrategy,
+        context
+      );
+    }
+    throw error;
+  }
+}
+
+// src/generate-object/validate-object-generation-input.ts
+function validateObjectGenerationInput({
+  output,
+  schema,
+  schemaName,
+  schemaDescription,
+  enumValues
+}) {
+  if (output != null && output !== "object" && output !== "array" && output !== "enum" && output !== "no-schema") {
+    throw new InvalidArgumentError({
+      parameter: "output",
+      value: output,
+      message: "Invalid output type."
+    });
+  }
+  if (output === "no-schema") {
+    if (schema != null) {
+      throw new InvalidArgumentError({
+        parameter: "schema",
+        value: schema,
+        message: "Schema is not supported for no-schema output."
+      });
+    }
+    if (schemaDescription != null) {
+      throw new InvalidArgumentError({
+        parameter: "schemaDescription",
+        value: schemaDescription,
+        message: "Schema description is not supported for no-schema output."
+      });
+    }
+    if (schemaName != null) {
+      throw new InvalidArgumentError({
+        parameter: "schemaName",
+        value: schemaName,
+        message: "Schema name is not supported for no-schema output."
+      });
+    }
+    if (enumValues != null) {
+      throw new InvalidArgumentError({
+        parameter: "enumValues",
+        value: enumValues,
+        message: "Enum values are not supported for no-schema output."
+      });
+    }
+  }
+  if (output === "object") {
+    if (schema == null) {
+      throw new InvalidArgumentError({
+        parameter: "schema",
+        value: schema,
+        message: "Schema is required for object output."
+      });
+    }
+    if (enumValues != null) {
+      throw new InvalidArgumentError({
+        parameter: "enumValues",
+        value: enumValues,
+        message: "Enum values are not supported for object output."
+      });
+    }
+  }
+  if (output === "array") {
+    if (schema == null) {
+      throw new InvalidArgumentError({
+        parameter: "schema",
+        value: schema,
+        message: "Element schema is required for array output."
+      });
+    }
+    if (enumValues != null) {
+      throw new InvalidArgumentError({
+        parameter: "enumValues",
+        value: enumValues,
+        message: "Enum values are not supported for array output."
+      });
+    }
+  }
+  if (output === "enum") {
+    if (schema != null) {
+      throw new InvalidArgumentError({
+        parameter: "schema",
+        value: schema,
+        message: "Schema is not supported for enum output."
+      });
+    }
+    if (schemaDescription != null) {
+      throw new InvalidArgumentError({
+        parameter: "schemaDescription",
+        value: schemaDescription,
+        message: "Schema description is not supported for enum output."
+      });
+    }
+    if (schemaName != null) {
+      throw new InvalidArgumentError({
+        parameter: "schemaName",
+        value: schemaName,
+        message: "Schema name is not supported for enum output."
+      });
+    }
+    if (enumValues == null) {
+      throw new InvalidArgumentError({
+        parameter: "enumValues",
+        value: enumValues,
+        message: "Enum values are required for enum output."
+      });
+    }
+    for (const value of enumValues) {
+      if (typeof value !== "string") {
+        throw new InvalidArgumentError({
+          parameter: "enumValues",
+          value,
+          message: "Enum values must be strings."
+        });
+      }
+    }
+  }
+}
+
+// src/generate-object/generate-object.ts
+var originalGenerateId3 = (0, import_provider_utils16.createIdGenerator)({ prefix: "aiobj", size: 24 });
+async function generateObject(options) {
+  const {
+    model: modelArg,
+    output = "object",
+    system,
+    prompt,
+    messages,
+    maxRetries: maxRetriesArg,
+    abortSignal,
+    headers,
+    experimental_repairText: repairText,
+    experimental_telemetry: telemetry,
+    providerOptions,
+    _internal: {
+      generateId: generateId3 = originalGenerateId3,
+      currentDate = () => /* @__PURE__ */ new Date()
+    } = {},
+    ...settings
+  } = options;
+  const model = resolveLanguageModel(modelArg);
+  const enumValues = "enum" in options ? options.enum : void 0;
+  const {
+    schema: inputSchema,
+    schemaDescription,
+    schemaName
+  } = "schema" in options ? options : {};
+  validateObjectGenerationInput({
+    output,
+    schema: inputSchema,
+    schemaName,
+    schemaDescription,
+    enumValues
+  });
+  const { maxRetries, retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const outputStrategy = getOutputStrategy({
+    output,
+    schema: inputSchema,
+    enumValues
+  });
+  const callSettings = prepareCallSettings(settings);
+  const baseTelemetryAttributes = getBaseTelemetryAttributes({
+    model,
+    telemetry,
+    headers,
+    settings: { ...callSettings, maxRetries }
+  });
+  const tracer = getTracer(telemetry);
+  try {
+    return await recordSpan({
+      name: "ai.generateObject",
+      attributes: selectTelemetryAttributes({
+        telemetry,
+        attributes: {
+          ...assembleOperationName({
+            operationId: "ai.generateObject",
+            telemetry
+          }),
+          ...baseTelemetryAttributes,
+          // specific settings that only make sense on the outer level:
+          "ai.prompt": {
+            input: () => JSON.stringify({ system, prompt, messages })
+          },
+          "ai.schema": outputStrategy.jsonSchema != null ? { input: () => JSON.stringify(outputStrategy.jsonSchema) } : void 0,
+          "ai.schema.name": schemaName,
+          "ai.schema.description": schemaDescription,
+          "ai.settings.output": outputStrategy.type
+        }
+      }),
+      tracer,
+      fn: async (span) => {
+        var _a17;
+        let result;
+        let finishReason;
+        let usage;
+        let warnings;
+        let response;
+        let request;
+        let resultProviderMetadata;
+        let reasoning;
+        const standardizedPrompt = await standardizePrompt({
+          system,
+          prompt,
+          messages
+        });
+        const promptMessages = await convertToLanguageModelPrompt({
+          prompt: standardizedPrompt,
+          supportedUrls: await model.supportedUrls
+        });
+        const generateResult = await retry(
+          () => recordSpan({
+            name: "ai.generateObject.doGenerate",
+            attributes: selectTelemetryAttributes({
+              telemetry,
+              attributes: {
+                ...assembleOperationName({
+                  operationId: "ai.generateObject.doGenerate",
+                  telemetry
+                }),
+                ...baseTelemetryAttributes,
+                "ai.prompt.messages": {
+                  input: () => stringifyForTelemetry(promptMessages)
+                },
+                // standardized gen-ai llm span attributes:
+                "gen_ai.system": model.provider,
+                "gen_ai.request.model": model.modelId,
+                "gen_ai.request.frequency_penalty": callSettings.frequencyPenalty,
+                "gen_ai.request.max_tokens": callSettings.maxOutputTokens,
+                "gen_ai.request.presence_penalty": callSettings.presencePenalty,
+                "gen_ai.request.temperature": callSettings.temperature,
+                "gen_ai.request.top_k": callSettings.topK,
+                "gen_ai.request.top_p": callSettings.topP
+              }
+            }),
+            tracer,
+            fn: async (span2) => {
+              var _a18, _b, _c, _d, _e, _f, _g, _h;
+              const result2 = await model.doGenerate({
+                responseFormat: {
+                  type: "json",
+                  schema: outputStrategy.jsonSchema,
+                  name: schemaName,
+                  description: schemaDescription
+                },
+                ...prepareCallSettings(settings),
+                prompt: promptMessages,
+                providerOptions,
+                abortSignal,
+                headers
+              });
+              const responseData = {
+                id: (_b = (_a18 = result2.response) == null ? void 0 : _a18.id) != null ? _b : generateId3(),
+                timestamp: (_d = (_c = result2.response) == null ? void 0 : _c.timestamp) != null ? _d : currentDate(),
+                modelId: (_f = (_e = result2.response) == null ? void 0 : _e.modelId) != null ? _f : model.modelId,
+                headers: (_g = result2.response) == null ? void 0 : _g.headers,
+                body: (_h = result2.response) == null ? void 0 : _h.body
+              };
+              const text2 = extractTextContent(result2.content);
+              const reasoning2 = extractReasoningContent(result2.content);
+              if (text2 === void 0) {
+                throw new NoObjectGeneratedError({
+                  message: "No object generated: the model did not return a response.",
+                  response: responseData,
+                  usage: result2.usage,
+                  finishReason: result2.finishReason
+                });
+              }
+              span2.setAttributes(
+                selectTelemetryAttributes({
+                  telemetry,
+                  attributes: {
+                    "ai.response.finishReason": result2.finishReason,
+                    "ai.response.object": { output: () => text2 },
+                    "ai.response.id": responseData.id,
+                    "ai.response.model": responseData.modelId,
+                    "ai.response.timestamp": responseData.timestamp.toISOString(),
+                    "ai.response.providerMetadata": JSON.stringify(
+                      result2.providerMetadata
+                    ),
+                    // TODO rename telemetry attributes to inputTokens and outputTokens
+                    "ai.usage.promptTokens": result2.usage.inputTokens,
+                    "ai.usage.completionTokens": result2.usage.outputTokens,
+                    // standardized gen-ai llm span attributes:
+                    "gen_ai.response.finish_reasons": [result2.finishReason],
+                    "gen_ai.response.id": responseData.id,
+                    "gen_ai.response.model": responseData.modelId,
+                    "gen_ai.usage.input_tokens": result2.usage.inputTokens,
+                    "gen_ai.usage.output_tokens": result2.usage.outputTokens
+                  }
+                })
+              );
+              return {
+                ...result2,
+                objectText: text2,
+                reasoning: reasoning2,
+                responseData
+              };
+            }
+          })
+        );
+        result = generateResult.objectText;
+        finishReason = generateResult.finishReason;
+        usage = generateResult.usage;
+        warnings = generateResult.warnings;
+        resultProviderMetadata = generateResult.providerMetadata;
+        request = (_a17 = generateResult.request) != null ? _a17 : {};
+        response = generateResult.responseData;
+        reasoning = generateResult.reasoning;
+        const object2 = await parseAndValidateObjectResultWithRepair(
+          result,
+          outputStrategy,
+          repairText,
+          {
+            response,
+            usage,
+            finishReason
+          }
+        );
+        span.setAttributes(
+          selectTelemetryAttributes({
+            telemetry,
+            attributes: {
+              "ai.response.finishReason": finishReason,
+              "ai.response.object": {
+                output: () => JSON.stringify(object2)
+              },
+              "ai.response.providerMetadata": JSON.stringify(
+                resultProviderMetadata
+              ),
+              // TODO rename telemetry attributes to inputTokens and outputTokens
+              "ai.usage.promptTokens": usage.inputTokens,
+              "ai.usage.completionTokens": usage.outputTokens
+            }
+          })
+        );
+        return new DefaultGenerateObjectResult({
+          object: object2,
+          reasoning,
+          finishReason,
+          usage,
+          warnings,
+          request,
+          response,
+          providerMetadata: resultProviderMetadata
+        });
+      }
+    });
+  } catch (error) {
+    throw wrapGatewayError(error);
+  }
+}
+var DefaultGenerateObjectResult = class {
+  constructor(options) {
+    this.object = options.object;
+    this.finishReason = options.finishReason;
+    this.usage = options.usage;
+    this.warnings = options.warnings;
+    this.providerMetadata = options.providerMetadata;
+    this.response = options.response;
+    this.request = options.request;
+    this.reasoning = options.reasoning;
+  }
+  toJsonResponse(init) {
+    var _a17;
+    return new Response(JSON.stringify(this.object), {
+      status: (_a17 = init == null ? void 0 : init.status) != null ? _a17 : 200,
+      headers: prepareHeaders(init == null ? void 0 : init.headers, {
+        "content-type": "application/json; charset=utf-8"
       })
     });
   }
 };
-var experimental_streamText = streamText;
 
-// core/prompt/convert-to-core-messages.ts
-function convertToCoreMessages(messages) {
-  const coreMessages = [];
-  for (const { role, content, toolInvocations } of messages) {
-    switch (role) {
-      case "user": {
-        coreMessages.push({ role: "user", content });
-        break;
-      }
-      case "assistant": {
-        if (toolInvocations == null) {
-          coreMessages.push({ role: "assistant", content });
-          break;
-        }
-        coreMessages.push({
-          role: "assistant",
-          content: [
-            { type: "text", text: content },
-            ...toolInvocations.map(({ toolCallId, toolName, args }) => ({
-              type: "tool-call",
-              toolCallId,
-              toolName,
-              args
-            }))
-          ]
-        });
-        coreMessages.push({
-          role: "tool",
-          content: toolInvocations.map(
-            ({ toolCallId, toolName, args, result }) => ({
-              type: "tool-result",
-              toolCallId,
-              toolName,
-              args,
-              result
-            })
-          )
-        });
-        break;
-      }
-      default: {
-        const _exhaustiveCheck = role;
-        throw new Error(`Unhandled role: ${_exhaustiveCheck}`);
-      }
-    }
+// src/generate-object/stream-object.ts
+var import_provider_utils18 = __nccwpck_require__(9033);
+
+// src/util/cosine-similarity.ts
+function cosineSimilarity(vector1, vector2) {
+  if (vector1.length !== vector2.length) {
+    throw new InvalidArgumentError({
+      parameter: "vector1,vector2",
+      value: { vector1Length: vector1.length, vector2Length: vector2.length },
+      message: `Vectors must have the same length`
+    });
   }
-  return coreMessages;
+  const n = vector1.length;
+  if (n === 0) {
+    return 0;
+  }
+  let magnitudeSquared1 = 0;
+  let magnitudeSquared2 = 0;
+  let dotProduct = 0;
+  for (let i = 0; i < n; i++) {
+    const value1 = vector1[i];
+    const value2 = vector2[i];
+    magnitudeSquared1 += value1 * value1;
+    magnitudeSquared2 += value2 * value2;
+    dotProduct += value1 * value2;
+  }
+  return magnitudeSquared1 === 0 || magnitudeSquared2 === 0 ? 0 : dotProduct / (Math.sqrt(magnitudeSquared1) * Math.sqrt(magnitudeSquared2));
 }
 
-// core/registry/invalid-model-id-error.ts
-var InvalidModelIdError = class extends Error {
-  constructor({
-    id,
-    message = `Invalid model id: ${id}`
-  }) {
-    super(message);
-    this.name = "AI_InvalidModelIdError";
-    this.id = id;
+// src/util/data-url.ts
+function getTextFromDataUrl(dataUrl) {
+  const [header, base64Content] = dataUrl.split(",");
+  const mediaType = header.split(";")[0].split(":")[1];
+  if (mediaType == null || base64Content == null) {
+    throw new Error("Invalid data URL format");
   }
-  static isInvalidModelIdError(error) {
-    return error instanceof Error && error.name === "AI_InvalidModelIdError" && typeof error.id === "string";
+  try {
+    return window.atob(base64Content);
+  } catch (error) {
+    throw new Error(`Error decoding data URL`);
   }
-  toJSON() {
-    return {
-      name: this.name,
-      message: this.message,
-      stack: this.stack,
-      id: this.id
-    };
+}
+
+// src/util/is-deep-equal-data.ts
+function isDeepEqualData(obj1, obj2) {
+  if (obj1 === obj2)
+    return true;
+  if (obj1 == null || obj2 == null)
+    return false;
+  if (typeof obj1 !== "object" && typeof obj2 !== "object")
+    return obj1 === obj2;
+  if (obj1.constructor !== obj2.constructor)
+    return false;
+  if (obj1 instanceof Date && obj2 instanceof Date) {
+    return obj1.getTime() === obj2.getTime();
+  }
+  if (Array.isArray(obj1)) {
+    if (obj1.length !== obj2.length)
+      return false;
+    for (let i = 0; i < obj1.length; i++) {
+      if (!isDeepEqualData(obj1[i], obj2[i]))
+        return false;
+    }
+    return true;
+  }
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length)
+    return false;
+  for (const key of keys1) {
+    if (!keys2.includes(key))
+      return false;
+    if (!isDeepEqualData(obj1[key], obj2[key]))
+      return false;
+  }
+  return true;
+}
+
+// src/util/serial-job-executor.ts
+var SerialJobExecutor = class {
+  constructor() {
+    this.queue = [];
+    this.isProcessing = false;
+  }
+  async processQueue() {
+    if (this.isProcessing) {
+      return;
+    }
+    this.isProcessing = true;
+    while (this.queue.length > 0) {
+      await this.queue[0]();
+      this.queue.shift();
+    }
+    this.isProcessing = false;
+  }
+  async run(job) {
+    return new Promise((resolve2, reject) => {
+      this.queue.push(async () => {
+        try {
+          await job();
+          resolve2();
+        } catch (error) {
+          reject(error);
+        }
+      });
+      void this.processQueue();
+    });
   }
 };
 
-// core/registry/no-such-model-error.ts
-var NoSuchModelError = class extends Error {
+// src/util/simulate-readable-stream.ts
+var import_provider_utils17 = __nccwpck_require__(9033);
+function simulateReadableStream({
+  chunks,
+  initialDelayInMs = 0,
+  chunkDelayInMs = 0,
+  _internal
+}) {
+  var _a17;
+  const delay2 = (_a17 = _internal == null ? void 0 : _internal.delay) != null ? _a17 : import_provider_utils17.delay;
+  let index = 0;
+  return new ReadableStream({
+    async pull(controller) {
+      if (index < chunks.length) {
+        await delay2(index === 0 ? initialDelayInMs : chunkDelayInMs);
+        controller.enqueue(chunks[index++]);
+      } else {
+        controller.close();
+      }
+    }
+  });
+}
+
+// src/generate-object/stream-object.ts
+var originalGenerateId4 = (0, import_provider_utils18.createIdGenerator)({ prefix: "aiobj", size: 24 });
+function streamObject(options) {
+  const {
+    model,
+    output = "object",
+    system,
+    prompt,
+    messages,
+    maxRetries,
+    abortSignal,
+    headers,
+    experimental_repairText: repairText,
+    experimental_telemetry: telemetry,
+    providerOptions,
+    onError = ({ error }) => {
+      console.error(error);
+    },
+    onFinish,
+    _internal: {
+      generateId: generateId3 = originalGenerateId4,
+      currentDate = () => /* @__PURE__ */ new Date(),
+      now: now2 = now
+    } = {},
+    ...settings
+  } = options;
+  const enumValues = "enum" in options && options.enum ? options.enum : void 0;
+  const {
+    schema: inputSchema,
+    schemaDescription,
+    schemaName
+  } = "schema" in options ? options : {};
+  validateObjectGenerationInput({
+    output,
+    schema: inputSchema,
+    schemaName,
+    schemaDescription,
+    enumValues
+  });
+  const outputStrategy = getOutputStrategy({
+    output,
+    schema: inputSchema,
+    enumValues
+  });
+  return new DefaultStreamObjectResult({
+    model,
+    telemetry,
+    headers,
+    settings,
+    maxRetries,
+    abortSignal,
+    outputStrategy,
+    system,
+    prompt,
+    messages,
+    schemaName,
+    schemaDescription,
+    providerOptions,
+    repairText,
+    onError,
+    onFinish,
+    generateId: generateId3,
+    currentDate,
+    now: now2
+  });
+}
+var DefaultStreamObjectResult = class {
+  constructor({
+    model: modelArg,
+    headers,
+    telemetry,
+    settings,
+    maxRetries: maxRetriesArg,
+    abortSignal,
+    outputStrategy,
+    system,
+    prompt,
+    messages,
+    schemaName,
+    schemaDescription,
+    providerOptions,
+    repairText,
+    onError,
+    onFinish,
+    generateId: generateId3,
+    currentDate,
+    now: now2
+  }) {
+    this._object = new DelayedPromise();
+    this._usage = new DelayedPromise();
+    this._providerMetadata = new DelayedPromise();
+    this._warnings = new DelayedPromise();
+    this._request = new DelayedPromise();
+    this._response = new DelayedPromise();
+    this._finishReason = new DelayedPromise();
+    const model = resolveLanguageModel(modelArg);
+    const { maxRetries, retry } = prepareRetries({
+      maxRetries: maxRetriesArg,
+      abortSignal
+    });
+    const callSettings = prepareCallSettings(settings);
+    const baseTelemetryAttributes = getBaseTelemetryAttributes({
+      model,
+      telemetry,
+      headers,
+      settings: { ...callSettings, maxRetries }
+    });
+    const tracer = getTracer(telemetry);
+    const self = this;
+    const stitchableStream = createStitchableStream();
+    const eventProcessor = new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk);
+        if (chunk.type === "error") {
+          onError({ error: wrapGatewayError(chunk.error) });
+        }
+      }
+    });
+    this.baseStream = stitchableStream.stream.pipeThrough(eventProcessor);
+    recordSpan({
+      name: "ai.streamObject",
+      attributes: selectTelemetryAttributes({
+        telemetry,
+        attributes: {
+          ...assembleOperationName({
+            operationId: "ai.streamObject",
+            telemetry
+          }),
+          ...baseTelemetryAttributes,
+          // specific settings that only make sense on the outer level:
+          "ai.prompt": {
+            input: () => JSON.stringify({ system, prompt, messages })
+          },
+          "ai.schema": outputStrategy.jsonSchema != null ? { input: () => JSON.stringify(outputStrategy.jsonSchema) } : void 0,
+          "ai.schema.name": schemaName,
+          "ai.schema.description": schemaDescription,
+          "ai.settings.output": outputStrategy.type
+        }
+      }),
+      tracer,
+      endWhenDone: false,
+      fn: async (rootSpan) => {
+        const standardizedPrompt = await standardizePrompt({
+          system,
+          prompt,
+          messages
+        });
+        const callOptions = {
+          responseFormat: {
+            type: "json",
+            schema: outputStrategy.jsonSchema,
+            name: schemaName,
+            description: schemaDescription
+          },
+          ...prepareCallSettings(settings),
+          prompt: await convertToLanguageModelPrompt({
+            prompt: standardizedPrompt,
+            supportedUrls: await model.supportedUrls
+          }),
+          providerOptions,
+          abortSignal,
+          headers,
+          includeRawChunks: false
+        };
+        const transformer = {
+          transform: (chunk, controller) => {
+            switch (chunk.type) {
+              case "text-delta":
+                controller.enqueue(chunk.delta);
+                break;
+              case "response-metadata":
+              case "finish":
+              case "error":
+              case "stream-start":
+                controller.enqueue(chunk);
+                break;
+            }
+          }
+        };
+        const {
+          result: { stream, response, request },
+          doStreamSpan,
+          startTimestampMs
+        } = await retry(
+          () => recordSpan({
+            name: "ai.streamObject.doStream",
+            attributes: selectTelemetryAttributes({
+              telemetry,
+              attributes: {
+                ...assembleOperationName({
+                  operationId: "ai.streamObject.doStream",
+                  telemetry
+                }),
+                ...baseTelemetryAttributes,
+                "ai.prompt.messages": {
+                  input: () => stringifyForTelemetry(callOptions.prompt)
+                },
+                // standardized gen-ai llm span attributes:
+                "gen_ai.system": model.provider,
+                "gen_ai.request.model": model.modelId,
+                "gen_ai.request.frequency_penalty": callSettings.frequencyPenalty,
+                "gen_ai.request.max_tokens": callSettings.maxOutputTokens,
+                "gen_ai.request.presence_penalty": callSettings.presencePenalty,
+                "gen_ai.request.temperature": callSettings.temperature,
+                "gen_ai.request.top_k": callSettings.topK,
+                "gen_ai.request.top_p": callSettings.topP
+              }
+            }),
+            tracer,
+            endWhenDone: false,
+            fn: async (doStreamSpan2) => ({
+              startTimestampMs: now2(),
+              doStreamSpan: doStreamSpan2,
+              result: await model.doStream(callOptions)
+            })
+          })
+        );
+        self._request.resolve(request != null ? request : {});
+        let warnings;
+        let usage = {
+          inputTokens: void 0,
+          outputTokens: void 0,
+          totalTokens: void 0
+        };
+        let finishReason;
+        let providerMetadata;
+        let object2;
+        let error;
+        let accumulatedText = "";
+        let textDelta = "";
+        let fullResponse = {
+          id: generateId3(),
+          timestamp: currentDate(),
+          modelId: model.modelId
+        };
+        let latestObjectJson = void 0;
+        let latestObject = void 0;
+        let isFirstChunk = true;
+        let isFirstDelta = true;
+        const transformedStream = stream.pipeThrough(new TransformStream(transformer)).pipeThrough(
+          new TransformStream({
+            async transform(chunk, controller) {
+              var _a17, _b, _c;
+              if (typeof chunk === "object" && chunk.type === "stream-start") {
+                warnings = chunk.warnings;
+                return;
+              }
+              if (isFirstChunk) {
+                const msToFirstChunk = now2() - startTimestampMs;
+                isFirstChunk = false;
+                doStreamSpan.addEvent("ai.stream.firstChunk", {
+                  "ai.stream.msToFirstChunk": msToFirstChunk
+                });
+                doStreamSpan.setAttributes({
+                  "ai.stream.msToFirstChunk": msToFirstChunk
+                });
+              }
+              if (typeof chunk === "string") {
+                accumulatedText += chunk;
+                textDelta += chunk;
+                const { value: currentObjectJson, state: parseState } = await parsePartialJson(accumulatedText);
+                if (currentObjectJson !== void 0 && !isDeepEqualData(latestObjectJson, currentObjectJson)) {
+                  const validationResult = await outputStrategy.validatePartialResult({
+                    value: currentObjectJson,
+                    textDelta,
+                    latestObject,
+                    isFirstDelta,
+                    isFinalDelta: parseState === "successful-parse"
+                  });
+                  if (validationResult.success && !isDeepEqualData(
+                    latestObject,
+                    validationResult.value.partial
+                  )) {
+                    latestObjectJson = currentObjectJson;
+                    latestObject = validationResult.value.partial;
+                    controller.enqueue({
+                      type: "object",
+                      object: latestObject
+                    });
+                    controller.enqueue({
+                      type: "text-delta",
+                      textDelta: validationResult.value.textDelta
+                    });
+                    textDelta = "";
+                    isFirstDelta = false;
+                  }
+                }
+                return;
+              }
+              switch (chunk.type) {
+                case "response-metadata": {
+                  fullResponse = {
+                    id: (_a17 = chunk.id) != null ? _a17 : fullResponse.id,
+                    timestamp: (_b = chunk.timestamp) != null ? _b : fullResponse.timestamp,
+                    modelId: (_c = chunk.modelId) != null ? _c : fullResponse.modelId
+                  };
+                  break;
+                }
+                case "finish": {
+                  if (textDelta !== "") {
+                    controller.enqueue({ type: "text-delta", textDelta });
+                  }
+                  finishReason = chunk.finishReason;
+                  usage = chunk.usage;
+                  providerMetadata = chunk.providerMetadata;
+                  controller.enqueue({
+                    ...chunk,
+                    usage,
+                    response: fullResponse
+                  });
+                  self._usage.resolve(usage);
+                  self._providerMetadata.resolve(providerMetadata);
+                  self._warnings.resolve(warnings);
+                  self._response.resolve({
+                    ...fullResponse,
+                    headers: response == null ? void 0 : response.headers
+                  });
+                  self._finishReason.resolve(finishReason != null ? finishReason : "unknown");
+                  try {
+                    object2 = await parseAndValidateObjectResultWithRepair(
+                      accumulatedText,
+                      outputStrategy,
+                      repairText,
+                      {
+                        response: fullResponse,
+                        usage,
+                        finishReason
+                      }
+                    );
+                    self._object.resolve(object2);
+                  } catch (e) {
+                    error = e;
+                    self._object.reject(e);
+                  }
+                  break;
+                }
+                default: {
+                  controller.enqueue(chunk);
+                  break;
+                }
+              }
+            },
+            // invoke onFinish callback and resolve toolResults promise when the stream is about to close:
+            async flush(controller) {
+              try {
+                const finalUsage = usage != null ? usage : {
+                  promptTokens: NaN,
+                  completionTokens: NaN,
+                  totalTokens: NaN
+                };
+                doStreamSpan.setAttributes(
+                  selectTelemetryAttributes({
+                    telemetry,
+                    attributes: {
+                      "ai.response.finishReason": finishReason,
+                      "ai.response.object": {
+                        output: () => JSON.stringify(object2)
+                      },
+                      "ai.response.id": fullResponse.id,
+                      "ai.response.model": fullResponse.modelId,
+                      "ai.response.timestamp": fullResponse.timestamp.toISOString(),
+                      "ai.response.providerMetadata": JSON.stringify(providerMetadata),
+                      "ai.usage.inputTokens": finalUsage.inputTokens,
+                      "ai.usage.outputTokens": finalUsage.outputTokens,
+                      "ai.usage.totalTokens": finalUsage.totalTokens,
+                      "ai.usage.reasoningTokens": finalUsage.reasoningTokens,
+                      "ai.usage.cachedInputTokens": finalUsage.cachedInputTokens,
+                      // standardized gen-ai llm span attributes:
+                      "gen_ai.response.finish_reasons": [finishReason],
+                      "gen_ai.response.id": fullResponse.id,
+                      "gen_ai.response.model": fullResponse.modelId,
+                      "gen_ai.usage.input_tokens": finalUsage.inputTokens,
+                      "gen_ai.usage.output_tokens": finalUsage.outputTokens
+                    }
+                  })
+                );
+                doStreamSpan.end();
+                rootSpan.setAttributes(
+                  selectTelemetryAttributes({
+                    telemetry,
+                    attributes: {
+                      "ai.usage.inputTokens": finalUsage.inputTokens,
+                      "ai.usage.outputTokens": finalUsage.outputTokens,
+                      "ai.usage.totalTokens": finalUsage.totalTokens,
+                      "ai.usage.reasoningTokens": finalUsage.reasoningTokens,
+                      "ai.usage.cachedInputTokens": finalUsage.cachedInputTokens,
+                      "ai.response.object": {
+                        output: () => JSON.stringify(object2)
+                      },
+                      "ai.response.providerMetadata": JSON.stringify(providerMetadata)
+                    }
+                  })
+                );
+                await (onFinish == null ? void 0 : onFinish({
+                  usage: finalUsage,
+                  object: object2,
+                  error,
+                  response: {
+                    ...fullResponse,
+                    headers: response == null ? void 0 : response.headers
+                  },
+                  warnings,
+                  providerMetadata
+                }));
+              } catch (error2) {
+                controller.enqueue({ type: "error", error: error2 });
+              } finally {
+                rootSpan.end();
+              }
+            }
+          })
+        );
+        stitchableStream.addStream(transformedStream);
+      }
+    }).catch((error) => {
+      stitchableStream.addStream(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue({ type: "error", error });
+            controller.close();
+          }
+        })
+      );
+    }).finally(() => {
+      stitchableStream.close();
+    });
+    this.outputStrategy = outputStrategy;
+  }
+  get object() {
+    return this._object.promise;
+  }
+  get usage() {
+    return this._usage.promise;
+  }
+  get providerMetadata() {
+    return this._providerMetadata.promise;
+  }
+  get warnings() {
+    return this._warnings.promise;
+  }
+  get request() {
+    return this._request.promise;
+  }
+  get response() {
+    return this._response.promise;
+  }
+  get finishReason() {
+    return this._finishReason.promise;
+  }
+  get partialObjectStream() {
+    return createAsyncIterableStream(
+      this.baseStream.pipeThrough(
+        new TransformStream({
+          transform(chunk, controller) {
+            switch (chunk.type) {
+              case "object":
+                controller.enqueue(chunk.object);
+                break;
+              case "text-delta":
+              case "finish":
+              case "error":
+                break;
+              default: {
+                const _exhaustiveCheck = chunk;
+                throw new Error(`Unsupported chunk type: ${_exhaustiveCheck}`);
+              }
+            }
+          }
+        })
+      )
+    );
+  }
+  get elementStream() {
+    return this.outputStrategy.createElementStream(this.baseStream);
+  }
+  get textStream() {
+    return createAsyncIterableStream(
+      this.baseStream.pipeThrough(
+        new TransformStream({
+          transform(chunk, controller) {
+            switch (chunk.type) {
+              case "text-delta":
+                controller.enqueue(chunk.textDelta);
+                break;
+              case "object":
+              case "finish":
+              case "error":
+                break;
+              default: {
+                const _exhaustiveCheck = chunk;
+                throw new Error(`Unsupported chunk type: ${_exhaustiveCheck}`);
+              }
+            }
+          }
+        })
+      )
+    );
+  }
+  get fullStream() {
+    return createAsyncIterableStream(this.baseStream);
+  }
+  pipeTextStreamToResponse(response, init) {
+    pipeTextStreamToResponse({
+      response,
+      textStream: this.textStream,
+      ...init
+    });
+  }
+  toTextStreamResponse(init) {
+    return createTextStreamResponse({
+      textStream: this.textStream,
+      ...init
+    });
+  }
+};
+
+// src/error/no-speech-generated-error.ts
+var import_provider26 = __nccwpck_require__(2585);
+var NoSpeechGeneratedError = class extends import_provider26.AISDKError {
+  constructor(options) {
+    super({
+      name: "AI_NoSpeechGeneratedError",
+      message: "No speech audio generated."
+    });
+    this.responses = options.responses;
+  }
+};
+
+// src/generate-speech/generated-audio-file.ts
+var DefaultGeneratedAudioFile = class extends DefaultGeneratedFile {
+  constructor({
+    data,
+    mediaType
+  }) {
+    super({ data, mediaType });
+    let format = "mp3";
+    if (mediaType) {
+      const mediaTypeParts = mediaType.split("/");
+      if (mediaTypeParts.length === 2) {
+        if (mediaType !== "audio/mpeg") {
+          format = mediaTypeParts[1];
+        }
+      }
+    }
+    if (!format) {
+      throw new Error(
+        "Audio format must be provided or determinable from media type"
+      );
+    }
+    this.format = format;
+  }
+};
+
+// src/generate-speech/generate-speech.ts
+async function generateSpeech({
+  model,
+  text: text2,
+  voice,
+  outputFormat,
+  instructions,
+  speed,
+  language,
+  providerOptions = {},
+  maxRetries: maxRetriesArg,
+  abortSignal,
+  headers
+}) {
+  var _a17;
+  if (model.specificationVersion !== "v2") {
+    throw new UnsupportedModelVersionError({
+      version: model.specificationVersion,
+      provider: model.provider,
+      modelId: model.modelId
+    });
+  }
+  const { retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const result = await retry(
+    () => model.doGenerate({
+      text: text2,
+      voice,
+      outputFormat,
+      instructions,
+      speed,
+      language,
+      abortSignal,
+      headers,
+      providerOptions
+    })
+  );
+  if (!result.audio || result.audio.length === 0) {
+    throw new NoSpeechGeneratedError({ responses: [result.response] });
+  }
+  return new DefaultSpeechResult({
+    audio: new DefaultGeneratedAudioFile({
+      data: result.audio,
+      mediaType: (_a17 = detectMediaType({
+        data: result.audio,
+        signatures: audioMediaTypeSignatures
+      })) != null ? _a17 : "audio/mp3"
+    }),
+    warnings: result.warnings,
+    responses: [result.response],
+    providerMetadata: result.providerMetadata
+  });
+}
+var DefaultSpeechResult = class {
+  constructor(options) {
+    var _a17;
+    this.audio = options.audio;
+    this.warnings = options.warnings;
+    this.responses = options.responses;
+    this.providerMetadata = (_a17 = options.providerMetadata) != null ? _a17 : {};
+  }
+};
+
+// src/generate-text/output.ts
+var output_exports = {};
+__export(output_exports, {
+  object: () => object,
+  text: () => text
+});
+var import_provider_utils19 = __nccwpck_require__(9033);
+var text = () => ({
+  type: "text",
+  responseFormat: { type: "text" },
+  async parsePartial({ text: text2 }) {
+    return { partial: text2 };
+  },
+  async parseOutput({ text: text2 }) {
+    return text2;
+  }
+});
+var object = ({
+  schema: inputSchema
+}) => {
+  const schema = (0, import_provider_utils19.asSchema)(inputSchema);
+  return {
+    type: "object",
+    responseFormat: {
+      type: "json",
+      schema: schema.jsonSchema
+    },
+    async parsePartial({ text: text2 }) {
+      const result = await parsePartialJson(text2);
+      switch (result.state) {
+        case "failed-parse":
+        case "undefined-input":
+          return void 0;
+        case "repaired-parse":
+        case "successful-parse":
+          return {
+            // Note: currently no validation of partial results:
+            partial: result.value
+          };
+        default: {
+          const _exhaustiveCheck = result.state;
+          throw new Error(`Unsupported parse state: ${_exhaustiveCheck}`);
+        }
+      }
+    },
+    async parseOutput({ text: text2 }, context) {
+      const parseResult = await (0, import_provider_utils19.safeParseJSON)({ text: text2 });
+      if (!parseResult.success) {
+        throw new NoObjectGeneratedError({
+          message: "No object generated: could not parse the response.",
+          cause: parseResult.error,
+          text: text2,
+          response: context.response,
+          usage: context.usage,
+          finishReason: context.finishReason
+        });
+      }
+      const validationResult = await (0, import_provider_utils19.safeValidateTypes)({
+        value: parseResult.value,
+        schema
+      });
+      if (!validationResult.success) {
+        throw new NoObjectGeneratedError({
+          message: "No object generated: response did not match schema.",
+          cause: validationResult.error,
+          text: text2,
+          response: context.response,
+          usage: context.usage,
+          finishReason: context.finishReason
+        });
+      }
+      return validationResult.value;
+    }
+  };
+};
+
+// src/generate-text/smooth-stream.ts
+var import_provider_utils20 = __nccwpck_require__(9033);
+var import_provider27 = __nccwpck_require__(2585);
+var CHUNKING_REGEXPS = {
+  word: /\S+\s+/m,
+  line: /\n+/m
+};
+function smoothStream({
+  delayInMs = 10,
+  chunking = "word",
+  _internal: { delay: delay2 = import_provider_utils20.delay } = {}
+} = {}) {
+  let detectChunk;
+  if (typeof chunking === "function") {
+    detectChunk = (buffer) => {
+      const match = chunking(buffer);
+      if (match == null) {
+        return null;
+      }
+      if (!match.length) {
+        throw new Error(`Chunking function must return a non-empty string.`);
+      }
+      if (!buffer.startsWith(match)) {
+        throw new Error(
+          `Chunking function must return a match that is a prefix of the buffer. Received: "${match}" expected to start with "${buffer}"`
+        );
+      }
+      return match;
+    };
+  } else {
+    const chunkingRegex = typeof chunking === "string" ? CHUNKING_REGEXPS[chunking] : chunking;
+    if (chunkingRegex == null) {
+      throw new import_provider27.InvalidArgumentError({
+        argument: "chunking",
+        message: `Chunking must be "word" or "line" or a RegExp. Received: ${chunking}`
+      });
+    }
+    detectChunk = (buffer) => {
+      const match = chunkingRegex.exec(buffer);
+      if (!match) {
+        return null;
+      }
+      return buffer.slice(0, match.index) + (match == null ? void 0 : match[0]);
+    };
+  }
+  return () => {
+    let buffer = "";
+    let id = "";
+    return new TransformStream({
+      async transform(chunk, controller) {
+        if (chunk.type !== "text-delta") {
+          if (buffer.length > 0) {
+            controller.enqueue({ type: "text-delta", text: buffer, id });
+            buffer = "";
+          }
+          controller.enqueue(chunk);
+          return;
+        }
+        if (chunk.id !== id && buffer.length > 0) {
+          controller.enqueue({ type: "text-delta", text: buffer, id });
+          buffer = "";
+        }
+        buffer += chunk.text;
+        id = chunk.id;
+        let match;
+        while ((match = detectChunk(buffer)) != null) {
+          controller.enqueue({ type: "text-delta", text: match, id });
+          buffer = buffer.slice(match.length);
+          await delay2(delayInMs);
+        }
+      }
+    });
+  };
+}
+
+// src/middleware/default-settings-middleware.ts
+function defaultSettingsMiddleware({
+  settings
+}) {
+  return {
+    middlewareVersion: "v2",
+    transformParams: async ({ params }) => {
+      return mergeObjects(settings, params);
+    }
+  };
+}
+
+// src/util/get-potential-start-index.ts
+function getPotentialStartIndex(text2, searchedText) {
+  if (searchedText.length === 0) {
+    return null;
+  }
+  const directIndex = text2.indexOf(searchedText);
+  if (directIndex !== -1) {
+    return directIndex;
+  }
+  for (let i = text2.length - 1; i >= 0; i--) {
+    const suffix = text2.substring(i);
+    if (searchedText.startsWith(suffix)) {
+      return i;
+    }
+  }
+  return null;
+}
+
+// src/middleware/extract-reasoning-middleware.ts
+function extractReasoningMiddleware({
+  tagName,
+  separator = "\n",
+  startWithReasoning = false
+}) {
+  const openingTag = `<${tagName}>`;
+  const closingTag = `</${tagName}>`;
+  return {
+    middlewareVersion: "v2",
+    wrapGenerate: async ({ doGenerate }) => {
+      const { content, ...rest } = await doGenerate();
+      const transformedContent = [];
+      for (const part of content) {
+        if (part.type !== "text") {
+          transformedContent.push(part);
+          continue;
+        }
+        const text2 = startWithReasoning ? openingTag + part.text : part.text;
+        const regexp = new RegExp(`${openingTag}(.*?)${closingTag}`, "gs");
+        const matches = Array.from(text2.matchAll(regexp));
+        if (!matches.length) {
+          transformedContent.push(part);
+          continue;
+        }
+        const reasoningText = matches.map((match) => match[1]).join(separator);
+        let textWithoutReasoning = text2;
+        for (let i = matches.length - 1; i >= 0; i--) {
+          const match = matches[i];
+          const beforeMatch = textWithoutReasoning.slice(0, match.index);
+          const afterMatch = textWithoutReasoning.slice(
+            match.index + match[0].length
+          );
+          textWithoutReasoning = beforeMatch + (beforeMatch.length > 0 && afterMatch.length > 0 ? separator : "") + afterMatch;
+        }
+        transformedContent.push({
+          type: "reasoning",
+          text: reasoningText
+        });
+        transformedContent.push({
+          type: "text",
+          text: textWithoutReasoning
+        });
+      }
+      return { content: transformedContent, ...rest };
+    },
+    wrapStream: async ({ doStream }) => {
+      const { stream, ...rest } = await doStream();
+      const reasoningExtractions = {};
+      let delayedTextStart;
+      return {
+        stream: stream.pipeThrough(
+          new TransformStream({
+            transform: (chunk, controller) => {
+              if (chunk.type === "text-start") {
+                delayedTextStart = chunk;
+                return;
+              }
+              if (chunk.type === "text-end" && delayedTextStart) {
+                controller.enqueue(delayedTextStart);
+                delayedTextStart = void 0;
+              }
+              if (chunk.type !== "text-delta") {
+                controller.enqueue(chunk);
+                return;
+              }
+              if (reasoningExtractions[chunk.id] == null) {
+                reasoningExtractions[chunk.id] = {
+                  isFirstReasoning: true,
+                  isFirstText: true,
+                  afterSwitch: false,
+                  isReasoning: startWithReasoning,
+                  buffer: "",
+                  idCounter: 0,
+                  textId: chunk.id
+                };
+              }
+              const activeExtraction = reasoningExtractions[chunk.id];
+              activeExtraction.buffer += chunk.delta;
+              function publish(text2) {
+                if (text2.length > 0) {
+                  const prefix = activeExtraction.afterSwitch && (activeExtraction.isReasoning ? !activeExtraction.isFirstReasoning : !activeExtraction.isFirstText) ? separator : "";
+                  if (activeExtraction.isReasoning && (activeExtraction.afterSwitch || activeExtraction.isFirstReasoning)) {
+                    controller.enqueue({
+                      type: "reasoning-start",
+                      id: `reasoning-${activeExtraction.idCounter}`
+                    });
+                  }
+                  if (activeExtraction.isReasoning) {
+                    controller.enqueue({
+                      type: "reasoning-delta",
+                      delta: prefix + text2,
+                      id: `reasoning-${activeExtraction.idCounter}`
+                    });
+                  } else {
+                    if (delayedTextStart) {
+                      controller.enqueue(delayedTextStart);
+                      delayedTextStart = void 0;
+                    }
+                    controller.enqueue({
+                      type: "text-delta",
+                      delta: prefix + text2,
+                      id: activeExtraction.textId
+                    });
+                  }
+                  activeExtraction.afterSwitch = false;
+                  if (activeExtraction.isReasoning) {
+                    activeExtraction.isFirstReasoning = false;
+                  } else {
+                    activeExtraction.isFirstText = false;
+                  }
+                }
+              }
+              do {
+                const nextTag = activeExtraction.isReasoning ? closingTag : openingTag;
+                const startIndex = getPotentialStartIndex(
+                  activeExtraction.buffer,
+                  nextTag
+                );
+                if (startIndex == null) {
+                  publish(activeExtraction.buffer);
+                  activeExtraction.buffer = "";
+                  break;
+                }
+                publish(activeExtraction.buffer.slice(0, startIndex));
+                const foundFullMatch = startIndex + nextTag.length <= activeExtraction.buffer.length;
+                if (foundFullMatch) {
+                  activeExtraction.buffer = activeExtraction.buffer.slice(
+                    startIndex + nextTag.length
+                  );
+                  if (activeExtraction.isReasoning) {
+                    controller.enqueue({
+                      type: "reasoning-end",
+                      id: `reasoning-${activeExtraction.idCounter++}`
+                    });
+                  }
+                  activeExtraction.isReasoning = !activeExtraction.isReasoning;
+                  activeExtraction.afterSwitch = true;
+                } else {
+                  activeExtraction.buffer = activeExtraction.buffer.slice(startIndex);
+                  break;
+                }
+              } while (true);
+            }
+          })
+        ),
+        ...rest
+      };
+    }
+  };
+}
+
+// src/middleware/simulate-streaming-middleware.ts
+function simulateStreamingMiddleware() {
+  return {
+    middlewareVersion: "v2",
+    wrapStream: async ({ doGenerate }) => {
+      const result = await doGenerate();
+      let id = 0;
+      const simulatedStream = new ReadableStream({
+        start(controller) {
+          controller.enqueue({
+            type: "stream-start",
+            warnings: result.warnings
+          });
+          controller.enqueue({ type: "response-metadata", ...result.response });
+          for (const part of result.content) {
+            switch (part.type) {
+              case "text": {
+                if (part.text.length > 0) {
+                  controller.enqueue({ type: "text-start", id: String(id) });
+                  controller.enqueue({
+                    type: "text-delta",
+                    id: String(id),
+                    delta: part.text
+                  });
+                  controller.enqueue({ type: "text-end", id: String(id) });
+                  id++;
+                }
+                break;
+              }
+              case "reasoning": {
+                controller.enqueue({
+                  type: "reasoning-start",
+                  id: String(id),
+                  providerMetadata: part.providerMetadata
+                });
+                controller.enqueue({
+                  type: "reasoning-delta",
+                  id: String(id),
+                  delta: part.text
+                });
+                controller.enqueue({ type: "reasoning-end", id: String(id) });
+                id++;
+                break;
+              }
+              default: {
+                controller.enqueue(part);
+                break;
+              }
+            }
+          }
+          controller.enqueue({
+            type: "finish",
+            finishReason: result.finishReason,
+            usage: result.usage,
+            providerMetadata: result.providerMetadata
+          });
+          controller.close();
+        }
+      });
+      return {
+        stream: simulatedStream,
+        request: result.request,
+        response: result.response
+      };
+    }
+  };
+}
+
+// src/middleware/wrap-language-model.ts
+var wrapLanguageModel = ({
+  model,
+  middleware: middlewareArg,
+  modelId,
+  providerId
+}) => {
+  return asArray(middlewareArg).reverse().reduce((wrappedModel, middleware) => {
+    return doWrap({ model: wrappedModel, middleware, modelId, providerId });
+  }, model);
+};
+var doWrap = ({
+  model,
+  middleware: {
+    transformParams,
+    wrapGenerate,
+    wrapStream,
+    overrideProvider,
+    overrideModelId,
+    overrideSupportedUrls
+  },
+  modelId,
+  providerId
+}) => {
+  var _a17, _b, _c;
+  async function doTransform({
+    params,
+    type
+  }) {
+    return transformParams ? await transformParams({ params, type, model }) : params;
+  }
+  return {
+    specificationVersion: "v2",
+    provider: (_a17 = providerId != null ? providerId : overrideProvider == null ? void 0 : overrideProvider({ model })) != null ? _a17 : model.provider,
+    modelId: (_b = modelId != null ? modelId : overrideModelId == null ? void 0 : overrideModelId({ model })) != null ? _b : model.modelId,
+    supportedUrls: (_c = overrideSupportedUrls == null ? void 0 : overrideSupportedUrls({ model })) != null ? _c : model.supportedUrls,
+    async doGenerate(params) {
+      const transformedParams = await doTransform({ params, type: "generate" });
+      const doGenerate = async () => model.doGenerate(transformedParams);
+      const doStream = async () => model.doStream(transformedParams);
+      return wrapGenerate ? wrapGenerate({
+        doGenerate,
+        doStream,
+        params: transformedParams,
+        model
+      }) : doGenerate();
+    },
+    async doStream(params) {
+      const transformedParams = await doTransform({ params, type: "stream" });
+      const doGenerate = async () => model.doGenerate(transformedParams);
+      const doStream = async () => model.doStream(transformedParams);
+      return wrapStream ? wrapStream({ doGenerate, doStream, params: transformedParams, model }) : doStream();
+    }
+  };
+};
+
+// src/middleware/wrap-provider.ts
+function wrapProvider({
+  provider,
+  languageModelMiddleware
+}) {
+  const wrappedProvider = {
+    languageModel(modelId) {
+      let model = provider.languageModel(modelId);
+      model = wrapLanguageModel({
+        model,
+        middleware: languageModelMiddleware
+      });
+      return model;
+    },
+    textEmbeddingModel: provider.textEmbeddingModel,
+    imageModel: provider.imageModel,
+    transcriptionModel: provider.transcriptionModel,
+    speechModel: provider.speechModel
+  };
+  return wrappedProvider;
+}
+
+// src/registry/custom-provider.ts
+var import_provider28 = __nccwpck_require__(2585);
+function customProvider({
+  languageModels,
+  textEmbeddingModels,
+  imageModels,
+  transcriptionModels,
+  speechModels,
+  fallbackProvider
+}) {
+  return {
+    languageModel(modelId) {
+      if (languageModels != null && modelId in languageModels) {
+        return languageModels[modelId];
+      }
+      if (fallbackProvider) {
+        return fallbackProvider.languageModel(modelId);
+      }
+      throw new import_provider28.NoSuchModelError({ modelId, modelType: "languageModel" });
+    },
+    textEmbeddingModel(modelId) {
+      if (textEmbeddingModels != null && modelId in textEmbeddingModels) {
+        return textEmbeddingModels[modelId];
+      }
+      if (fallbackProvider) {
+        return fallbackProvider.textEmbeddingModel(modelId);
+      }
+      throw new import_provider28.NoSuchModelError({ modelId, modelType: "textEmbeddingModel" });
+    },
+    imageModel(modelId) {
+      if (imageModels != null && modelId in imageModels) {
+        return imageModels[modelId];
+      }
+      if (fallbackProvider == null ? void 0 : fallbackProvider.imageModel) {
+        return fallbackProvider.imageModel(modelId);
+      }
+      throw new import_provider28.NoSuchModelError({ modelId, modelType: "imageModel" });
+    },
+    transcriptionModel(modelId) {
+      if (transcriptionModels != null && modelId in transcriptionModels) {
+        return transcriptionModels[modelId];
+      }
+      if (fallbackProvider == null ? void 0 : fallbackProvider.transcriptionModel) {
+        return fallbackProvider.transcriptionModel(modelId);
+      }
+      throw new import_provider28.NoSuchModelError({ modelId, modelType: "transcriptionModel" });
+    },
+    speechModel(modelId) {
+      if (speechModels != null && modelId in speechModels) {
+        return speechModels[modelId];
+      }
+      if (fallbackProvider == null ? void 0 : fallbackProvider.speechModel) {
+        return fallbackProvider.speechModel(modelId);
+      }
+      throw new import_provider28.NoSuchModelError({ modelId, modelType: "speechModel" });
+    }
+  };
+}
+var experimental_customProvider = customProvider;
+
+// src/registry/no-such-provider-error.ts
+var import_provider29 = __nccwpck_require__(2585);
+var name16 = "AI_NoSuchProviderError";
+var marker16 = `vercel.ai.error.${name16}`;
+var symbol16 = Symbol.for(marker16);
+var _a16;
+var NoSuchProviderError = class extends import_provider29.NoSuchModelError {
   constructor({
     modelId,
     modelType,
-    message = `No such ${modelType}: ${modelId}`
-  }) {
-    super(message);
-    this.name = "AI_NoSuchModelError";
-    this.modelId = modelId;
-    this.modelType = modelType;
-  }
-  static isNoSuchModelError(error) {
-    return error instanceof Error && error.name === "AI_NoSuchModelError" && typeof error.modelId === "string" && typeof error.modelType === "string";
-  }
-  toJSON() {
-    return {
-      name: this.name,
-      message: this.message,
-      stack: this.stack,
-      modelId: this.modelId,
-      modelType: this.modelType
-    };
-  }
-};
-
-// core/registry/no-such-provider-error.ts
-var NoSuchProviderError = class extends Error {
-  constructor({
     providerId,
     availableProviders,
     message = `No such provider: ${providerId} (available providers: ${availableProviders.join()})`
   }) {
-    super(message);
-    this.name = "AI_NoSuchProviderError";
+    super({ errorName: name16, modelId, modelType, message });
+    this[_a16] = true;
     this.providerId = providerId;
     this.availableProviders = availableProviders;
   }
-  static isNoSuchProviderError(error) {
-    return error instanceof Error && error.name === "AI_NoSuchProviderError" && typeof error.providerId === "string" && Array.isArray(error.availableProviders);
-  }
-  toJSON() {
-    return {
-      name: this.name,
-      message: this.message,
-      stack: this.stack,
-      providerId: this.providerId,
-      availableProviders: this.availableProviders
-    };
+  static isInstance(error) {
+    return import_provider29.AISDKError.hasMarker(error, marker16);
   }
 };
+_a16 = symbol16;
 
-// core/registry/provider-registry.ts
-function experimental_createProviderRegistry(providers) {
-  const registry = new DefaultProviderRegistry();
+// src/registry/provider-registry.ts
+var import_provider30 = __nccwpck_require__(2585);
+function createProviderRegistry(providers, {
+  separator = ":",
+  languageModelMiddleware
+} = {}) {
+  const registry = new DefaultProviderRegistry({
+    separator,
+    languageModelMiddleware
+  });
   for (const [id, provider] of Object.entries(providers)) {
     registry.registerProvider({ id, provider });
   }
   return registry;
 }
-var experimental_createModelRegistry = experimental_createProviderRegistry;
+var experimental_createProviderRegistry = createProviderRegistry;
 var DefaultProviderRegistry = class {
-  constructor() {
+  constructor({
+    separator,
+    languageModelMiddleware
+  }) {
     this.providers = {};
+    this.separator = separator;
+    this.languageModelMiddleware = languageModelMiddleware;
   }
-  registerProvider({ id, provider }) {
+  registerProvider({
+    id,
+    provider
+  }) {
     this.providers[id] = provider;
   }
-  getProvider(id) {
+  getProvider(id, modelType) {
     const provider = this.providers[id];
     if (provider == null) {
       throw new NoSuchProviderError({
+        modelId: id,
+        modelType,
         providerId: id,
         availableProviders: Object.keys(this.providers)
       });
     }
     return provider;
   }
-  splitId(id) {
-    const index = id.indexOf(":");
+  splitId(id, modelType) {
+    const index = id.indexOf(this.separator);
     if (index === -1) {
-      throw new InvalidModelIdError({ id });
+      throw new import_provider30.NoSuchModelError({
+        modelId: id,
+        modelType,
+        message: `Invalid ${modelType} id for registry: ${id} (must be in the format "providerId${this.separator}modelId")`
+      });
     }
-    return [id.slice(0, index), id.slice(index + 1)];
+    return [id.slice(0, index), id.slice(index + this.separator.length)];
   }
   languageModel(id) {
-    var _a, _b;
-    const [providerId, modelId] = this.splitId(id);
-    const model = (_b = (_a = this.getProvider(providerId)).languageModel) == null ? void 0 : _b.call(_a, modelId);
+    var _a17, _b;
+    const [providerId, modelId] = this.splitId(id, "languageModel");
+    let model = (_b = (_a17 = this.getProvider(providerId, "languageModel")).languageModel) == null ? void 0 : _b.call(
+      _a17,
+      modelId
+    );
     if (model == null) {
-      throw new NoSuchModelError({ modelId: id, modelType: "language model" });
+      throw new import_provider30.NoSuchModelError({ modelId: id, modelType: "languageModel" });
+    }
+    if (this.languageModelMiddleware != null) {
+      model = wrapLanguageModel({
+        model,
+        middleware: this.languageModelMiddleware
+      });
     }
     return model;
   }
   textEmbeddingModel(id) {
-    var _a, _b;
-    const [providerId, modelId] = this.splitId(id);
-    const model = (_b = (_a = this.getProvider(providerId)).textEmbedding) == null ? void 0 : _b.call(_a, modelId);
+    var _a17;
+    const [providerId, modelId] = this.splitId(id, "textEmbeddingModel");
+    const provider = this.getProvider(providerId, "textEmbeddingModel");
+    const model = (_a17 = provider.textEmbeddingModel) == null ? void 0 : _a17.call(provider, modelId);
     if (model == null) {
-      throw new NoSuchModelError({
+      throw new import_provider30.NoSuchModelError({
         modelId: id,
-        modelType: "text embedding model"
+        modelType: "textEmbeddingModel"
       });
+    }
+    return model;
+  }
+  imageModel(id) {
+    var _a17;
+    const [providerId, modelId] = this.splitId(id, "imageModel");
+    const provider = this.getProvider(providerId, "imageModel");
+    const model = (_a17 = provider.imageModel) == null ? void 0 : _a17.call(provider, modelId);
+    if (model == null) {
+      throw new import_provider30.NoSuchModelError({ modelId: id, modelType: "imageModel" });
+    }
+    return model;
+  }
+  transcriptionModel(id) {
+    var _a17;
+    const [providerId, modelId] = this.splitId(id, "transcriptionModel");
+    const provider = this.getProvider(providerId, "transcriptionModel");
+    const model = (_a17 = provider.transcriptionModel) == null ? void 0 : _a17.call(provider, modelId);
+    if (model == null) {
+      throw new import_provider30.NoSuchModelError({
+        modelId: id,
+        modelType: "transcriptionModel"
+      });
+    }
+    return model;
+  }
+  speechModel(id) {
+    var _a17;
+    const [providerId, modelId] = this.splitId(id, "speechModel");
+    const provider = this.getProvider(providerId, "speechModel");
+    const model = (_a17 = provider.speechModel) == null ? void 0 : _a17.call(provider, modelId);
+    if (model == null) {
+      throw new import_provider30.NoSuchModelError({ modelId: id, modelType: "speechModel" });
     }
     return model;
   }
 };
 
-// core/tool/tool.ts
-function tool(tool2) {
-  return tool2;
-}
+// src/tool/mcp/mcp-client.ts
+var import_provider_utils22 = __nccwpck_require__(9033);
 
-// core/types/errors.ts
-var import_provider8 = __nccwpck_require__(131);
+// src/tool/mcp/mcp-sse-transport.ts
+var import_provider_utils21 = __nccwpck_require__(9033);
 
-// core/util/cosine-similarity.ts
-function cosineSimilarity(vector1, vector2) {
-  if (vector1.length !== vector2.length) {
-    throw new Error(
-      `Vectors must have the same length (vector1: ${vector1.length} elements, vector2: ${vector2.length} elements)`
-    );
+// src/tool/mcp/json-rpc-message.ts
+var import_v49 = __nccwpck_require__(5350);
+
+// src/tool/mcp/types.ts
+var import_v48 = __nccwpck_require__(5350);
+var LATEST_PROTOCOL_VERSION = "2025-06-18";
+var SUPPORTED_PROTOCOL_VERSIONS = [
+  LATEST_PROTOCOL_VERSION,
+  "2025-03-26",
+  "2024-11-05"
+];
+var ClientOrServerImplementationSchema = import_v48.z.looseObject({
+  name: import_v48.z.string(),
+  version: import_v48.z.string()
+});
+var BaseParamsSchema = import_v48.z.looseObject({
+  _meta: import_v48.z.optional(import_v48.z.object({}).loose())
+});
+var ResultSchema = BaseParamsSchema;
+var RequestSchema = import_v48.z.object({
+  method: import_v48.z.string(),
+  params: import_v48.z.optional(BaseParamsSchema)
+});
+var ServerCapabilitiesSchema = import_v48.z.looseObject({
+  experimental: import_v48.z.optional(import_v48.z.object({}).loose()),
+  logging: import_v48.z.optional(import_v48.z.object({}).loose()),
+  prompts: import_v48.z.optional(
+    import_v48.z.looseObject({
+      listChanged: import_v48.z.optional(import_v48.z.boolean())
+    })
+  ),
+  resources: import_v48.z.optional(
+    import_v48.z.looseObject({
+      subscribe: import_v48.z.optional(import_v48.z.boolean()),
+      listChanged: import_v48.z.optional(import_v48.z.boolean())
+    })
+  ),
+  tools: import_v48.z.optional(
+    import_v48.z.looseObject({
+      listChanged: import_v48.z.optional(import_v48.z.boolean())
+    })
+  )
+});
+var InitializeResultSchema = ResultSchema.extend({
+  protocolVersion: import_v48.z.string(),
+  capabilities: ServerCapabilitiesSchema,
+  serverInfo: ClientOrServerImplementationSchema,
+  instructions: import_v48.z.optional(import_v48.z.string())
+});
+var PaginatedResultSchema = ResultSchema.extend({
+  nextCursor: import_v48.z.optional(import_v48.z.string())
+});
+var ToolSchema = import_v48.z.object({
+  name: import_v48.z.string(),
+  description: import_v48.z.optional(import_v48.z.string()),
+  inputSchema: import_v48.z.object({
+    type: import_v48.z.literal("object"),
+    properties: import_v48.z.optional(import_v48.z.object({}).loose())
+  }).loose()
+}).loose();
+var ListToolsResultSchema = PaginatedResultSchema.extend({
+  tools: import_v48.z.array(ToolSchema)
+});
+var TextContentSchema = import_v48.z.object({
+  type: import_v48.z.literal("text"),
+  text: import_v48.z.string()
+}).loose();
+var ImageContentSchema = import_v48.z.object({
+  type: import_v48.z.literal("image"),
+  data: import_v48.z.base64(),
+  mimeType: import_v48.z.string()
+}).loose();
+var ResourceContentsSchema = import_v48.z.object({
+  /**
+   * The URI of this resource.
+   */
+  uri: import_v48.z.string(),
+  /**
+   * The MIME type of this resource, if known.
+   */
+  mimeType: import_v48.z.optional(import_v48.z.string())
+}).loose();
+var TextResourceContentsSchema = ResourceContentsSchema.extend({
+  text: import_v48.z.string()
+});
+var BlobResourceContentsSchema = ResourceContentsSchema.extend({
+  blob: import_v48.z.base64()
+});
+var EmbeddedResourceSchema = import_v48.z.object({
+  type: import_v48.z.literal("resource"),
+  resource: import_v48.z.union([TextResourceContentsSchema, BlobResourceContentsSchema])
+}).loose();
+var CallToolResultSchema = ResultSchema.extend({
+  content: import_v48.z.array(
+    import_v48.z.union([TextContentSchema, ImageContentSchema, EmbeddedResourceSchema])
+  ),
+  isError: import_v48.z.boolean().default(false).optional()
+}).or(
+  ResultSchema.extend({
+    toolResult: import_v48.z.unknown()
+  })
+);
+
+// src/tool/mcp/json-rpc-message.ts
+var JSONRPC_VERSION = "2.0";
+var JSONRPCRequestSchema = import_v49.z.object({
+  jsonrpc: import_v49.z.literal(JSONRPC_VERSION),
+  id: import_v49.z.union([import_v49.z.string(), import_v49.z.number().int()])
+}).merge(RequestSchema).strict();
+var JSONRPCResponseSchema = import_v49.z.object({
+  jsonrpc: import_v49.z.literal(JSONRPC_VERSION),
+  id: import_v49.z.union([import_v49.z.string(), import_v49.z.number().int()]),
+  result: ResultSchema
+}).strict();
+var JSONRPCErrorSchema = import_v49.z.object({
+  jsonrpc: import_v49.z.literal(JSONRPC_VERSION),
+  id: import_v49.z.union([import_v49.z.string(), import_v49.z.number().int()]),
+  error: import_v49.z.object({
+    code: import_v49.z.number().int(),
+    message: import_v49.z.string(),
+    data: import_v49.z.optional(import_v49.z.unknown())
+  })
+}).strict();
+var JSONRPCNotificationSchema = import_v49.z.object({
+  jsonrpc: import_v49.z.literal(JSONRPC_VERSION)
+}).merge(
+  import_v49.z.object({
+    method: import_v49.z.string(),
+    params: import_v49.z.optional(BaseParamsSchema)
+  })
+).strict();
+var JSONRPCMessageSchema = import_v49.z.union([
+  JSONRPCRequestSchema,
+  JSONRPCNotificationSchema,
+  JSONRPCResponseSchema,
+  JSONRPCErrorSchema
+]);
+
+// src/tool/mcp/mcp-sse-transport.ts
+var SseMCPTransport = class {
+  constructor({
+    url,
+    headers
+  }) {
+    this.connected = false;
+    this.url = new URL(url);
+    this.headers = headers;
   }
-  return dotProduct(vector1, vector2) / (magnitude(vector1) * magnitude(vector2));
-}
-function dotProduct(vector1, vector2) {
-  return vector1.reduce(
-    (accumulator, value, index) => accumulator + value * vector2[index],
-    0
-  );
-}
-function magnitude(vector) {
-  return Math.sqrt(dotProduct(vector, vector));
-}
-
-// streams/ai-stream.ts
-var import_eventsource_parser = __nccwpck_require__(2427);
-function createEventStreamTransformer(customParser) {
-  const textDecoder = new TextDecoder();
-  let eventSourceParser;
-  return new TransformStream({
-    async start(controller) {
-      eventSourceParser = (0, import_eventsource_parser.createParser)(
-        (event) => {
-          if ("data" in event && event.type === "event" && event.data === "[DONE]" || // Replicate doesn't send [DONE] but does send a 'done' event
-          // @see https://replicate.com/docs/streaming
-          event.event === "done") {
-            controller.terminate();
+  async start() {
+    return new Promise((resolve2, reject) => {
+      if (this.connected) {
+        return resolve2();
+      }
+      this.abortController = new AbortController();
+      const establishConnection = async () => {
+        var _a17, _b, _c;
+        try {
+          const headers = new Headers(this.headers);
+          headers.set("Accept", "text/event-stream");
+          const response = await fetch(this.url.href, {
+            headers,
+            signal: (_a17 = this.abortController) == null ? void 0 : _a17.signal
+          });
+          if (!response.ok || !response.body) {
+            const error = new MCPClientError({
+              message: `MCP SSE Transport Error: ${response.status} ${response.statusText}`
+            });
+            (_b = this.onerror) == null ? void 0 : _b.call(this, error);
+            return reject(error);
+          }
+          const stream = response.body.pipeThrough(new TextDecoderStream()).pipeThrough(new import_provider_utils21.EventSourceParserStream());
+          const reader = stream.getReader();
+          const processEvents = async () => {
+            var _a18, _b2, _c2;
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                  if (this.connected) {
+                    this.connected = false;
+                    throw new MCPClientError({
+                      message: "MCP SSE Transport Error: Connection closed unexpectedly"
+                    });
+                  }
+                  return;
+                }
+                const { event, data } = value;
+                if (event === "endpoint") {
+                  this.endpoint = new URL(data, this.url);
+                  if (this.endpoint.origin !== this.url.origin) {
+                    throw new MCPClientError({
+                      message: `MCP SSE Transport Error: Endpoint origin does not match connection origin: ${this.endpoint.origin}`
+                    });
+                  }
+                  this.connected = true;
+                  resolve2();
+                } else if (event === "message") {
+                  try {
+                    const message = JSONRPCMessageSchema.parse(
+                      JSON.parse(data)
+                    );
+                    (_a18 = this.onmessage) == null ? void 0 : _a18.call(this, message);
+                  } catch (error) {
+                    const e = new MCPClientError({
+                      message: "MCP SSE Transport Error: Failed to parse message",
+                      cause: error
+                    });
+                    (_b2 = this.onerror) == null ? void 0 : _b2.call(this, e);
+                  }
+                }
+              }
+            } catch (error) {
+              if (error instanceof Error && error.name === "AbortError") {
+                return;
+              }
+              (_c2 = this.onerror) == null ? void 0 : _c2.call(this, error);
+              reject(error);
+            }
+          };
+          this.sseConnection = {
+            close: () => reader.cancel()
+          };
+          processEvents();
+        } catch (error) {
+          if (error instanceof Error && error.name === "AbortError") {
             return;
           }
-          if ("data" in event) {
-            const parsedMessage = customParser ? customParser(event.data, {
-              event: event.event
-            }) : event.data;
-            if (parsedMessage)
-              controller.enqueue(parsedMessage);
-          }
+          (_c = this.onerror) == null ? void 0 : _c.call(this, error);
+          reject(error);
         }
-      );
-    },
-    transform(chunk) {
-      eventSourceParser.feed(textDecoder.decode(chunk));
-    }
-  });
-}
-function createCallbacksTransformer(cb) {
-  const textEncoder = new TextEncoder();
-  let aggregatedResponse = "";
-  const callbacks = cb || {};
-  return new TransformStream({
-    async start() {
-      if (callbacks.onStart)
-        await callbacks.onStart();
-    },
-    async transform(message, controller) {
-      const content = typeof message === "string" ? message : message.content;
-      controller.enqueue(textEncoder.encode(content));
-      aggregatedResponse += content;
-      if (callbacks.onToken)
-        await callbacks.onToken(content);
-      if (callbacks.onText && typeof message === "string") {
-        await callbacks.onText(message);
-      }
-    },
-    async flush() {
-      const isOpenAICallbacks = isOfTypeOpenAIStreamCallbacks(callbacks);
-      if (callbacks.onCompletion) {
-        await callbacks.onCompletion(aggregatedResponse);
-      }
-      if (callbacks.onFinal && !isOpenAICallbacks) {
-        await callbacks.onFinal(aggregatedResponse);
-      }
-    }
-  });
-}
-function isOfTypeOpenAIStreamCallbacks(callbacks) {
-  return "experimental_onFunctionCall" in callbacks;
-}
-function trimStartOfStreamHelper() {
-  let isStreamStart = true;
-  return (text) => {
-    if (isStreamStart) {
-      text = text.trimStart();
-      if (text)
-        isStreamStart = false;
-    }
-    return text;
-  };
-}
-function AIStream(response, customParser, callbacks) {
-  if (!response.ok) {
-    if (response.body) {
-      const reader = response.body.getReader();
-      return new ReadableStream({
-        async start(controller) {
-          const { done, value } = await reader.read();
-          if (!done) {
-            const errorText = new TextDecoder().decode(value);
-            controller.error(new Error(`Response error: ${errorText}`));
-          }
-        }
-      });
-    } else {
-      return new ReadableStream({
-        start(controller) {
-          controller.error(new Error("Response error: No response body"));
-        }
-      });
-    }
-  }
-  const responseBodyStream = response.body || createEmptyReadableStream();
-  return responseBodyStream.pipeThrough(createEventStreamTransformer(customParser)).pipeThrough(createCallbacksTransformer(callbacks));
-}
-function createEmptyReadableStream() {
-  return new ReadableStream({
-    start(controller) {
-      controller.close();
-    }
-  });
-}
-function readableFromAsyncIterable(iterable) {
-  let it = iterable[Symbol.asyncIterator]();
-  return new ReadableStream({
-    async pull(controller) {
-      const { done, value } = await it.next();
-      if (done)
-        controller.close();
-      else
-        controller.enqueue(value);
-    },
-    async cancel(reason) {
-      var _a;
-      await ((_a = it.return) == null ? void 0 : _a.call(it, reason));
-    }
-  });
-}
-
-// streams/stream-data.ts
-var import_ui_utils3 = __nccwpck_require__(7170);
-var StreamData = class {
-  constructor() {
-    this.encoder = new TextEncoder();
-    this.controller = null;
-    this.isClosed = false;
-    this.warningTimeout = null;
-    const self = this;
-    this.stream = new ReadableStream({
-      start: async (controller) => {
-        self.controller = controller;
-        if (process.env.NODE_ENV === "development") {
-          self.warningTimeout = setTimeout(() => {
-            console.warn(
-              "The data stream is hanging. Did you forget to close it with `data.close()`?"
-            );
-          }, 3e3);
-        }
-      },
-      pull: (controller) => {
-      },
-      cancel: (reason) => {
-        this.isClosed = true;
-      }
+      };
+      establishConnection();
     });
   }
   async close() {
-    if (this.isClosed) {
-      throw new Error("Data Stream has already been closed.");
-    }
-    if (!this.controller) {
-      throw new Error("Stream controller is not initialized.");
-    }
-    this.controller.close();
-    this.isClosed = true;
-    if (this.warningTimeout) {
-      clearTimeout(this.warningTimeout);
-    }
+    var _a17, _b, _c;
+    this.connected = false;
+    (_a17 = this.sseConnection) == null ? void 0 : _a17.close();
+    (_b = this.abortController) == null ? void 0 : _b.abort();
+    (_c = this.onclose) == null ? void 0 : _c.call(this);
   }
-  append(value) {
-    if (this.isClosed) {
-      throw new Error("Data Stream has already been closed.");
+  async send(message) {
+    var _a17, _b, _c;
+    if (!this.endpoint || !this.connected) {
+      throw new MCPClientError({
+        message: "MCP SSE Transport Error: Not connected"
+      });
     }
-    if (!this.controller) {
-      throw new Error("Stream controller is not initialized.");
-    }
-    this.controller.enqueue(
-      this.encoder.encode((0, import_ui_utils3.formatStreamPart)("data", [value]))
-    );
-  }
-  appendMessageAnnotation(value) {
-    if (this.isClosed) {
-      throw new Error("Data Stream has already been closed.");
-    }
-    if (!this.controller) {
-      throw new Error("Stream controller is not initialized.");
-    }
-    this.controller.enqueue(
-      this.encoder.encode((0, import_ui_utils3.formatStreamPart)("message_annotations", [value]))
-    );
-  }
-};
-function createStreamDataTransformer() {
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-  return new TransformStream({
-    transform: async (chunk, controller) => {
-      const message = decoder.decode(chunk);
-      controller.enqueue(encoder.encode((0, import_ui_utils3.formatStreamPart)("text", message)));
-    }
-  });
-}
-var experimental_StreamData = class extends StreamData {
-};
-
-// streams/anthropic-stream.ts
-function parseAnthropicStream() {
-  let previous = "";
-  return (data) => {
-    const json = JSON.parse(data);
-    if ("error" in json) {
-      throw new Error(`${json.error.type}: ${json.error.message}`);
-    }
-    if (!("completion" in json)) {
+    try {
+      const headers = new Headers(this.headers);
+      headers.set("Content-Type", "application/json");
+      const init = {
+        method: "POST",
+        headers,
+        body: JSON.stringify(message),
+        signal: (_a17 = this.abortController) == null ? void 0 : _a17.signal
+      };
+      const response = await fetch(this.endpoint, init);
+      if (!response.ok) {
+        const text2 = await response.text().catch(() => null);
+        const error = new MCPClientError({
+          message: `MCP SSE Transport Error: POSTing to endpoint (HTTP ${response.status}): ${text2}`
+        });
+        (_b = this.onerror) == null ? void 0 : _b.call(this, error);
+        return;
+      }
+    } catch (error) {
+      (_c = this.onerror) == null ? void 0 : _c.call(this, error);
       return;
     }
-    const text = json.completion;
-    if (!previous || text.length > previous.length && text.startsWith(previous)) {
-      const delta = text.slice(previous.length);
-      previous = text;
-      return delta;
-    }
-    return text;
-  };
+  }
+};
+
+// src/tool/mcp/mcp-transport.ts
+function createMcpTransport(config) {
+  if (config.type !== "sse") {
+    throw new MCPClientError({
+      message: "Unsupported or invalid transport configuration. If you are using a custom transport, make sure it implements the MCPTransport interface."
+    });
+  }
+  return new SseMCPTransport(config);
 }
-async function* streamable(stream) {
-  for await (const chunk of stream) {
-    if ("completion" in chunk) {
-      const text = chunk.completion;
-      if (text)
-        yield text;
-    } else if ("delta" in chunk) {
-      const { delta } = chunk;
-      if ("text" in delta) {
-        const text = delta.text;
-        if (text)
-          yield text;
+function isCustomMcpTransport(transport) {
+  return "start" in transport && typeof transport.start === "function" && "send" in transport && typeof transport.send === "function" && "close" in transport && typeof transport.close === "function";
+}
+
+// src/tool/mcp/mcp-client.ts
+var CLIENT_VERSION = "1.0.0";
+async function createMCPClient(config) {
+  const client = new DefaultMCPClient(config);
+  await client.init();
+  return client;
+}
+var DefaultMCPClient = class {
+  constructor({
+    transport: transportConfig,
+    name: name17 = "ai-sdk-mcp-client",
+    onUncaughtError
+  }) {
+    this.requestMessageId = 0;
+    this.responseHandlers = /* @__PURE__ */ new Map();
+    this.serverCapabilities = {};
+    this.isClosed = true;
+    this.onUncaughtError = onUncaughtError;
+    if (isCustomMcpTransport(transportConfig)) {
+      this.transport = transportConfig;
+    } else {
+      this.transport = createMcpTransport(transportConfig);
+    }
+    this.transport.onclose = () => this.onClose();
+    this.transport.onerror = (error) => this.onError(error);
+    this.transport.onmessage = (message) => {
+      if ("method" in message) {
+        this.onError(
+          new MCPClientError({
+            message: "Unsupported message type"
+          })
+        );
+        return;
       }
+      this.onResponse(message);
+    };
+    this.clientInfo = {
+      name: name17,
+      version: CLIENT_VERSION
+    };
+  }
+  async init() {
+    try {
+      await this.transport.start();
+      this.isClosed = false;
+      const result = await this.request({
+        request: {
+          method: "initialize",
+          params: {
+            protocolVersion: LATEST_PROTOCOL_VERSION,
+            capabilities: {},
+            clientInfo: this.clientInfo
+          }
+        },
+        resultSchema: InitializeResultSchema
+      });
+      if (result === void 0) {
+        throw new MCPClientError({
+          message: "Server sent invalid initialize result"
+        });
+      }
+      if (!SUPPORTED_PROTOCOL_VERSIONS.includes(result.protocolVersion)) {
+        throw new MCPClientError({
+          message: `Server's protocol version is not supported: ${result.protocolVersion}`
+        });
+      }
+      this.serverCapabilities = result.capabilities;
+      await this.notification({
+        method: "notifications/initialized"
+      });
+      return this;
+    } catch (error) {
+      await this.close();
+      throw error;
     }
   }
-}
-function AnthropicStream(res, cb) {
-  if (Symbol.asyncIterator in res) {
-    return readableFromAsyncIterable(streamable(res)).pipeThrough(createCallbacksTransformer(cb)).pipeThrough(createStreamDataTransformer());
-  } else {
-    return AIStream(res, parseAnthropicStream(), cb).pipeThrough(
-      createStreamDataTransformer()
+  async close() {
+    var _a17;
+    if (this.isClosed)
+      return;
+    await ((_a17 = this.transport) == null ? void 0 : _a17.close());
+    this.onClose();
+  }
+  assertCapability(method) {
+    switch (method) {
+      case "initialize":
+        break;
+      case "tools/list":
+      case "tools/call":
+        if (!this.serverCapabilities.tools) {
+          throw new MCPClientError({
+            message: `Server does not support tools`
+          });
+        }
+        break;
+      default:
+        throw new MCPClientError({
+          message: `Unsupported method: ${method}`
+        });
+    }
+  }
+  async request({
+    request,
+    resultSchema,
+    options
+  }) {
+    return new Promise((resolve2, reject) => {
+      if (this.isClosed) {
+        return reject(
+          new MCPClientError({
+            message: "Attempted to send a request from a closed client"
+          })
+        );
+      }
+      this.assertCapability(request.method);
+      const signal = options == null ? void 0 : options.signal;
+      signal == null ? void 0 : signal.throwIfAborted();
+      const messageId = this.requestMessageId++;
+      const jsonrpcRequest = {
+        ...request,
+        jsonrpc: "2.0",
+        id: messageId
+      };
+      const cleanup = () => {
+        this.responseHandlers.delete(messageId);
+      };
+      this.responseHandlers.set(messageId, (response) => {
+        if (signal == null ? void 0 : signal.aborted) {
+          return reject(
+            new MCPClientError({
+              message: "Request was aborted",
+              cause: signal.reason
+            })
+          );
+        }
+        if (response instanceof Error) {
+          return reject(response);
+        }
+        try {
+          const result = resultSchema.parse(response.result);
+          resolve2(result);
+        } catch (error) {
+          const parseError = new MCPClientError({
+            message: "Failed to parse server response",
+            cause: error
+          });
+          reject(parseError);
+        }
+      });
+      this.transport.send(jsonrpcRequest).catch((error) => {
+        cleanup();
+        reject(error);
+      });
+    });
+  }
+  async listTools({
+    params,
+    options
+  } = {}) {
+    try {
+      return this.request({
+        request: { method: "tools/list", params },
+        resultSchema: ListToolsResultSchema,
+        options
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async callTool({
+    name: name17,
+    args,
+    options
+  }) {
+    try {
+      return this.request({
+        request: { method: "tools/call", params: { name: name17, arguments: args } },
+        resultSchema: CallToolResultSchema,
+        options: {
+          signal: options == null ? void 0 : options.abortSignal
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async notification(notification) {
+    const jsonrpcNotification = {
+      ...notification,
+      jsonrpc: "2.0"
+    };
+    await this.transport.send(jsonrpcNotification);
+  }
+  /**
+   * Returns a set of AI SDK tools from the MCP server
+   * @returns A record of tool names to their implementations
+   */
+  async tools({
+    schemas = "automatic"
+  } = {}) {
+    var _a17;
+    const tools = {};
+    try {
+      const listToolsResult = await this.listTools();
+      for (const { name: name17, description, inputSchema } of listToolsResult.tools) {
+        if (schemas !== "automatic" && !(name17 in schemas)) {
+          continue;
+        }
+        const self = this;
+        const execute = async (args, options) => {
+          var _a18;
+          (_a18 = options == null ? void 0 : options.abortSignal) == null ? void 0 : _a18.throwIfAborted();
+          return self.callTool({ name: name17, args, options });
+        };
+        const toolWithExecute = schemas === "automatic" ? (0, import_provider_utils22.dynamicTool)({
+          description,
+          inputSchema: (0, import_provider_utils22.jsonSchema)({
+            ...inputSchema,
+            properties: (_a17 = inputSchema.properties) != null ? _a17 : {},
+            additionalProperties: false
+          }),
+          execute
+        }) : (0, import_provider_utils22.tool)({
+          description,
+          inputSchema: schemas[name17].inputSchema,
+          execute
+        });
+        tools[name17] = toolWithExecute;
+      }
+      return tools;
+    } catch (error) {
+      throw error;
+    }
+  }
+  onClose() {
+    if (this.isClosed)
+      return;
+    this.isClosed = true;
+    const error = new MCPClientError({
+      message: "Connection closed"
+    });
+    for (const handler of this.responseHandlers.values()) {
+      handler(error);
+    }
+    this.responseHandlers.clear();
+  }
+  onError(error) {
+    if (this.onUncaughtError) {
+      this.onUncaughtError(error);
+    }
+  }
+  onResponse(response) {
+    const messageId = Number(response.id);
+    const handler = this.responseHandlers.get(messageId);
+    if (handler === void 0) {
+      throw new MCPClientError({
+        message: `Protocol error: Received a response for an unknown message ID: ${JSON.stringify(
+          response
+        )}`
+      });
+    }
+    this.responseHandlers.delete(messageId);
+    handler(
+      "result" in response ? response : new MCPClientError({
+        message: response.error.message,
+        cause: response.error
+      })
     );
   }
-}
+};
 
-// streams/assistant-response.ts
-var import_ui_utils4 = __nccwpck_require__(7170);
-function AssistantResponse({ threadId, messageId }, process2) {
-  const stream = new ReadableStream({
-    async start(controller) {
-      var _a;
-      const textEncoder = new TextEncoder();
-      const sendMessage = (message) => {
-        controller.enqueue(
-          textEncoder.encode((0, import_ui_utils4.formatStreamPart)("assistant_message", message))
-        );
-      };
-      const sendDataMessage = (message) => {
-        controller.enqueue(
-          textEncoder.encode((0, import_ui_utils4.formatStreamPart)("data_message", message))
-        );
-      };
-      const sendError = (errorMessage) => {
-        controller.enqueue(
-          textEncoder.encode((0, import_ui_utils4.formatStreamPart)("error", errorMessage))
-        );
-      };
-      const forwardStream = async (stream2) => {
-        var _a2, _b;
-        let result = void 0;
-        for await (const value of stream2) {
-          switch (value.event) {
-            case "thread.message.created": {
-              controller.enqueue(
-                textEncoder.encode(
-                  (0, import_ui_utils4.formatStreamPart)("assistant_message", {
-                    id: value.data.id,
-                    role: "assistant",
-                    content: [{ type: "text", text: { value: "" } }]
-                  })
-                )
-              );
-              break;
-            }
-            case "thread.message.delta": {
-              const content = (_a2 = value.data.delta.content) == null ? void 0 : _a2[0];
-              if ((content == null ? void 0 : content.type) === "text" && ((_b = content.text) == null ? void 0 : _b.value) != null) {
-                controller.enqueue(
-                  textEncoder.encode(
-                    (0, import_ui_utils4.formatStreamPart)("text", content.text.value)
-                  )
-                );
-              }
-              break;
-            }
-            case "thread.run.completed":
-            case "thread.run.requires_action": {
-              result = value.data;
-              break;
-            }
-          }
-        }
-        return result;
-      };
-      controller.enqueue(
-        textEncoder.encode(
-          (0, import_ui_utils4.formatStreamPart)("assistant_control_data", {
-            threadId,
-            messageId
-          })
-        )
-      );
-      try {
-        await process2({
-          threadId,
-          messageId,
-          sendMessage,
-          sendDataMessage,
-          forwardStream
-        });
-      } catch (error) {
-        sendError((_a = error.message) != null ? _a : `${error}`);
-      } finally {
-        controller.close();
-      }
-    },
-    pull(controller) {
-    },
-    cancel() {
-    }
-  });
-  return new Response(stream, {
-    status: 200,
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8"
-    }
-  });
-}
-var experimental_AssistantResponse = AssistantResponse;
-
-// streams/aws-bedrock-stream.ts
-async function* asDeltaIterable(response, extractTextDeltaFromChunk) {
-  var _a, _b;
-  const decoder = new TextDecoder();
-  for await (const chunk of (_a = response.body) != null ? _a : []) {
-    const bytes = (_b = chunk.chunk) == null ? void 0 : _b.bytes;
-    if (bytes != null) {
-      const chunkText = decoder.decode(bytes);
-      const chunkJSON = JSON.parse(chunkText);
-      const delta = extractTextDeltaFromChunk(chunkJSON);
-      if (delta != null) {
-        yield delta;
-      }
-    }
+// src/error/no-transcript-generated-error.ts
+var import_provider31 = __nccwpck_require__(2585);
+var NoTranscriptGeneratedError = class extends import_provider31.AISDKError {
+  constructor(options) {
+    super({
+      name: "AI_NoTranscriptGeneratedError",
+      message: "No transcript generated."
+    });
+    this.responses = options.responses;
   }
-}
-function AWSBedrockAnthropicMessagesStream(response, callbacks) {
-  return AWSBedrockStream(response, callbacks, (chunk) => {
-    var _a;
-    return (_a = chunk.delta) == null ? void 0 : _a.text;
+};
+
+// src/transcribe/transcribe.ts
+async function transcribe({
+  model,
+  audio,
+  providerOptions = {},
+  maxRetries: maxRetriesArg,
+  abortSignal,
+  headers
+}) {
+  if (model.specificationVersion !== "v2") {
+    throw new UnsupportedModelVersionError({
+      version: model.specificationVersion,
+      provider: model.provider,
+      modelId: model.modelId
+    });
+  }
+  const { retry } = prepareRetries({
+    maxRetries: maxRetriesArg,
+    abortSignal
+  });
+  const audioData = audio instanceof URL ? (await download({ url: audio })).data : convertDataContentToUint8Array(audio);
+  const result = await retry(
+    () => {
+      var _a17;
+      return model.doGenerate({
+        audio: audioData,
+        abortSignal,
+        headers,
+        providerOptions,
+        mediaType: (_a17 = detectMediaType({
+          data: audioData,
+          signatures: audioMediaTypeSignatures
+        })) != null ? _a17 : "audio/wav"
+      });
+    }
+  );
+  if (!result.text) {
+    throw new NoTranscriptGeneratedError({ responses: [result.response] });
+  }
+  return new DefaultTranscriptionResult({
+    text: result.text,
+    segments: result.segments,
+    language: result.language,
+    durationInSeconds: result.durationInSeconds,
+    warnings: result.warnings,
+    responses: [result.response],
+    providerMetadata: result.providerMetadata
   });
 }
-function AWSBedrockAnthropicStream(response, callbacks) {
-  return AWSBedrockStream(response, callbacks, (chunk) => chunk.completion);
-}
-function AWSBedrockCohereStream(response, callbacks) {
-  return AWSBedrockStream(response, callbacks, (chunk) => chunk == null ? void 0 : chunk.text);
-}
-function AWSBedrockLlama2Stream(response, callbacks) {
-  return AWSBedrockStream(response, callbacks, (chunk) => chunk.generation);
-}
-function AWSBedrockStream(response, callbacks, extractTextDeltaFromChunk) {
-  return readableFromAsyncIterable(
-    asDeltaIterable(response, extractTextDeltaFromChunk)
-  ).pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
-}
-
-// streams/cohere-stream.ts
-var utf8Decoder = new TextDecoder("utf-8");
-async function processLines(lines, controller) {
-  for (const line of lines) {
-    const { text, is_finished } = JSON.parse(line);
-    if (!is_finished) {
-      controller.enqueue(text);
-    }
+var DefaultTranscriptionResult = class {
+  constructor(options) {
+    var _a17;
+    this.text = options.text;
+    this.segments = options.segments;
+    this.language = options.language;
+    this.durationInSeconds = options.durationInSeconds;
+    this.warnings = options.warnings;
+    this.responses = options.responses;
+    this.providerMetadata = (_a17 = options.providerMetadata) != null ? _a17 : {};
   }
-}
-async function readAndProcessLines(reader, controller) {
-  let segment = "";
+};
+
+// src/ui/call-completion-api.ts
+var import_provider_utils23 = __nccwpck_require__(9033);
+
+// src/ui/process-text-stream.ts
+async function processTextStream({
+  stream,
+  onTextPart
+}) {
+  const reader = stream.pipeThrough(new TextDecoderStream()).getReader();
   while (true) {
-    const { value: chunk, done } = await reader.read();
+    const { done, value } = await reader.read();
     if (done) {
       break;
     }
-    segment += utf8Decoder.decode(chunk, { stream: true });
-    const linesArray = segment.split(/\r\n|\n|\r/g);
-    segment = linesArray.pop() || "";
-    await processLines(linesArray, controller);
-  }
-  if (segment) {
-    const linesArray = [segment];
-    await processLines(linesArray, controller);
-  }
-  controller.close();
-}
-function createParser2(res) {
-  var _a;
-  const reader = (_a = res.body) == null ? void 0 : _a.getReader();
-  return new ReadableStream({
-    async start(controller) {
-      if (!reader) {
-        controller.close();
-        return;
-      }
-      await readAndProcessLines(reader, controller);
-    }
-  });
-}
-async function* streamable2(stream) {
-  for await (const chunk of stream) {
-    if (chunk.eventType === "text-generation") {
-      const text = chunk.text;
-      if (text)
-        yield text;
-    }
-  }
-}
-function CohereStream(reader, callbacks) {
-  if (Symbol.asyncIterator in reader) {
-    return readableFromAsyncIterable(streamable2(reader)).pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
-  } else {
-    return createParser2(reader).pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
+    await onTextPart(value);
   }
 }
 
-// streams/google-generative-ai-stream.ts
-async function* streamable3(response) {
-  var _a, _b, _c;
-  for await (const chunk of response.stream) {
-    const parts = (_c = (_b = (_a = chunk.candidates) == null ? void 0 : _a[0]) == null ? void 0 : _b.content) == null ? void 0 : _c.parts;
-    if (parts === void 0) {
-      continue;
+// src/ui/call-completion-api.ts
+var getOriginalFetch = () => fetch;
+async function callCompletionApi({
+  api,
+  prompt,
+  credentials,
+  headers,
+  body,
+  streamProtocol = "data",
+  setCompletion,
+  setLoading,
+  setError,
+  setAbortController,
+  onFinish,
+  onError,
+  fetch: fetch2 = getOriginalFetch()
+}) {
+  var _a17;
+  try {
+    setLoading(true);
+    setError(void 0);
+    const abortController = new AbortController();
+    setAbortController(abortController);
+    setCompletion("");
+    const response = await fetch2(api, {
+      method: "POST",
+      body: JSON.stringify({
+        prompt,
+        ...body
+      }),
+      credentials,
+      headers: {
+        "Content-Type": "application/json",
+        ...headers
+      },
+      signal: abortController.signal
+    }).catch((err) => {
+      throw err;
+    });
+    if (!response.ok) {
+      throw new Error(
+        (_a17 = await response.text()) != null ? _a17 : "Failed to fetch the chat response."
+      );
     }
-    const firstPart = parts[0];
-    if (typeof firstPart.text === "string") {
-      yield firstPart.text;
+    if (!response.body) {
+      throw new Error("The response body is empty.");
     }
+    let result = "";
+    switch (streamProtocol) {
+      case "text": {
+        await processTextStream({
+          stream: response.body,
+          onTextPart: (chunk) => {
+            result += chunk;
+            setCompletion(result);
+          }
+        });
+        break;
+      }
+      case "data": {
+        await consumeStream({
+          stream: (0, import_provider_utils23.parseJsonEventStream)({
+            stream: response.body,
+            schema: uiMessageChunkSchema
+          }).pipeThrough(
+            new TransformStream({
+              async transform(part) {
+                if (!part.success) {
+                  throw part.error;
+                }
+                const streamPart = part.value;
+                if (streamPart.type === "text-delta") {
+                  result += streamPart.delta;
+                  setCompletion(result);
+                } else if (streamPart.type === "error") {
+                  throw new Error(streamPart.errorText);
+                }
+              }
+            })
+          ),
+          onError: (error) => {
+            throw error;
+          }
+        });
+        break;
+      }
+      default: {
+        const exhaustiveCheck = streamProtocol;
+        throw new Error(`Unknown stream protocol: ${exhaustiveCheck}`);
+      }
+    }
+    if (onFinish) {
+      onFinish(prompt, result);
+    }
+    setAbortController(null);
+    return result;
+  } catch (err) {
+    if (err.name === "AbortError") {
+      setAbortController(null);
+      return null;
+    }
+    if (err instanceof Error) {
+      if (onError) {
+        onError(err);
+      }
+    }
+    setError(err);
+  } finally {
+    setLoading(false);
   }
 }
-function GoogleGenerativeAIStream(response, cb) {
-  return readableFromAsyncIterable(streamable3(response)).pipeThrough(createCallbacksTransformer(cb)).pipeThrough(createStreamDataTransformer());
-}
 
-// streams/huggingface-stream.ts
-function createParser3(res) {
-  const trimStartOfStream = trimStartOfStreamHelper();
-  return new ReadableStream({
-    async pull(controller) {
-      var _a, _b;
-      const { value, done } = await res.next();
-      if (done) {
-        controller.close();
-        return;
-      }
-      const text = trimStartOfStream((_b = (_a = value.token) == null ? void 0 : _a.text) != null ? _b : "");
-      if (!text)
-        return;
-      if (value.generated_text != null && value.generated_text.length > 0) {
-        return;
-      }
-      if (text === "</s>" || text === "<|endoftext|>" || text === "<|end|>") {
-        return;
-      }
-      controller.enqueue(text);
-    }
-  });
-}
-function HuggingFaceStream(res, callbacks) {
-  return createParser3(res).pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
-}
+// src/ui/chat.ts
+var import_provider_utils26 = __nccwpck_require__(9033);
 
-// streams/inkeep-stream.ts
-function InkeepStream(res, callbacks) {
-  if (!res.body) {
-    throw new Error("Response body is null");
+// src/ui/convert-file-list-to-file-ui-parts.ts
+async function convertFileListToFileUIParts(files) {
+  if (files == null) {
+    return [];
   }
-  let chat_session_id = "";
-  let records_cited;
-  const inkeepEventParser = (data, options) => {
-    var _a, _b;
-    const { event } = options;
-    if (event === "records_cited") {
-      records_cited = JSON.parse(data);
-      (_a = callbacks == null ? void 0 : callbacks.onRecordsCited) == null ? void 0 : _a.call(callbacks, records_cited);
-    }
-    if (event === "message_chunk") {
-      const inkeepMessageChunk = JSON.parse(data);
-      chat_session_id = (_b = inkeepMessageChunk.chat_session_id) != null ? _b : chat_session_id;
-      return inkeepMessageChunk.content_chunk;
-    }
-    return;
-  };
-  let { onRecordsCited, ...passThroughCallbacks } = callbacks || {};
-  passThroughCallbacks = {
-    ...passThroughCallbacks,
-    onFinal: (completion) => {
-      var _a;
-      const inkeepOnFinalMetadata = {
-        chat_session_id,
-        records_cited
+  if (!globalThis.FileList || !(files instanceof globalThis.FileList)) {
+    throw new Error("FileList is not supported in the current environment");
+  }
+  return Promise.all(
+    Array.from(files).map(async (file) => {
+      const { name: name17, type } = file;
+      const dataUrl = await new Promise((resolve2, reject) => {
+        const reader = new FileReader();
+        reader.onload = (readerEvent) => {
+          var _a17;
+          resolve2((_a17 = readerEvent.target) == null ? void 0 : _a17.result);
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+      return {
+        type: "file",
+        mediaType: type,
+        filename: name17,
+        url: dataUrl
       };
-      (_a = callbacks == null ? void 0 : callbacks.onFinal) == null ? void 0 : _a.call(callbacks, completion, inkeepOnFinalMetadata);
-    }
-  };
-  return AIStream(res, inkeepEventParser, passThroughCallbacks).pipeThrough(
-    createStreamDataTransformer()
+    })
   );
 }
 
-// streams/langchain-adapter.ts
-var langchain_adapter_exports = {};
-__export(langchain_adapter_exports, {
-  toAIStream: () => toAIStream
-});
-function toAIStream(stream, callbacks) {
-  return stream.pipeThrough(
-    new TransformStream({
-      transform: async (chunk, controller) => {
-        if (typeof chunk === "string") {
-          controller.enqueue(chunk);
-        } else if (typeof chunk.content === "string") {
-          controller.enqueue(chunk.content);
-        } else {
-          const content = chunk.content;
-          for (const item of content) {
-            if (item.type === "text") {
-              controller.enqueue(item.text);
-            }
+// src/ui/default-chat-transport.ts
+var import_provider_utils25 = __nccwpck_require__(9033);
+
+// src/ui/http-chat-transport.ts
+var import_provider_utils24 = __nccwpck_require__(9033);
+var HttpChatTransport = class {
+  constructor({
+    api = "/api/chat",
+    credentials,
+    headers,
+    body,
+    fetch: fetch2,
+    prepareSendMessagesRequest,
+    prepareReconnectToStreamRequest
+  }) {
+    this.api = api;
+    this.credentials = credentials;
+    this.headers = headers;
+    this.body = body;
+    this.fetch = fetch2;
+    this.prepareSendMessagesRequest = prepareSendMessagesRequest;
+    this.prepareReconnectToStreamRequest = prepareReconnectToStreamRequest;
+  }
+  async sendMessages({
+    abortSignal,
+    ...options
+  }) {
+    var _a17, _b, _c, _d, _e;
+    const resolvedBody = await (0, import_provider_utils24.resolve)(this.body);
+    const resolvedHeaders = await (0, import_provider_utils24.resolve)(this.headers);
+    const resolvedCredentials = await (0, import_provider_utils24.resolve)(this.credentials);
+    const preparedRequest = await ((_a17 = this.prepareSendMessagesRequest) == null ? void 0 : _a17.call(this, {
+      api: this.api,
+      id: options.chatId,
+      messages: options.messages,
+      body: { ...resolvedBody, ...options.body },
+      headers: { ...resolvedHeaders, ...options.headers },
+      credentials: resolvedCredentials,
+      requestMetadata: options.metadata,
+      trigger: options.trigger,
+      messageId: options.messageId
+    }));
+    const api = (_b = preparedRequest == null ? void 0 : preparedRequest.api) != null ? _b : this.api;
+    const headers = (preparedRequest == null ? void 0 : preparedRequest.headers) !== void 0 ? preparedRequest.headers : { ...resolvedHeaders, ...options.headers };
+    const body = (preparedRequest == null ? void 0 : preparedRequest.body) !== void 0 ? preparedRequest.body : {
+      ...resolvedBody,
+      ...options.body,
+      id: options.chatId,
+      messages: options.messages,
+      trigger: options.trigger,
+      messageId: options.messageId
+    };
+    const credentials = (_c = preparedRequest == null ? void 0 : preparedRequest.credentials) != null ? _c : resolvedCredentials;
+    const fetch2 = (_d = this.fetch) != null ? _d : globalThis.fetch;
+    const response = await fetch2(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...headers
+      },
+      body: JSON.stringify(body),
+      credentials,
+      signal: abortSignal
+    });
+    if (!response.ok) {
+      throw new Error(
+        (_e = await response.text()) != null ? _e : "Failed to fetch the chat response."
+      );
+    }
+    if (!response.body) {
+      throw new Error("The response body is empty.");
+    }
+    return this.processResponseStream(response.body);
+  }
+  async reconnectToStream(options) {
+    var _a17, _b, _c, _d, _e;
+    const resolvedBody = await (0, import_provider_utils24.resolve)(this.body);
+    const resolvedHeaders = await (0, import_provider_utils24.resolve)(this.headers);
+    const resolvedCredentials = await (0, import_provider_utils24.resolve)(this.credentials);
+    const preparedRequest = await ((_a17 = this.prepareReconnectToStreamRequest) == null ? void 0 : _a17.call(this, {
+      api: this.api,
+      id: options.chatId,
+      body: { ...resolvedBody, ...options.body },
+      headers: { ...resolvedHeaders, ...options.headers },
+      credentials: resolvedCredentials,
+      requestMetadata: options.metadata
+    }));
+    const api = (_b = preparedRequest == null ? void 0 : preparedRequest.api) != null ? _b : `${this.api}/${options.chatId}/stream`;
+    const headers = (preparedRequest == null ? void 0 : preparedRequest.headers) !== void 0 ? preparedRequest.headers : { ...resolvedHeaders, ...options.headers };
+    const credentials = (_c = preparedRequest == null ? void 0 : preparedRequest.credentials) != null ? _c : resolvedCredentials;
+    const fetch2 = (_d = this.fetch) != null ? _d : globalThis.fetch;
+    const response = await fetch2(api, {
+      method: "GET",
+      headers,
+      credentials
+    });
+    if (response.status === 204) {
+      return null;
+    }
+    if (!response.ok) {
+      throw new Error(
+        (_e = await response.text()) != null ? _e : "Failed to fetch the chat response."
+      );
+    }
+    if (!response.body) {
+      throw new Error("The response body is empty.");
+    }
+    return this.processResponseStream(response.body);
+  }
+};
+
+// src/ui/default-chat-transport.ts
+var DefaultChatTransport = class extends HttpChatTransport {
+  constructor(options = {}) {
+    super(options);
+  }
+  processResponseStream(stream) {
+    return (0, import_provider_utils25.parseJsonEventStream)({
+      stream,
+      schema: uiMessageChunkSchema
+    }).pipeThrough(
+      new TransformStream({
+        async transform(chunk, controller) {
+          if (!chunk.success) {
+            throw chunk.error;
           }
+          controller.enqueue(chunk.value);
         }
-      }
-    })
-  ).pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
-}
-
-// streams/langchain-stream.ts
-function LangChainStream(callbacks) {
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-  const runs = /* @__PURE__ */ new Set();
-  const handleError = async (e, runId) => {
-    runs.delete(runId);
-    await writer.ready;
-    await writer.abort(e);
-  };
-  const handleStart = async (runId) => {
-    runs.add(runId);
-  };
-  const handleEnd = async (runId) => {
-    runs.delete(runId);
-    if (runs.size === 0) {
-      await writer.ready;
-      await writer.close();
-    }
-  };
-  return {
-    stream: stream.readable.pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer()),
-    writer,
-    handlers: {
-      handleLLMNewToken: async (token) => {
-        await writer.ready;
-        await writer.write(token);
-      },
-      handleLLMStart: async (_llm, _prompts, runId) => {
-        handleStart(runId);
-      },
-      handleLLMEnd: async (_output, runId) => {
-        await handleEnd(runId);
-      },
-      handleLLMError: async (e, runId) => {
-        await handleError(e, runId);
-      },
-      handleChainStart: async (_chain, _inputs, runId) => {
-        handleStart(runId);
-      },
-      handleChainEnd: async (_outputs, runId) => {
-        await handleEnd(runId);
-      },
-      handleChainError: async (e, runId) => {
-        await handleError(e, runId);
-      },
-      handleToolStart: async (_tool, _input, runId) => {
-        handleStart(runId);
-      },
-      handleToolEnd: async (_output, runId) => {
-        await handleEnd(runId);
-      },
-      handleToolError: async (e, runId) => {
-        await handleError(e, runId);
-      }
-    }
-  };
-}
-
-// streams/mistral-stream.ts
-async function* streamable4(stream) {
-  var _a, _b;
-  for await (const chunk of stream) {
-    const content = (_b = (_a = chunk.choices[0]) == null ? void 0 : _a.delta) == null ? void 0 : _b.content;
-    if (content === void 0 || content === "") {
-      continue;
-    }
-    yield content;
-  }
-}
-function MistralStream(response, callbacks) {
-  const stream = readableFromAsyncIterable(streamable4(response));
-  return stream.pipeThrough(createCallbacksTransformer(callbacks)).pipeThrough(createStreamDataTransformer());
-}
-
-// streams/openai-stream.ts
-var import_ui_utils5 = __nccwpck_require__(7170);
-function parseOpenAIStream() {
-  const extract = chunkToText();
-  return (data) => extract(JSON.parse(data));
-}
-async function* streamable5(stream) {
-  const extract = chunkToText();
-  for await (let chunk of stream) {
-    if ("promptFilterResults" in chunk) {
-      chunk = {
-        id: chunk.id,
-        created: chunk.created.getDate(),
-        object: chunk.object,
-        // not exposed by Azure API
-        model: chunk.model,
-        // not exposed by Azure API
-        choices: chunk.choices.map((choice) => {
-          var _a, _b, _c, _d, _e, _f, _g;
-          return {
-            delta: {
-              content: (_a = choice.delta) == null ? void 0 : _a.content,
-              function_call: (_b = choice.delta) == null ? void 0 : _b.functionCall,
-              role: (_c = choice.delta) == null ? void 0 : _c.role,
-              tool_calls: ((_e = (_d = choice.delta) == null ? void 0 : _d.toolCalls) == null ? void 0 : _e.length) ? (_g = (_f = choice.delta) == null ? void 0 : _f.toolCalls) == null ? void 0 : _g.map((toolCall, index) => ({
-                index,
-                id: toolCall.id,
-                function: toolCall.function,
-                type: toolCall.type
-              })) : void 0
-            },
-            finish_reason: choice.finishReason,
-            index: choice.index
-          };
-        })
-      };
-    }
-    const text = extract(chunk);
-    if (text)
-      yield text;
-  }
-}
-function chunkToText() {
-  const trimStartOfStream = trimStartOfStreamHelper();
-  let isFunctionStreamingIn;
-  return (json) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
-    if (isChatCompletionChunk(json)) {
-      const delta = (_a = json.choices[0]) == null ? void 0 : _a.delta;
-      if ((_b = delta.function_call) == null ? void 0 : _b.name) {
-        isFunctionStreamingIn = true;
-        return {
-          isText: false,
-          content: `{"function_call": {"name": "${delta.function_call.name}", "arguments": "`
-        };
-      } else if ((_e = (_d = (_c = delta.tool_calls) == null ? void 0 : _c[0]) == null ? void 0 : _d.function) == null ? void 0 : _e.name) {
-        isFunctionStreamingIn = true;
-        const toolCall = delta.tool_calls[0];
-        if (toolCall.index === 0) {
-          return {
-            isText: false,
-            content: `{"tool_calls":[ {"id": "${toolCall.id}", "type": "function", "function": {"name": "${(_f = toolCall.function) == null ? void 0 : _f.name}", "arguments": "`
-          };
-        } else {
-          return {
-            isText: false,
-            content: `"}}, {"id": "${toolCall.id}", "type": "function", "function": {"name": "${(_g = toolCall.function) == null ? void 0 : _g.name}", "arguments": "`
-          };
-        }
-      } else if ((_h = delta.function_call) == null ? void 0 : _h.arguments) {
-        return {
-          isText: false,
-          content: cleanupArguments((_i = delta.function_call) == null ? void 0 : _i.arguments)
-        };
-      } else if ((_l = (_k = (_j = delta.tool_calls) == null ? void 0 : _j[0]) == null ? void 0 : _k.function) == null ? void 0 : _l.arguments) {
-        return {
-          isText: false,
-          content: cleanupArguments((_o = (_n = (_m = delta.tool_calls) == null ? void 0 : _m[0]) == null ? void 0 : _n.function) == null ? void 0 : _o.arguments)
-        };
-      } else if (isFunctionStreamingIn && (((_p = json.choices[0]) == null ? void 0 : _p.finish_reason) === "function_call" || ((_q = json.choices[0]) == null ? void 0 : _q.finish_reason) === "stop")) {
-        isFunctionStreamingIn = false;
-        return {
-          isText: false,
-          content: '"}}'
-        };
-      } else if (isFunctionStreamingIn && ((_r = json.choices[0]) == null ? void 0 : _r.finish_reason) === "tool_calls") {
-        isFunctionStreamingIn = false;
-        return {
-          isText: false,
-          content: '"}}]}'
-        };
-      }
-    }
-    const text = trimStartOfStream(
-      isChatCompletionChunk(json) && json.choices[0].delta.content ? json.choices[0].delta.content : isCompletion(json) ? json.choices[0].text : ""
-    );
-    return text;
-  };
-  function cleanupArguments(argumentChunk) {
-    let escapedPartialJson = argumentChunk.replace(/\\/g, "\\\\").replace(/\//g, "\\/").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\f/g, "\\f");
-    return `${escapedPartialJson}`;
-  }
-}
-var __internal__OpenAIFnMessagesSymbol = Symbol(
-  "internal_openai_fn_messages"
-);
-function isChatCompletionChunk(data) {
-  return "choices" in data && data.choices && data.choices[0] && "delta" in data.choices[0];
-}
-function isCompletion(data) {
-  return "choices" in data && data.choices && data.choices[0] && "text" in data.choices[0];
-}
-function OpenAIStream(res, callbacks) {
-  const cb = callbacks;
-  let stream;
-  if (Symbol.asyncIterator in res) {
-    stream = readableFromAsyncIterable(streamable5(res)).pipeThrough(
-      createCallbacksTransformer(
-        (cb == null ? void 0 : cb.experimental_onFunctionCall) || (cb == null ? void 0 : cb.experimental_onToolCall) ? {
-          ...cb,
-          onFinal: void 0
-        } : {
-          ...cb
-        }
-      )
-    );
-  } else {
-    stream = AIStream(
-      res,
-      parseOpenAIStream(),
-      (cb == null ? void 0 : cb.experimental_onFunctionCall) || (cb == null ? void 0 : cb.experimental_onToolCall) ? {
-        ...cb,
-        onFinal: void 0
-      } : {
-        ...cb
-      }
+      })
     );
   }
-  if (cb && (cb.experimental_onFunctionCall || cb.experimental_onToolCall)) {
-    const functionCallTransformer = createFunctionCallTransformer(cb);
-    return stream.pipeThrough(functionCallTransformer);
-  } else {
-    return stream.pipeThrough(createStreamDataTransformer());
-  }
-}
-function createFunctionCallTransformer(callbacks) {
-  const textEncoder = new TextEncoder();
-  let isFirstChunk = true;
-  let aggregatedResponse = "";
-  let aggregatedFinalCompletionResponse = "";
-  let isFunctionStreamingIn = false;
-  let functionCallMessages = callbacks[__internal__OpenAIFnMessagesSymbol] || [];
-  const decode = (0, import_ui_utils5.createChunkDecoder)();
-  return new TransformStream({
-    async transform(chunk, controller) {
-      const message = decode(chunk);
-      aggregatedFinalCompletionResponse += message;
-      const shouldHandleAsFunction = isFirstChunk && (message.startsWith('{"function_call":') || message.startsWith('{"tool_calls":'));
-      if (shouldHandleAsFunction) {
-        isFunctionStreamingIn = true;
-        aggregatedResponse += message;
-        isFirstChunk = false;
+};
+
+// src/ui/chat.ts
+var AbstractChat = class {
+  constructor({
+    generateId: generateId3 = import_provider_utils26.generateId,
+    id = generateId3(),
+    transport = new DefaultChatTransport(),
+    messageMetadataSchema,
+    dataPartSchemas,
+    state,
+    onError,
+    onToolCall,
+    onFinish,
+    onData,
+    sendAutomaticallyWhen
+  }) {
+    this.activeResponse = void 0;
+    this.jobExecutor = new SerialJobExecutor();
+    /**
+     * Appends or replaces a user message to the chat list. This triggers the API call to fetch
+     * the assistant's response.
+     *
+     * If a messageId is provided, the message will be replaced.
+     */
+    this.sendMessage = async (message, options) => {
+      var _a17, _b, _c, _d;
+      if (message == null) {
+        await this.makeRequest({
+          trigger: "submit-message",
+          messageId: (_a17 = this.lastMessage) == null ? void 0 : _a17.id,
+          ...options
+        });
         return;
       }
-      if (!isFunctionStreamingIn) {
-        controller.enqueue(
-          textEncoder.encode((0, import_ui_utils5.formatStreamPart)("text", message))
-        );
-        return;
+      let uiMessage;
+      if ("text" in message || "files" in message) {
+        const fileParts = Array.isArray(message.files) ? message.files : await convertFileListToFileUIParts(message.files);
+        uiMessage = {
+          parts: [
+            ...fileParts,
+            ..."text" in message && message.text != null ? [{ type: "text", text: message.text }] : []
+          ]
+        };
       } else {
-        aggregatedResponse += message;
+        uiMessage = message;
       }
-    },
-    async flush(controller) {
-      try {
-        if (!isFirstChunk && isFunctionStreamingIn && (callbacks.experimental_onFunctionCall || callbacks.experimental_onToolCall)) {
-          isFunctionStreamingIn = false;
-          const payload = JSON.parse(aggregatedResponse);
-          let newFunctionCallMessages = [
-            ...functionCallMessages
-          ];
-          let functionResponse = void 0;
-          if (callbacks.experimental_onFunctionCall) {
-            if (payload.function_call === void 0) {
-              console.warn(
-                "experimental_onFunctionCall should not be defined when using tools"
-              );
-            }
-            const argumentsPayload = JSON.parse(
-              payload.function_call.arguments
-            );
-            functionResponse = await callbacks.experimental_onFunctionCall(
-              {
-                name: payload.function_call.name,
-                arguments: argumentsPayload
-              },
-              (result) => {
-                newFunctionCallMessages = [
-                  ...functionCallMessages,
-                  {
-                    role: "assistant",
-                    content: "",
-                    function_call: payload.function_call
-                  },
-                  {
-                    role: "function",
-                    name: payload.function_call.name,
-                    content: JSON.stringify(result)
-                  }
-                ];
-                return newFunctionCallMessages;
+      if (message.messageId != null) {
+        const messageIndex = this.state.messages.findIndex(
+          (m) => m.id === message.messageId
+        );
+        if (messageIndex === -1) {
+          throw new Error(`message with id ${message.messageId} not found`);
+        }
+        if (this.state.messages[messageIndex].role !== "user") {
+          throw new Error(
+            `message with id ${message.messageId} is not a user message`
+          );
+        }
+        this.state.messages = this.state.messages.slice(0, messageIndex + 1);
+        this.state.replaceMessage(messageIndex, {
+          ...uiMessage,
+          id: message.messageId,
+          role: (_b = uiMessage.role) != null ? _b : "user",
+          metadata: message.metadata
+        });
+      } else {
+        this.state.pushMessage({
+          ...uiMessage,
+          id: (_c = uiMessage.id) != null ? _c : this.generateId(),
+          role: (_d = uiMessage.role) != null ? _d : "user",
+          metadata: message.metadata
+        });
+      }
+      await this.makeRequest({
+        trigger: "submit-message",
+        messageId: message.messageId,
+        ...options
+      });
+    };
+    /**
+     * Regenerate the assistant message with the provided message id.
+     * If no message id is provided, the last assistant message will be regenerated.
+     */
+    this.regenerate = async ({
+      messageId,
+      ...options
+    } = {}) => {
+      const messageIndex = messageId == null ? this.state.messages.length - 1 : this.state.messages.findIndex((message) => message.id === messageId);
+      if (messageIndex === -1) {
+        throw new Error(`message ${messageId} not found`);
+      }
+      this.state.messages = this.state.messages.slice(
+        0,
+        // if the message is a user message, we need to include it in the request:
+        this.messages[messageIndex].role === "assistant" ? messageIndex : messageIndex + 1
+      );
+      await this.makeRequest({
+        trigger: "regenerate-message",
+        messageId,
+        ...options
+      });
+    };
+    /**
+     * Attempt to resume an ongoing streaming response.
+     */
+    this.resumeStream = async (options = {}) => {
+      await this.makeRequest({ trigger: "resume-stream", ...options });
+    };
+    /**
+     * Clear the error state and set the status to ready if the chat is in an error state.
+     */
+    this.clearError = () => {
+      if (this.status === "error") {
+        this.state.error = void 0;
+        this.setStatus({ status: "ready" });
+      }
+    };
+    this.addToolResult = async ({
+      tool: tool3,
+      toolCallId,
+      output
+    }) => this.jobExecutor.run(async () => {
+      var _a17, _b;
+      const messages = this.state.messages;
+      const lastMessage = messages[messages.length - 1];
+      this.state.replaceMessage(messages.length - 1, {
+        ...lastMessage,
+        parts: lastMessage.parts.map(
+          (part) => isToolUIPart(part) && part.toolCallId === toolCallId ? { ...part, state: "output-available", output } : part
+        )
+      });
+      if (this.activeResponse) {
+        this.activeResponse.state.message.parts = this.activeResponse.state.message.parts.map(
+          (part) => isToolUIPart(part) && part.toolCallId === toolCallId ? {
+            ...part,
+            state: "output-available",
+            output,
+            errorText: void 0
+          } : part
+        );
+      }
+      if (this.status !== "streaming" && this.status !== "submitted" && ((_a17 = this.sendAutomaticallyWhen) == null ? void 0 : _a17.call(this, { messages: this.state.messages }))) {
+        this.makeRequest({
+          trigger: "submit-message",
+          messageId: (_b = this.lastMessage) == null ? void 0 : _b.id
+        });
+      }
+    });
+    /**
+     * Abort the current request immediately, keep the generated tokens if any.
+     */
+    this.stop = async () => {
+      var _a17;
+      if (this.status !== "streaming" && this.status !== "submitted")
+        return;
+      if ((_a17 = this.activeResponse) == null ? void 0 : _a17.abortController) {
+        this.activeResponse.abortController.abort();
+      }
+    };
+    this.id = id;
+    this.transport = transport;
+    this.generateId = generateId3;
+    this.messageMetadataSchema = messageMetadataSchema;
+    this.dataPartSchemas = dataPartSchemas;
+    this.state = state;
+    this.onError = onError;
+    this.onToolCall = onToolCall;
+    this.onFinish = onFinish;
+    this.onData = onData;
+    this.sendAutomaticallyWhen = sendAutomaticallyWhen;
+  }
+  /**
+   * Hook status:
+   *
+   * - `submitted`: The message has been sent to the API and we're awaiting the start of the response stream.
+   * - `streaming`: The response is actively streaming in from the API, receiving chunks of data.
+   * - `ready`: The full response has been received and processed; a new user message can be submitted.
+   * - `error`: An error occurred during the API request, preventing successful completion.
+   */
+  get status() {
+    return this.state.status;
+  }
+  setStatus({
+    status,
+    error
+  }) {
+    if (this.status === status)
+      return;
+    this.state.status = status;
+    this.state.error = error;
+  }
+  get error() {
+    return this.state.error;
+  }
+  get messages() {
+    return this.state.messages;
+  }
+  get lastMessage() {
+    return this.state.messages[this.state.messages.length - 1];
+  }
+  set messages(messages) {
+    this.state.messages = messages;
+  }
+  async makeRequest({
+    trigger,
+    metadata,
+    headers,
+    body,
+    messageId
+  }) {
+    var _a17, _b, _c;
+    this.setStatus({ status: "submitted", error: void 0 });
+    const lastMessage = this.lastMessage;
+    try {
+      const activeResponse = {
+        state: createStreamingUIMessageState({
+          lastMessage: this.state.snapshot(lastMessage),
+          messageId: this.generateId()
+        }),
+        abortController: new AbortController()
+      };
+      this.activeResponse = activeResponse;
+      let stream;
+      if (trigger === "resume-stream") {
+        const reconnect = await this.transport.reconnectToStream({
+          chatId: this.id,
+          metadata,
+          headers,
+          body
+        });
+        if (reconnect == null) {
+          this.setStatus({ status: "ready" });
+          return;
+        }
+        stream = reconnect;
+      } else {
+        stream = await this.transport.sendMessages({
+          chatId: this.id,
+          messages: this.state.messages,
+          abortSignal: activeResponse.abortController.signal,
+          metadata,
+          headers,
+          body,
+          trigger,
+          messageId
+        });
+      }
+      const runUpdateMessageJob = (job) => (
+        // serialize the job execution to avoid race conditions:
+        this.jobExecutor.run(
+          () => job({
+            state: activeResponse.state,
+            write: () => {
+              var _a18;
+              this.setStatus({ status: "streaming" });
+              const replaceLastMessage = activeResponse.state.message.id === ((_a18 = this.lastMessage) == null ? void 0 : _a18.id);
+              if (replaceLastMessage) {
+                this.state.replaceMessage(
+                  this.state.messages.length - 1,
+                  activeResponse.state.message
+                );
+              } else {
+                this.state.pushMessage(activeResponse.state.message);
               }
-            );
+            }
+          })
+        )
+      );
+      await consumeStream({
+        stream: processUIMessageStream({
+          stream,
+          onToolCall: this.onToolCall,
+          onData: this.onData,
+          messageMetadataSchema: this.messageMetadataSchema,
+          dataPartSchemas: this.dataPartSchemas,
+          runUpdateMessageJob,
+          onError: (error) => {
+            throw error;
           }
-          if (callbacks.experimental_onToolCall) {
-            const toolCalls = {
-              tools: []
-            };
-            for (const tool2 of payload.tool_calls) {
-              toolCalls.tools.push({
-                id: tool2.id,
-                type: "function",
-                func: {
-                  name: tool2.function.name,
-                  arguments: JSON.parse(tool2.function.arguments)
+        }),
+        onError: (error) => {
+          throw error;
+        }
+      });
+      (_a17 = this.onFinish) == null ? void 0 : _a17.call(this, { message: activeResponse.state.message });
+      this.setStatus({ status: "ready" });
+    } catch (err) {
+      if (err.name === "AbortError") {
+        this.setStatus({ status: "ready" });
+        return null;
+      }
+      if (this.onError && err instanceof Error) {
+        this.onError(err);
+      }
+      this.setStatus({ status: "error", error: err });
+    } finally {
+      this.activeResponse = void 0;
+    }
+    if ((_b = this.sendAutomaticallyWhen) == null ? void 0 : _b.call(this, { messages: this.state.messages })) {
+      await this.makeRequest({
+        trigger: "submit-message",
+        messageId: (_c = this.lastMessage) == null ? void 0 : _c.id,
+        metadata,
+        headers,
+        body
+      });
+    }
+  }
+};
+
+// src/ui/convert-to-model-messages.ts
+function convertToModelMessages(messages, options) {
+  const modelMessages = [];
+  if (options == null ? void 0 : options.ignoreIncompleteToolCalls) {
+    messages = messages.map((message) => ({
+      ...message,
+      parts: message.parts.filter(
+        (part) => !isToolUIPart(part) || part.state !== "input-streaming" && part.state !== "input-available"
+      )
+    }));
+  }
+  for (const message of messages) {
+    switch (message.role) {
+      case "system": {
+        const textParts = message.parts.filter((part) => part.type === "text");
+        const providerMetadata = textParts.reduce((acc, part) => {
+          if (part.providerMetadata != null) {
+            return { ...acc, ...part.providerMetadata };
+          }
+          return acc;
+        }, {});
+        modelMessages.push({
+          role: "system",
+          content: textParts.map((part) => part.text).join(""),
+          ...Object.keys(providerMetadata).length > 0 ? { providerOptions: providerMetadata } : {}
+        });
+        break;
+      }
+      case "user": {
+        modelMessages.push({
+          role: "user",
+          content: message.parts.filter(
+            (part) => part.type === "text" || part.type === "file"
+          ).map((part) => {
+            switch (part.type) {
+              case "text":
+                return {
+                  type: "text",
+                  text: part.text,
+                  ...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
+                };
+              case "file":
+                return {
+                  type: "file",
+                  mediaType: part.mediaType,
+                  filename: part.filename,
+                  data: part.url,
+                  ...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
+                };
+              default:
+                return part;
+            }
+          })
+        });
+        break;
+      }
+      case "assistant": {
+        if (message.parts != null) {
+          let processBlock2 = function() {
+            var _a17, _b;
+            if (block.length === 0) {
+              return;
+            }
+            const content = [];
+            for (const part of block) {
+              if (part.type === "text") {
+                content.push({
+                  type: "text",
+                  text: part.text,
+                  ...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
+                });
+              } else if (part.type === "file") {
+                content.push({
+                  type: "file",
+                  mediaType: part.mediaType,
+                  filename: part.filename,
+                  data: part.url
+                });
+              } else if (part.type === "reasoning") {
+                content.push({
+                  type: "reasoning",
+                  text: part.text,
+                  providerOptions: part.providerMetadata
+                });
+              } else if (part.type === "dynamic-tool") {
+                const toolName = part.toolName;
+                if (part.state === "input-streaming") {
+                  throw new MessageConversionError({
+                    originalMessage: message,
+                    message: `incomplete tool input is not supported: ${part.toolCallId}`
+                  });
+                } else {
+                  content.push({
+                    type: "tool-call",
+                    toolCallId: part.toolCallId,
+                    toolName,
+                    input: part.input,
+                    ...part.callProviderMetadata != null ? { providerOptions: part.callProviderMetadata } : {}
+                  });
                 }
+              } else if (isToolUIPart(part)) {
+                const toolName = getToolName(part);
+                if (part.state === "input-streaming") {
+                  throw new MessageConversionError({
+                    originalMessage: message,
+                    message: `incomplete tool input is not supported: ${part.toolCallId}`
+                  });
+                } else {
+                  content.push({
+                    type: "tool-call",
+                    toolCallId: part.toolCallId,
+                    toolName,
+                    input: part.state === "output-error" ? (_a17 = part.input) != null ? _a17 : part.rawInput : part.input,
+                    providerExecuted: part.providerExecuted,
+                    ...part.callProviderMetadata != null ? { providerOptions: part.callProviderMetadata } : {}
+                  });
+                  if (part.providerExecuted === true && (part.state === "output-available" || part.state === "output-error")) {
+                    content.push({
+                      type: "tool-result",
+                      toolCallId: part.toolCallId,
+                      toolName,
+                      output: createToolModelOutput({
+                        output: part.state === "output-error" ? part.errorText : part.output,
+                        tool: (_b = options == null ? void 0 : options.tools) == null ? void 0 : _b[toolName],
+                        errorMode: part.state === "output-error" ? "json" : "none"
+                      })
+                    });
+                  }
+                }
+              } else {
+                const _exhaustiveCheck = part;
+                throw new Error(`Unsupported part: ${_exhaustiveCheck}`);
+              }
+            }
+            modelMessages.push({
+              role: "assistant",
+              content
+            });
+            const toolParts = block.filter(
+              (part) => isToolUIPart(part) && part.providerExecuted !== true || part.type === "dynamic-tool"
+            );
+            if (toolParts.length > 0) {
+              modelMessages.push({
+                role: "tool",
+                content: toolParts.map((toolPart) => {
+                  var _a18;
+                  switch (toolPart.state) {
+                    case "output-error":
+                    case "output-available": {
+                      const toolName = toolPart.type === "dynamic-tool" ? toolPart.toolName : getToolName(toolPart);
+                      return {
+                        type: "tool-result",
+                        toolCallId: toolPart.toolCallId,
+                        toolName,
+                        output: createToolModelOutput({
+                          output: toolPart.state === "output-error" ? toolPart.errorText : toolPart.output,
+                          tool: (_a18 = options == null ? void 0 : options.tools) == null ? void 0 : _a18[toolName],
+                          errorMode: toolPart.state === "output-error" ? "text" : "none"
+                        })
+                      };
+                    }
+                    default: {
+                      throw new MessageConversionError({
+                        originalMessage: message,
+                        message: `Unsupported tool part state: ${toolPart.state}`
+                      });
+                    }
+                  }
+                })
               });
             }
-            let responseIndex = 0;
-            try {
-              functionResponse = await callbacks.experimental_onToolCall(
-                toolCalls,
-                (result) => {
-                  if (result) {
-                    const { tool_call_id, function_name, tool_call_result } = result;
-                    newFunctionCallMessages = [
-                      ...newFunctionCallMessages,
-                      // Only append the assistant message if it's the first response
-                      ...responseIndex === 0 ? [
-                        {
-                          role: "assistant",
-                          content: "",
-                          tool_calls: payload.tool_calls.map(
-                            (tc) => ({
-                              id: tc.id,
-                              type: "function",
-                              function: {
-                                name: tc.function.name,
-                                // we send the arguments an object to the user, but as the API expects a string, we need to stringify it
-                                arguments: JSON.stringify(
-                                  tc.function.arguments
-                                )
-                              }
-                            })
-                          )
-                        }
-                      ] : [],
-                      // Append the function call result message
-                      {
-                        role: "tool",
-                        tool_call_id,
-                        name: function_name,
-                        content: JSON.stringify(tool_call_result)
-                      }
-                    ];
-                    responseIndex++;
-                  }
-                  return newFunctionCallMessages;
-                }
-              );
-            } catch (e) {
-              console.error("Error calling experimental_onToolCall:", e);
-            }
-          }
-          if (!functionResponse) {
-            controller.enqueue(
-              textEncoder.encode(
-                (0, import_ui_utils5.formatStreamPart)(
-                  payload.function_call ? "function_call" : "tool_calls",
-                  // parse to prevent double-encoding:
-                  JSON.parse(aggregatedResponse)
-                )
-              )
-            );
-            return;
-          } else if (typeof functionResponse === "string") {
-            controller.enqueue(
-              textEncoder.encode((0, import_ui_utils5.formatStreamPart)("text", functionResponse))
-            );
-            aggregatedFinalCompletionResponse = functionResponse;
-            return;
-          }
-          const filteredCallbacks = {
-            ...callbacks,
-            onStart: void 0
+            block = [];
           };
-          callbacks.onFinal = void 0;
-          const openAIStream = OpenAIStream(functionResponse, {
-            ...filteredCallbacks,
-            [__internal__OpenAIFnMessagesSymbol]: newFunctionCallMessages
-          });
-          const reader = openAIStream.getReader();
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              break;
+          var processBlock = processBlock2;
+          let block = [];
+          for (const part of message.parts) {
+            if (part.type === "text" || part.type === "reasoning" || part.type === "file" || part.type === "dynamic-tool" || isToolUIPart(part)) {
+              block.push(part);
+            } else if (part.type === "step-start") {
+              processBlock2();
             }
-            controller.enqueue(value);
           }
+          processBlock2();
+          break;
         }
-      } finally {
-        if (callbacks.onFinal && aggregatedFinalCompletionResponse) {
-          await callbacks.onFinal(aggregatedFinalCompletionResponse);
-        }
+        break;
+      }
+      default: {
+        const _exhaustiveCheck = message.role;
+        throw new MessageConversionError({
+          originalMessage: message,
+          message: `Unsupported role: ${_exhaustiveCheck}`
+        });
       }
     }
-  });
+  }
+  return modelMessages;
+}
+var convertToCoreMessages = convertToModelMessages;
+
+// src/ui/last-assistant-message-is-complete-with-tool-calls.ts
+function lastAssistantMessageIsCompleteWithToolCalls({
+  messages
+}) {
+  const message = messages[messages.length - 1];
+  if (!message) {
+    return false;
+  }
+  if (message.role !== "assistant") {
+    return false;
+  }
+  const lastStepStartIndex = message.parts.reduce((lastIndex, part, index) => {
+    return part.type === "step-start" ? index : lastIndex;
+  }, -1);
+  const lastStepToolInvocations = message.parts.slice(lastStepStartIndex + 1).filter((part) => isToolUIPart(part) || part.type === "dynamic-tool");
+  return lastStepToolInvocations.length > 0 && lastStepToolInvocations.every((part) => part.state === "output-available");
 }
 
-// streams/replicate-stream.ts
-async function ReplicateStream(res, cb, options) {
-  var _a;
-  const url = (_a = res.urls) == null ? void 0 : _a.stream;
-  if (!url) {
-    if (res.error)
-      throw new Error(res.error);
-    else
-      throw new Error("Missing stream URL in Replicate response");
-  }
-  const eventStream = await fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: "text/event-stream",
-      ...options == null ? void 0 : options.headers
-    }
-  });
-  return AIStream(eventStream, void 0, cb).pipeThrough(
-    createStreamDataTransformer()
+// src/ui/transform-text-to-ui-message-stream.ts
+function transformTextToUiMessageStream({
+  stream
+}) {
+  return stream.pipeThrough(
+    new TransformStream({
+      start(controller) {
+        controller.enqueue({ type: "start" });
+        controller.enqueue({ type: "start-step" });
+        controller.enqueue({ type: "text-start", id: "text-1" });
+      },
+      async transform(part, controller) {
+        controller.enqueue({ type: "text-delta", id: "text-1", delta: part });
+      },
+      async flush(controller) {
+        controller.enqueue({ type: "text-end", id: "text-1" });
+        controller.enqueue({ type: "finish-step" });
+        controller.enqueue({ type: "finish" });
+      }
+    })
   );
 }
 
-// core/util/merge-streams.ts
-function mergeStreams(stream1, stream2) {
-  const reader1 = stream1.getReader();
-  const reader2 = stream2.getReader();
-  let lastRead1 = void 0;
-  let lastRead2 = void 0;
-  let stream1Done = false;
-  let stream2Done = false;
-  async function readStream1(controller) {
-    try {
-      if (lastRead1 == null) {
-        lastRead1 = reader1.read();
-      }
-      const result = await lastRead1;
-      lastRead1 = void 0;
-      if (!result.done) {
-        controller.enqueue(result.value);
-      } else {
-        controller.close();
-      }
-    } catch (error) {
-      controller.error(error);
+// src/ui/text-stream-chat-transport.ts
+var TextStreamChatTransport = class extends HttpChatTransport {
+  constructor(options = {}) {
+    super(options);
+  }
+  processResponseStream(stream) {
+    return transformTextToUiMessageStream({
+      stream: stream.pipeThrough(new TextDecoderStream())
+    });
+  }
+};
+
+// src/ui/validate-ui-messages.ts
+var import_provider32 = __nccwpck_require__(2585);
+var import_provider_utils27 = __nccwpck_require__(9033);
+var import_v410 = __nccwpck_require__(5350);
+var textUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("text"),
+  text: import_v410.z.string(),
+  state: import_v410.z.enum(["streaming", "done"]).optional(),
+  providerMetadata: providerMetadataSchema.optional()
+});
+var reasoningUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("reasoning"),
+  text: import_v410.z.string(),
+  state: import_v410.z.enum(["streaming", "done"]).optional(),
+  providerMetadata: providerMetadataSchema.optional()
+});
+var sourceUrlUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("source-url"),
+  sourceId: import_v410.z.string(),
+  url: import_v410.z.string(),
+  title: import_v410.z.string().optional(),
+  providerMetadata: providerMetadataSchema.optional()
+});
+var sourceDocumentUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("source-document"),
+  sourceId: import_v410.z.string(),
+  mediaType: import_v410.z.string(),
+  title: import_v410.z.string(),
+  filename: import_v410.z.string().optional(),
+  providerMetadata: providerMetadataSchema.optional()
+});
+var fileUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("file"),
+  mediaType: import_v410.z.string(),
+  filename: import_v410.z.string().optional(),
+  url: import_v410.z.string(),
+  providerMetadata: providerMetadataSchema.optional()
+});
+var stepStartUIPartSchema = import_v410.z.object({
+  type: import_v410.z.literal("step-start")
+});
+var dataUIPartSchema = import_v410.z.object({
+  type: import_v410.z.string().startsWith("data-"),
+  id: import_v410.z.string().optional(),
+  data: import_v410.z.unknown()
+});
+var dynamicToolUIPartSchemas = [
+  import_v410.z.object({
+    type: import_v410.z.literal("dynamic-tool"),
+    toolName: import_v410.z.string(),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("input-streaming"),
+    input: import_v410.z.unknown().optional(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.never().optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.literal("dynamic-tool"),
+    toolName: import_v410.z.string(),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("input-available"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.never().optional(),
+    callProviderMetadata: providerMetadataSchema.optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.literal("dynamic-tool"),
+    toolName: import_v410.z.string(),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("output-available"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.unknown(),
+    errorText: import_v410.z.never().optional(),
+    callProviderMetadata: providerMetadataSchema.optional(),
+    preliminary: import_v410.z.boolean().optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.literal("dynamic-tool"),
+    toolName: import_v410.z.string(),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("output-error"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.string(),
+    callProviderMetadata: providerMetadataSchema.optional()
+  })
+];
+var toolUIPartSchemas = [
+  import_v410.z.object({
+    type: import_v410.z.string().startsWith("tool-"),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("input-streaming"),
+    input: import_v410.z.unknown().optional(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.never().optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.string().startsWith("tool-"),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("input-available"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.never().optional(),
+    callProviderMetadata: providerMetadataSchema.optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.string().startsWith("tool-"),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("output-available"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.unknown(),
+    errorText: import_v410.z.never().optional(),
+    callProviderMetadata: providerMetadataSchema.optional(),
+    preliminary: import_v410.z.boolean().optional()
+  }),
+  import_v410.z.object({
+    type: import_v410.z.string().startsWith("tool-"),
+    toolCallId: import_v410.z.string(),
+    state: import_v410.z.literal("output-error"),
+    input: import_v410.z.unknown(),
+    output: import_v410.z.never().optional(),
+    errorText: import_v410.z.string(),
+    callProviderMetadata: providerMetadataSchema.optional()
+  })
+];
+var uiMessageSchema = import_v410.z.object({
+  id: import_v410.z.string(),
+  role: import_v410.z.enum(["system", "user", "assistant"]),
+  metadata: import_v410.z.unknown().optional(),
+  parts: import_v410.z.array(
+    import_v410.z.union([
+      textUIPartSchema,
+      reasoningUIPartSchema,
+      sourceUrlUIPartSchema,
+      sourceDocumentUIPartSchema,
+      fileUIPartSchema,
+      stepStartUIPartSchema,
+      dataUIPartSchema,
+      ...dynamicToolUIPartSchemas,
+      ...toolUIPartSchemas
+    ])
+  )
+});
+async function validateUIMessages({
+  messages,
+  metadataSchema,
+  dataSchemas,
+  tools
+}) {
+  const validatedMessages = await (0, import_provider_utils27.validateTypes)({
+    value: messages,
+    schema: import_v410.z.array(uiMessageSchema)
+  });
+  if (metadataSchema) {
+    for (const message of validatedMessages) {
+      await (0, import_provider_utils27.validateTypes)({
+        value: message.metadata,
+        schema: metadataSchema
+      });
     }
   }
-  async function readStream2(controller) {
-    try {
-      if (lastRead2 == null) {
-        lastRead2 = reader2.read();
+  if (dataSchemas) {
+    for (const message of validatedMessages) {
+      const dataParts = message.parts.filter(
+        (part) => part.type.startsWith("data-")
+      );
+      for (const dataPart of dataParts) {
+        const dataName = dataPart.type.slice(5);
+        const dataSchema = dataSchemas[dataName];
+        if (!dataSchema) {
+          throw new import_provider32.TypeValidationError({
+            value: dataPart.data,
+            cause: `No data schema found for data part ${dataName}`
+          });
+        }
+        await (0, import_provider_utils27.validateTypes)({
+          value: dataPart.data,
+          schema: dataSchema
+        });
       }
-      const result = await lastRead2;
-      lastRead2 = void 0;
-      if (!result.done) {
-        controller.enqueue(result.value);
-      } else {
-        controller.close();
-      }
-    } catch (error) {
-      controller.error(error);
     }
   }
+  if (tools) {
+    for (const message of validatedMessages) {
+      const toolParts = message.parts.filter(
+        (part) => part.type.startsWith("tool-")
+      );
+      for (const toolPart of toolParts) {
+        const toolName = toolPart.type.slice(5);
+        const tool3 = tools[toolName];
+        if (!tool3) {
+          throw new import_provider32.TypeValidationError({
+            value: toolPart.input,
+            cause: `No tool schema found for tool part ${toolName}`
+          });
+        }
+        if (toolPart.state === "input-available" || toolPart.state === "output-available" || toolPart.state === "output-error") {
+          await (0, import_provider_utils27.validateTypes)({
+            value: toolPart.input,
+            schema: tool3.inputSchema
+          });
+        }
+        if (toolPart.state === "output-available" && tool3.outputSchema) {
+          await (0, import_provider_utils27.validateTypes)({
+            value: toolPart.output,
+            schema: tool3.outputSchema
+          });
+        }
+      }
+    }
+  }
+  return validatedMessages;
+}
+
+// src/ui-message-stream/create-ui-message-stream.ts
+var import_provider_utils28 = __nccwpck_require__(9033);
+function createUIMessageStream({
+  execute,
+  onError = import_provider_utils28.getErrorMessage,
+  originalMessages,
+  onFinish,
+  generateId: generateId3 = import_provider_utils28.generateId
+}) {
+  let controller;
+  const ongoingStreamPromises = [];
+  const stream = new ReadableStream({
+    start(controllerArg) {
+      controller = controllerArg;
+    }
+  });
+  function safeEnqueue(data) {
+    try {
+      controller.enqueue(data);
+    } catch (error) {
+    }
+  }
+  try {
+    const result = execute({
+      writer: {
+        write(part) {
+          safeEnqueue(part);
+        },
+        merge(streamArg) {
+          ongoingStreamPromises.push(
+            (async () => {
+              const reader = streamArg.getReader();
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done)
+                  break;
+                safeEnqueue(value);
+              }
+            })().catch((error) => {
+              safeEnqueue({
+                type: "error",
+                errorText: onError(error)
+              });
+            })
+          );
+        },
+        onError
+      }
+    });
+    if (result) {
+      ongoingStreamPromises.push(
+        result.catch((error) => {
+          safeEnqueue({
+            type: "error",
+            errorText: onError(error)
+          });
+        })
+      );
+    }
+  } catch (error) {
+    safeEnqueue({
+      type: "error",
+      errorText: onError(error)
+    });
+  }
+  const waitForStreams = new Promise(async (resolve2) => {
+    while (ongoingStreamPromises.length > 0) {
+      await ongoingStreamPromises.shift();
+    }
+    resolve2();
+  });
+  waitForStreams.finally(() => {
+    try {
+      controller.close();
+    } catch (error) {
+    }
+  });
+  return handleUIMessageStreamFinish({
+    stream,
+    messageId: generateId3(),
+    originalMessages,
+    onFinish,
+    onError
+  });
+}
+
+// src/ui-message-stream/read-ui-message-stream.ts
+function readUIMessageStream({
+  message,
+  stream,
+  onError,
+  terminateOnError = false
+}) {
+  var _a17;
+  let controller;
+  let hasErrored = false;
+  const outputStream = new ReadableStream({
+    start(controllerParam) {
+      controller = controllerParam;
+    }
+  });
+  const state = createStreamingUIMessageState({
+    messageId: (_a17 = message == null ? void 0 : message.id) != null ? _a17 : "",
+    lastMessage: message
+  });
+  const handleError = (error) => {
+    onError == null ? void 0 : onError(error);
+    if (!hasErrored && terminateOnError) {
+      hasErrored = true;
+      controller == null ? void 0 : controller.error(error);
+    }
+  };
+  consumeStream({
+    stream: processUIMessageStream({
+      stream,
+      runUpdateMessageJob(job) {
+        return job({
+          state,
+          write: () => {
+            controller == null ? void 0 : controller.enqueue(structuredClone(state.message));
+          }
+        });
+      },
+      onError: handleError
+    }),
+    onError: handleError
+  }).finally(() => {
+    if (!hasErrored) {
+      controller == null ? void 0 : controller.close();
+    }
+  });
+  return createAsyncIterableStream(outputStream);
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 9033:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  EventSourceParserStream: () => import_stream2.EventSourceParserStream,
+  asSchema: () => asSchema,
+  asValidator: () => asValidator,
+  combineHeaders: () => combineHeaders,
+  convertAsyncIteratorToReadableStream: () => convertAsyncIteratorToReadableStream,
+  convertBase64ToUint8Array: () => convertBase64ToUint8Array,
+  convertToBase64: () => convertToBase64,
+  convertUint8ArrayToBase64: () => convertUint8ArrayToBase64,
+  createBinaryResponseHandler: () => createBinaryResponseHandler,
+  createEventSourceResponseHandler: () => createEventSourceResponseHandler,
+  createIdGenerator: () => createIdGenerator,
+  createJsonErrorResponseHandler: () => createJsonErrorResponseHandler,
+  createJsonResponseHandler: () => createJsonResponseHandler,
+  createJsonStreamResponseHandler: () => createJsonStreamResponseHandler,
+  createProviderDefinedToolFactory: () => createProviderDefinedToolFactory,
+  createProviderDefinedToolFactoryWithOutputSchema: () => createProviderDefinedToolFactoryWithOutputSchema,
+  createStatusCodeErrorResponseHandler: () => createStatusCodeErrorResponseHandler,
+  delay: () => delay,
+  dynamicTool: () => dynamicTool,
+  executeTool: () => executeTool,
+  extractResponseHeaders: () => extractResponseHeaders,
+  generateId: () => generateId,
+  getErrorMessage: () => getErrorMessage,
+  getFromApi: () => getFromApi,
+  injectJsonInstructionIntoMessages: () => injectJsonInstructionIntoMessages,
+  isAbortError: () => isAbortError,
+  isParsableJson: () => isParsableJson,
+  isUrlSupported: () => isUrlSupported,
+  isValidator: () => isValidator,
+  jsonSchema: () => jsonSchema,
+  loadApiKey: () => loadApiKey,
+  loadOptionalSetting: () => loadOptionalSetting,
+  loadSetting: () => loadSetting,
+  mediaTypeToExtension: () => mediaTypeToExtension,
+  parseJSON: () => parseJSON,
+  parseJsonEventStream: () => parseJsonEventStream,
+  parseProviderOptions: () => parseProviderOptions,
+  postFormDataToApi: () => postFormDataToApi,
+  postJsonToApi: () => postJsonToApi,
+  postToApi: () => postToApi,
+  removeUndefinedEntries: () => removeUndefinedEntries,
+  resolve: () => resolve,
+  safeParseJSON: () => safeParseJSON,
+  safeValidateTypes: () => safeValidateTypes,
+  standardSchemaValidator: () => standardSchemaValidator,
+  tool: () => tool,
+  validateTypes: () => validateTypes,
+  validator: () => validator,
+  validatorSymbol: () => validatorSymbol,
+  withoutTrailingSlash: () => withoutTrailingSlash,
+  zodSchema: () => zodSchema
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/combine-headers.ts
+function combineHeaders(...headers) {
+  return headers.reduce(
+    (combinedHeaders, currentHeaders) => ({
+      ...combinedHeaders,
+      ...currentHeaders != null ? currentHeaders : {}
+    }),
+    {}
+  );
+}
+
+// src/convert-async-iterator-to-readable-stream.ts
+function convertAsyncIteratorToReadableStream(iterator) {
   return new ReadableStream({
+    /**
+     * Called when the consumer wants to pull more data from the stream.
+     *
+     * @param {ReadableStreamDefaultController<T>} controller - The controller to enqueue data into the stream.
+     * @returns {Promise<void>}
+     */
     async pull(controller) {
       try {
-        if (stream1Done) {
-          readStream2(controller);
-          return;
-        }
-        if (stream2Done) {
-          readStream1(controller);
-          return;
-        }
-        if (lastRead1 == null) {
-          lastRead1 = reader1.read();
-        }
-        if (lastRead2 == null) {
-          lastRead2 = reader2.read();
-        }
-        const { result, reader } = await Promise.race([
-          lastRead1.then((result2) => ({ result: result2, reader: reader1 })),
-          lastRead2.then((result2) => ({ result: result2, reader: reader2 }))
-        ]);
-        if (!result.done) {
-          controller.enqueue(result.value);
-        }
-        if (reader === reader1) {
-          lastRead1 = void 0;
-          if (result.done) {
-            readStream2(controller);
-            stream1Done = true;
-          }
+        const { value, done } = await iterator.next();
+        if (done) {
+          controller.close();
         } else {
-          lastRead2 = void 0;
-          if (result.done) {
-            stream2Done = true;
-            readStream1(controller);
-          }
+          controller.enqueue(value);
         }
       } catch (error) {
         controller.error(error);
       }
     },
+    /**
+     * Called when the consumer cancels the stream.
+     */
     cancel() {
-      reader1.cancel();
-      reader2.cancel();
     }
   });
 }
 
-// streams/stream-to-response.ts
-function streamToResponse(res, response, init, data) {
-  var _a;
-  response.writeHead((_a = init == null ? void 0 : init.status) != null ? _a : 200, {
-    "Content-Type": "text/plain; charset=utf-8",
-    ...init == null ? void 0 : init.headers
-  });
-  let processedStream = res;
-  if (data) {
-    processedStream = mergeStreams(data.stream, res);
+// src/delay.ts
+async function delay(delayInMs, options) {
+  if (delayInMs == null) {
+    return Promise.resolve();
   }
-  const reader = processedStream.getReader();
-  function read() {
-    reader.read().then(({ done, value }) => {
-      if (done) {
-        response.end();
-        return;
+  const signal = options == null ? void 0 : options.abortSignal;
+  return new Promise((resolve2, reject) => {
+    if (signal == null ? void 0 : signal.aborted) {
+      reject(createAbortError());
+      return;
+    }
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      resolve2();
+    }, delayInMs);
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      signal == null ? void 0 : signal.removeEventListener("abort", onAbort);
+    };
+    const onAbort = () => {
+      cleanup();
+      reject(createAbortError());
+    };
+    signal == null ? void 0 : signal.addEventListener("abort", onAbort);
+  });
+}
+function createAbortError() {
+  return new DOMException("Delay was aborted", "AbortError");
+}
+
+// src/extract-response-headers.ts
+function extractResponseHeaders(response) {
+  return Object.fromEntries([...response.headers]);
+}
+
+// src/generate-id.ts
+var import_provider = __nccwpck_require__(2585);
+var createIdGenerator = ({
+  prefix,
+  size = 16,
+  alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  separator = "-"
+} = {}) => {
+  const generator = () => {
+    const alphabetLength = alphabet.length;
+    const chars = new Array(size);
+    for (let i = 0; i < size; i++) {
+      chars[i] = alphabet[Math.random() * alphabetLength | 0];
+    }
+    return chars.join("");
+  };
+  if (prefix == null) {
+    return generator;
+  }
+  if (alphabet.includes(separator)) {
+    throw new import_provider.InvalidArgumentError({
+      argument: "separator",
+      message: `The separator "${separator}" must not be part of the alphabet "${alphabet}".`
+    });
+  }
+  return () => `${prefix}${separator}${generator()}`;
+};
+var generateId = createIdGenerator();
+
+// src/get-error-message.ts
+function getErrorMessage(error) {
+  if (error == null) {
+    return "unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+
+// src/get-from-api.ts
+var import_provider3 = __nccwpck_require__(2585);
+
+// src/handle-fetch-error.ts
+var import_provider2 = __nccwpck_require__(2585);
+
+// src/is-abort-error.ts
+function isAbortError(error) {
+  return (error instanceof Error || error instanceof DOMException) && (error.name === "AbortError" || error.name === "ResponseAborted" || // Next.js
+  error.name === "TimeoutError");
+}
+
+// src/handle-fetch-error.ts
+var FETCH_FAILED_ERROR_MESSAGES = ["fetch failed", "failed to fetch"];
+function handleFetchError({
+  error,
+  url,
+  requestBodyValues
+}) {
+  if (isAbortError(error)) {
+    return error;
+  }
+  if (error instanceof TypeError && FETCH_FAILED_ERROR_MESSAGES.includes(error.message.toLowerCase())) {
+    const cause = error.cause;
+    if (cause != null) {
+      return new import_provider2.APICallError({
+        message: `Cannot connect to API: ${cause.message}`,
+        cause,
+        url,
+        requestBodyValues,
+        isRetryable: true
+        // retry when network error
+      });
+    }
+  }
+  return error;
+}
+
+// src/remove-undefined-entries.ts
+function removeUndefinedEntries(record) {
+  return Object.fromEntries(
+    Object.entries(record).filter(([_key, value]) => value != null)
+  );
+}
+
+// src/get-from-api.ts
+var getOriginalFetch = () => globalThis.fetch;
+var getFromApi = async ({
+  url,
+  headers = {},
+  successfulResponseHandler,
+  failedResponseHandler,
+  abortSignal,
+  fetch = getOriginalFetch()
+}) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: removeUndefinedEntries(headers),
+      signal: abortSignal
+    });
+    const responseHeaders = extractResponseHeaders(response);
+    if (!response.ok) {
+      let errorInformation;
+      try {
+        errorInformation = await failedResponseHandler({
+          response,
+          url,
+          requestBodyValues: {}
+        });
+      } catch (error) {
+        if (isAbortError(error) || import_provider3.APICallError.isInstance(error)) {
+          throw error;
+        }
+        throw new import_provider3.APICallError({
+          message: "Failed to process error response",
+          cause: error,
+          statusCode: response.status,
+          url,
+          responseHeaders,
+          requestBodyValues: {}
+        });
       }
-      response.write(value);
-      read();
-    });
-  }
-  read();
-}
-
-// streams/streaming-text-response.ts
-var StreamingTextResponse = class extends Response {
-  constructor(res, init, data) {
-    let processedStream = res;
-    if (data) {
-      processedStream = mergeStreams(data.stream, res);
+      throw errorInformation.value;
     }
-    super(processedStream, {
-      ...init,
-      status: 200,
-      headers: prepareResponseHeaders(init, {
-        contentType: "text/plain; charset=utf-8"
-      })
-    });
+    try {
+      return await successfulResponseHandler({
+        response,
+        url,
+        requestBodyValues: {}
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (isAbortError(error) || import_provider3.APICallError.isInstance(error)) {
+          throw error;
+        }
+      }
+      throw new import_provider3.APICallError({
+        message: "Failed to process successful response",
+        cause: error,
+        statusCode: response.status,
+        url,
+        responseHeaders,
+        requestBodyValues: {}
+      });
+    }
+  } catch (error) {
+    throw handleFetchError({ error, url, requestBodyValues: {} });
   }
 };
 
-// streams/index.ts
-var generateId2 = import_provider_utils7.generateId;
-var nanoid = import_provider_utils7.generateId;
+// src/inject-json-instruction.ts
+var DEFAULT_SCHEMA_PREFIX = "JSON schema:";
+var DEFAULT_SCHEMA_SUFFIX = "You MUST answer with a JSON object that matches the JSON schema above.";
+var DEFAULT_GENERIC_SUFFIX = "You MUST answer with JSON.";
+function injectJsonInstruction({
+  prompt,
+  schema,
+  schemaPrefix = schema != null ? DEFAULT_SCHEMA_PREFIX : void 0,
+  schemaSuffix = schema != null ? DEFAULT_SCHEMA_SUFFIX : DEFAULT_GENERIC_SUFFIX
+}) {
+  return [
+    prompt != null && prompt.length > 0 ? prompt : void 0,
+    prompt != null && prompt.length > 0 ? "" : void 0,
+    // add a newline if prompt is not null
+    schemaPrefix,
+    schema != null ? JSON.stringify(schema) : void 0,
+    schemaSuffix
+  ].filter((line) => line != null).join("\n");
+}
+function injectJsonInstructionIntoMessages({
+  messages,
+  schema,
+  schemaPrefix,
+  schemaSuffix
+}) {
+  var _a, _b;
+  const systemMessage = ((_a = messages[0]) == null ? void 0 : _a.role) === "system" ? { ...messages[0] } : { role: "system", content: "" };
+  systemMessage.content = injectJsonInstruction({
+    prompt: systemMessage.content,
+    schema,
+    schemaPrefix,
+    schemaSuffix
+  });
+  return [
+    systemMessage,
+    ...((_b = messages[0]) == null ? void 0 : _b.role) === "system" ? messages.slice(1) : messages
+  ];
+}
+
+// src/is-url-supported.ts
+function isUrlSupported({
+  mediaType,
+  url,
+  supportedUrls
+}) {
+  url = url.toLowerCase();
+  mediaType = mediaType.toLowerCase();
+  return Object.entries(supportedUrls).map(([key, value]) => {
+    const mediaType2 = key.toLowerCase();
+    return mediaType2 === "*" || mediaType2 === "*/*" ? { mediaTypePrefix: "", regexes: value } : { mediaTypePrefix: mediaType2.replace(/\*/, ""), regexes: value };
+  }).filter(({ mediaTypePrefix }) => mediaType.startsWith(mediaTypePrefix)).flatMap(({ regexes }) => regexes).some((pattern) => pattern.test(url));
+}
+
+// src/load-api-key.ts
+var import_provider4 = __nccwpck_require__(2585);
+function loadApiKey({
+  apiKey,
+  environmentVariableName,
+  apiKeyParameterName = "apiKey",
+  description
+}) {
+  if (typeof apiKey === "string") {
+    return apiKey;
+  }
+  if (apiKey != null) {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key must be a string.`
+    });
+  }
+  if (typeof process === "undefined") {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter. Environment variables is not supported in this environment.`
+    });
+  }
+  apiKey = process.env[environmentVariableName];
+  if (apiKey == null) {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key is missing. Pass it using the '${apiKeyParameterName}' parameter or the ${environmentVariableName} environment variable.`
+    });
+  }
+  if (typeof apiKey !== "string") {
+    throw new import_provider4.LoadAPIKeyError({
+      message: `${description} API key must be a string. The value of the ${environmentVariableName} environment variable is not a string.`
+    });
+  }
+  return apiKey;
+}
+
+// src/load-optional-setting.ts
+function loadOptionalSetting({
+  settingValue,
+  environmentVariableName
+}) {
+  if (typeof settingValue === "string") {
+    return settingValue;
+  }
+  if (settingValue != null || typeof process === "undefined") {
+    return void 0;
+  }
+  settingValue = process.env[environmentVariableName];
+  if (settingValue == null || typeof settingValue !== "string") {
+    return void 0;
+  }
+  return settingValue;
+}
+
+// src/load-setting.ts
+var import_provider5 = __nccwpck_require__(2585);
+function loadSetting({
+  settingValue,
+  environmentVariableName,
+  settingName,
+  description
+}) {
+  if (typeof settingValue === "string") {
+    return settingValue;
+  }
+  if (settingValue != null) {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting must be a string.`
+    });
+  }
+  if (typeof process === "undefined") {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting is missing. Pass it using the '${settingName}' parameter. Environment variables is not supported in this environment.`
+    });
+  }
+  settingValue = process.env[environmentVariableName];
+  if (settingValue == null) {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting is missing. Pass it using the '${settingName}' parameter or the ${environmentVariableName} environment variable.`
+    });
+  }
+  if (typeof settingValue !== "string") {
+    throw new import_provider5.LoadSettingError({
+      message: `${description} setting must be a string. The value of the ${environmentVariableName} environment variable is not a string.`
+    });
+  }
+  return settingValue;
+}
+
+// src/media-type-to-extension.ts
+function mediaTypeToExtension(mediaType) {
+  var _a;
+  const [_type, subtype = ""] = mediaType.toLowerCase().split("/");
+  return (_a = {
+    mpeg: "mp3",
+    "x-wav": "wav",
+    opus: "ogg",
+    mp4: "m4a",
+    "x-m4a": "m4a"
+  }[subtype]) != null ? _a : subtype;
+}
+
+// src/parse-json.ts
+var import_provider8 = __nccwpck_require__(2585);
+
+// src/secure-json-parse.ts
+var suspectProtoRx = /"__proto__"\s*:/;
+var suspectConstructorRx = /"constructor"\s*:/;
+function _parse(text) {
+  const obj = JSON.parse(text);
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  if (suspectProtoRx.test(text) === false && suspectConstructorRx.test(text) === false) {
+    return obj;
+  }
+  return filter(obj);
+}
+function filter(obj) {
+  let next = [obj];
+  while (next.length) {
+    const nodes = next;
+    next = [];
+    for (const node of nodes) {
+      if (Object.prototype.hasOwnProperty.call(node, "__proto__")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      if (Object.prototype.hasOwnProperty.call(node, "constructor") && Object.prototype.hasOwnProperty.call(node.constructor, "prototype")) {
+        throw new SyntaxError("Object contains forbidden prototype property");
+      }
+      for (const key in node) {
+        const value = node[key];
+        if (value && typeof value === "object") {
+          next.push(value);
+        }
+      }
+    }
+  }
+  return obj;
+}
+function secureJsonParse(text) {
+  const { stackTraceLimit } = Error;
+  Error.stackTraceLimit = 0;
+  try {
+    return _parse(text);
+  } finally {
+    Error.stackTraceLimit = stackTraceLimit;
+  }
+}
+
+// src/validate-types.ts
+var import_provider7 = __nccwpck_require__(2585);
+
+// src/validator.ts
+var import_provider6 = __nccwpck_require__(2585);
+var validatorSymbol = Symbol.for("vercel.ai.validator");
+function validator(validate) {
+  return { [validatorSymbol]: true, validate };
+}
+function isValidator(value) {
+  return typeof value === "object" && value !== null && validatorSymbol in value && value[validatorSymbol] === true && "validate" in value;
+}
+function asValidator(value) {
+  return isValidator(value) ? value : standardSchemaValidator(value);
+}
+function standardSchemaValidator(standardSchema) {
+  return validator(async (value) => {
+    const result = await standardSchema["~standard"].validate(value);
+    return result.issues == null ? { success: true, value: result.value } : {
+      success: false,
+      error: new import_provider6.TypeValidationError({
+        value,
+        cause: result.issues
+      })
+    };
+  });
+}
+
+// src/validate-types.ts
+async function validateTypes({
+  value,
+  schema
+}) {
+  const result = await safeValidateTypes({ value, schema });
+  if (!result.success) {
+    throw import_provider7.TypeValidationError.wrap({ value, cause: result.error });
+  }
+  return result.value;
+}
+async function safeValidateTypes({
+  value,
+  schema
+}) {
+  const validator2 = asValidator(schema);
+  try {
+    if (validator2.validate == null) {
+      return { success: true, value, rawValue: value };
+    }
+    const result = await validator2.validate(value);
+    if (result.success) {
+      return { success: true, value: result.value, rawValue: value };
+    }
+    return {
+      success: false,
+      error: import_provider7.TypeValidationError.wrap({ value, cause: result.error }),
+      rawValue: value
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: import_provider7.TypeValidationError.wrap({ value, cause: error }),
+      rawValue: value
+    };
+  }
+}
+
+// src/parse-json.ts
+async function parseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return value;
+    }
+    return validateTypes({ value, schema });
+  } catch (error) {
+    if (import_provider8.JSONParseError.isInstance(error) || import_provider8.TypeValidationError.isInstance(error)) {
+      throw error;
+    }
+    throw new import_provider8.JSONParseError({ text, cause: error });
+  }
+}
+async function safeParseJSON({
+  text,
+  schema
+}) {
+  try {
+    const value = secureJsonParse(text);
+    if (schema == null) {
+      return { success: true, value, rawValue: value };
+    }
+    return await safeValidateTypes({ value, schema });
+  } catch (error) {
+    return {
+      success: false,
+      error: import_provider8.JSONParseError.isInstance(error) ? error : new import_provider8.JSONParseError({ text, cause: error }),
+      rawValue: void 0
+    };
+  }
+}
+function isParsableJson(input) {
+  try {
+    secureJsonParse(input);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// src/parse-json-event-stream.ts
+var import_stream = __nccwpck_require__(7990);
+function parseJsonEventStream({
+  stream,
+  schema
+}) {
+  return stream.pipeThrough(new TextDecoderStream()).pipeThrough(new import_stream.EventSourceParserStream()).pipeThrough(
+    new TransformStream({
+      async transform({ data }, controller) {
+        if (data === "[DONE]") {
+          return;
+        }
+        controller.enqueue(await safeParseJSON({ text: data, schema }));
+      }
+    })
+  );
+}
+
+// src/parse-provider-options.ts
+var import_provider9 = __nccwpck_require__(2585);
+async function parseProviderOptions({
+  provider,
+  providerOptions,
+  schema
+}) {
+  if ((providerOptions == null ? void 0 : providerOptions[provider]) == null) {
+    return void 0;
+  }
+  const parsedProviderOptions = await safeValidateTypes({
+    value: providerOptions[provider],
+    schema
+  });
+  if (!parsedProviderOptions.success) {
+    throw new import_provider9.InvalidArgumentError({
+      argument: "providerOptions",
+      message: `invalid ${provider} provider options`,
+      cause: parsedProviderOptions.error
+    });
+  }
+  return parsedProviderOptions.value;
+}
+
+// src/post-to-api.ts
+var import_provider10 = __nccwpck_require__(2585);
+var getOriginalFetch2 = () => globalThis.fetch;
+var postJsonToApi = async ({
+  url,
+  headers,
+  body,
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+}) => postToApi({
+  url,
+  headers: {
+    "Content-Type": "application/json",
+    ...headers
+  },
+  body: {
+    content: JSON.stringify(body),
+    values: body
+  },
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+});
+var postFormDataToApi = async ({
+  url,
+  headers,
+  formData,
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+}) => postToApi({
+  url,
+  headers,
+  body: {
+    content: formData,
+    values: Object.fromEntries(formData.entries())
+  },
+  failedResponseHandler,
+  successfulResponseHandler,
+  abortSignal,
+  fetch
+});
+var postToApi = async ({
+  url,
+  headers = {},
+  body,
+  successfulResponseHandler,
+  failedResponseHandler,
+  abortSignal,
+  fetch = getOriginalFetch2()
+}) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: removeUndefinedEntries(headers),
+      body: body.content,
+      signal: abortSignal
+    });
+    const responseHeaders = extractResponseHeaders(response);
+    if (!response.ok) {
+      let errorInformation;
+      try {
+        errorInformation = await failedResponseHandler({
+          response,
+          url,
+          requestBodyValues: body.values
+        });
+      } catch (error) {
+        if (isAbortError(error) || import_provider10.APICallError.isInstance(error)) {
+          throw error;
+        }
+        throw new import_provider10.APICallError({
+          message: "Failed to process error response",
+          cause: error,
+          statusCode: response.status,
+          url,
+          responseHeaders,
+          requestBodyValues: body.values
+        });
+      }
+      throw errorInformation.value;
+    }
+    try {
+      return await successfulResponseHandler({
+        response,
+        url,
+        requestBodyValues: body.values
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (isAbortError(error) || import_provider10.APICallError.isInstance(error)) {
+          throw error;
+        }
+      }
+      throw new import_provider10.APICallError({
+        message: "Failed to process successful response",
+        cause: error,
+        statusCode: response.status,
+        url,
+        responseHeaders,
+        requestBodyValues: body.values
+      });
+    }
+  } catch (error) {
+    throw handleFetchError({ error, url, requestBodyValues: body.values });
+  }
+};
+
+// src/types/tool.ts
+function tool(tool2) {
+  return tool2;
+}
+function dynamicTool(tool2) {
+  return { ...tool2, type: "dynamic" };
+}
+
+// src/provider-defined-tool-factory.ts
+function createProviderDefinedToolFactory({
+  id,
+  name,
+  inputSchema
+}) {
+  return ({
+    execute,
+    outputSchema,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable,
+    ...args
+  }) => tool({
+    type: "provider-defined",
+    id,
+    name,
+    args,
+    inputSchema,
+    outputSchema,
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable
+  });
+}
+function createProviderDefinedToolFactoryWithOutputSchema({
+  id,
+  name,
+  inputSchema,
+  outputSchema
+}) {
+  return ({
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable,
+    ...args
+  }) => tool({
+    type: "provider-defined",
+    id,
+    name,
+    args,
+    inputSchema,
+    outputSchema,
+    execute,
+    toModelOutput,
+    onInputStart,
+    onInputDelta,
+    onInputAvailable
+  });
+}
+
+// src/resolve.ts
+async function resolve(value) {
+  if (typeof value === "function") {
+    value = value();
+  }
+  return Promise.resolve(value);
+}
+
+// src/response-handler.ts
+var import_provider11 = __nccwpck_require__(2585);
+var createJsonErrorResponseHandler = ({
+  errorSchema,
+  errorToMessage,
+  isRetryable
+}) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const responseHeaders = extractResponseHeaders(response);
+  if (responseBody.trim() === "") {
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
+  }
+  try {
+    const parsedError = await parseJSON({
+      text: responseBody,
+      schema: errorSchema
+    });
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: errorToMessage(parsedError),
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        data: parsedError,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response, parsedError)
+      })
+    };
+  } catch (parseError) {
+    return {
+      responseHeaders,
+      value: new import_provider11.APICallError({
+        message: response.statusText,
+        url,
+        requestBodyValues,
+        statusCode: response.status,
+        responseHeaders,
+        responseBody,
+        isRetryable: isRetryable == null ? void 0 : isRetryable(response)
+      })
+    };
+  }
+};
+var createEventSourceResponseHandler = (chunkSchema) => async ({ response }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (response.body == null) {
+    throw new import_provider11.EmptyResponseBodyError({});
+  }
+  return {
+    responseHeaders,
+    value: parseJsonEventStream({
+      stream: response.body,
+      schema: chunkSchema
+    })
+  };
+};
+var createJsonStreamResponseHandler = (chunkSchema) => async ({ response }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (response.body == null) {
+    throw new import_provider11.EmptyResponseBodyError({});
+  }
+  let buffer = "";
+  return {
+    responseHeaders,
+    value: response.body.pipeThrough(new TextDecoderStream()).pipeThrough(
+      new TransformStream({
+        async transform(chunkText, controller) {
+          if (chunkText.endsWith("\n")) {
+            controller.enqueue(
+              await safeParseJSON({
+                text: buffer + chunkText,
+                schema: chunkSchema
+              })
+            );
+            buffer = "";
+          } else {
+            buffer += chunkText;
+          }
+        }
+      })
+    )
+  };
+};
+var createJsonResponseHandler = (responseSchema) => async ({ response, url, requestBodyValues }) => {
+  const responseBody = await response.text();
+  const parsedResult = await safeParseJSON({
+    text: responseBody,
+    schema: responseSchema
+  });
+  const responseHeaders = extractResponseHeaders(response);
+  if (!parsedResult.success) {
+    throw new import_provider11.APICallError({
+      message: "Invalid JSON response",
+      cause: parsedResult.error,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody,
+      url,
+      requestBodyValues
+    });
+  }
+  return {
+    responseHeaders,
+    value: parsedResult.value,
+    rawValue: parsedResult.rawValue
+  };
+};
+var createBinaryResponseHandler = () => async ({ response, url, requestBodyValues }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  if (!response.body) {
+    throw new import_provider11.APICallError({
+      message: "Response body is empty",
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody: void 0
+    });
+  }
+  try {
+    const buffer = await response.arrayBuffer();
+    return {
+      responseHeaders,
+      value: new Uint8Array(buffer)
+    };
+  } catch (error) {
+    throw new import_provider11.APICallError({
+      message: "Failed to read response as array buffer",
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody: void 0,
+      cause: error
+    });
+  }
+};
+var createStatusCodeErrorResponseHandler = () => async ({ response, url, requestBodyValues }) => {
+  const responseHeaders = extractResponseHeaders(response);
+  const responseBody = await response.text();
+  return {
+    responseHeaders,
+    value: new import_provider11.APICallError({
+      message: response.statusText,
+      url,
+      requestBodyValues,
+      statusCode: response.status,
+      responseHeaders,
+      responseBody
+    })
+  };
+};
+
+// src/zod-schema.ts
+var z4 = __toESM(__nccwpck_require__(5350));
+var import_zod_to_json_schema = __toESM(__nccwpck_require__(2708));
+function zod3Schema(zodSchema2, options) {
+  var _a;
+  const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
+  return jsonSchema(
+    (0, import_zod_to_json_schema.default)(zodSchema2, {
+      $refStrategy: useReferences ? "root" : "none",
+      target: "jsonSchema7"
+      // note: openai mode breaks various gemini conversions
+    }),
+    {
+      validate: async (value) => {
+        const result = await zodSchema2.safeParseAsync(value);
+        return result.success ? { success: true, value: result.data } : { success: false, error: result.error };
+      }
+    }
+  );
+}
+function zod4Schema(zodSchema2, options) {
+  var _a;
+  const useReferences = (_a = options == null ? void 0 : options.useReferences) != null ? _a : false;
+  const z4JSONSchema = z4.toJSONSchema(zodSchema2, {
+    target: "draft-7",
+    io: "output",
+    reused: useReferences ? "ref" : "inline"
+  });
+  return jsonSchema(z4JSONSchema, {
+    validate: async (value) => {
+      const result = await z4.safeParseAsync(zodSchema2, value);
+      return result.success ? { success: true, value: result.data } : { success: false, error: result.error };
+    }
+  });
+}
+function isZod4Schema(zodSchema2) {
+  return "_zod" in zodSchema2;
+}
+function zodSchema(zodSchema2, options) {
+  if (isZod4Schema(zodSchema2)) {
+    return zod4Schema(zodSchema2, options);
+  } else {
+    return zod3Schema(zodSchema2, options);
+  }
+}
+
+// src/schema.ts
+var schemaSymbol = Symbol.for("vercel.ai.schema");
+function jsonSchema(jsonSchema2, {
+  validate
+} = {}) {
+  return {
+    [schemaSymbol]: true,
+    _type: void 0,
+    // should never be used directly
+    [validatorSymbol]: true,
+    jsonSchema: jsonSchema2,
+    validate
+  };
+}
+function isSchema(value) {
+  return typeof value === "object" && value !== null && schemaSymbol in value && value[schemaSymbol] === true && "jsonSchema" in value && "validate" in value;
+}
+function asSchema(schema) {
+  return schema == null ? jsonSchema({
+    properties: {},
+    additionalProperties: false
+  }) : isSchema(schema) ? schema : zodSchema(schema);
+}
+
+// src/uint8-utils.ts
+var { btoa, atob } = globalThis;
+function convertBase64ToUint8Array(base64String) {
+  const base64Url = base64String.replace(/-/g, "+").replace(/_/g, "/");
+  const latin1string = atob(base64Url);
+  return Uint8Array.from(latin1string, (byte) => byte.codePointAt(0));
+}
+function convertUint8ArrayToBase64(array) {
+  let latin1string = "";
+  for (let i = 0; i < array.length; i++) {
+    latin1string += String.fromCodePoint(array[i]);
+  }
+  return btoa(latin1string);
+}
+function convertToBase64(value) {
+  return value instanceof Uint8Array ? convertUint8ArrayToBase64(value) : value;
+}
+
+// src/without-trailing-slash.ts
+function withoutTrailingSlash(url) {
+  return url == null ? void 0 : url.replace(/\/$/, "");
+}
+
+// src/is-async-iterable.ts
+function isAsyncIterable(obj) {
+  return obj != null && typeof obj[Symbol.asyncIterator] === "function";
+}
+
+// src/types/execute-tool.ts
+async function* executeTool({
+  execute,
+  input,
+  options
+}) {
+  const result = execute(input, options);
+  if (isAsyncIterable(result)) {
+    let lastOutput;
+    for await (const output of result) {
+      lastOutput = output;
+      yield { type: "preliminary", output };
+    }
+    yield { type: "final", output: lastOutput };
+  } else {
+    yield { type: "final", output: await result };
+  }
+}
+
+// src/index.ts
+__reExport(src_exports, __nccwpck_require__(4302), module.exports);
+var import_stream2 = __nccwpck_require__(7990);
+// Annotate the CommonJS export names for ESM import in node:
+0 && (0);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 2585:
+/***/ ((module) => {
+
+"use strict";
+
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name14 in all)
+    __defProp(target, name14, { get: all[name14], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  AISDKError: () => AISDKError,
+  APICallError: () => APICallError,
+  EmptyResponseBodyError: () => EmptyResponseBodyError,
+  InvalidArgumentError: () => InvalidArgumentError,
+  InvalidPromptError: () => InvalidPromptError,
+  InvalidResponseDataError: () => InvalidResponseDataError,
+  JSONParseError: () => JSONParseError,
+  LoadAPIKeyError: () => LoadAPIKeyError,
+  LoadSettingError: () => LoadSettingError,
+  NoContentGeneratedError: () => NoContentGeneratedError,
+  NoSuchModelError: () => NoSuchModelError,
+  TooManyEmbeddingValuesForCallError: () => TooManyEmbeddingValuesForCallError,
+  TypeValidationError: () => TypeValidationError,
+  UnsupportedFunctionalityError: () => UnsupportedFunctionalityError,
+  getErrorMessage: () => getErrorMessage,
+  isJSONArray: () => isJSONArray,
+  isJSONObject: () => isJSONObject,
+  isJSONValue: () => isJSONValue
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/errors/ai-sdk-error.ts
+var marker = "vercel.ai.error";
+var symbol = Symbol.for(marker);
+var _a;
+var _AISDKError = class _AISDKError extends Error {
+  /**
+   * Creates an AI SDK Error.
+   *
+   * @param {Object} params - The parameters for creating the error.
+   * @param {string} params.name - The name of the error.
+   * @param {string} params.message - The error message.
+   * @param {unknown} [params.cause] - The underlying cause of the error.
+   */
+  constructor({
+    name: name14,
+    message,
+    cause
+  }) {
+    super(message);
+    this[_a] = true;
+    this.name = name14;
+    this.cause = cause;
+  }
+  /**
+   * Checks if the given error is an AI SDK Error.
+   * @param {unknown} error - The error to check.
+   * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
+   */
+  static isInstance(error) {
+    return _AISDKError.hasMarker(error, marker);
+  }
+  static hasMarker(error, marker15) {
+    const markerSymbol = Symbol.for(marker15);
+    return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
+  }
+};
+_a = symbol;
+var AISDKError = _AISDKError;
+
+// src/errors/api-call-error.ts
+var name = "AI_APICallError";
+var marker2 = `vercel.ai.error.${name}`;
+var symbol2 = Symbol.for(marker2);
+var _a2;
+var APICallError = class extends AISDKError {
+  constructor({
+    message,
+    url,
+    requestBodyValues,
+    statusCode,
+    responseHeaders,
+    responseBody,
+    cause,
+    isRetryable = statusCode != null && (statusCode === 408 || // request timeout
+    statusCode === 409 || // conflict
+    statusCode === 429 || // too many requests
+    statusCode >= 500),
+    // server error
+    data
+  }) {
+    super({ name, message, cause });
+    this[_a2] = true;
+    this.url = url;
+    this.requestBodyValues = requestBodyValues;
+    this.statusCode = statusCode;
+    this.responseHeaders = responseHeaders;
+    this.responseBody = responseBody;
+    this.isRetryable = isRetryable;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker2);
+  }
+};
+_a2 = symbol2;
+
+// src/errors/empty-response-body-error.ts
+var name2 = "AI_EmptyResponseBodyError";
+var marker3 = `vercel.ai.error.${name2}`;
+var symbol3 = Symbol.for(marker3);
+var _a3;
+var EmptyResponseBodyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message = "Empty response body" } = {}) {
+    super({ name: name2, message });
+    this[_a3] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker3);
+  }
+};
+_a3 = symbol3;
+
+// src/errors/get-error-message.ts
+function getErrorMessage(error) {
+  if (error == null) {
+    return "unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+
+// src/errors/invalid-argument-error.ts
+var name3 = "AI_InvalidArgumentError";
+var marker4 = `vercel.ai.error.${name3}`;
+var symbol4 = Symbol.for(marker4);
+var _a4;
+var InvalidArgumentError = class extends AISDKError {
+  constructor({
+    message,
+    cause,
+    argument
+  }) {
+    super({ name: name3, message, cause });
+    this[_a4] = true;
+    this.argument = argument;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker4);
+  }
+};
+_a4 = symbol4;
+
+// src/errors/invalid-prompt-error.ts
+var name4 = "AI_InvalidPromptError";
+var marker5 = `vercel.ai.error.${name4}`;
+var symbol5 = Symbol.for(marker5);
+var _a5;
+var InvalidPromptError = class extends AISDKError {
+  constructor({
+    prompt,
+    message,
+    cause
+  }) {
+    super({ name: name4, message: `Invalid prompt: ${message}`, cause });
+    this[_a5] = true;
+    this.prompt = prompt;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker5);
+  }
+};
+_a5 = symbol5;
+
+// src/errors/invalid-response-data-error.ts
+var name5 = "AI_InvalidResponseDataError";
+var marker6 = `vercel.ai.error.${name5}`;
+var symbol6 = Symbol.for(marker6);
+var _a6;
+var InvalidResponseDataError = class extends AISDKError {
+  constructor({
+    data,
+    message = `Invalid response data: ${JSON.stringify(data)}.`
+  }) {
+    super({ name: name5, message });
+    this[_a6] = true;
+    this.data = data;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker6);
+  }
+};
+_a6 = symbol6;
+
+// src/errors/json-parse-error.ts
+var name6 = "AI_JSONParseError";
+var marker7 = `vercel.ai.error.${name6}`;
+var symbol7 = Symbol.for(marker7);
+var _a7;
+var JSONParseError = class extends AISDKError {
+  constructor({ text, cause }) {
+    super({
+      name: name6,
+      message: `JSON parsing failed: Text: ${text}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a7] = true;
+    this.text = text;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker7);
+  }
+};
+_a7 = symbol7;
+
+// src/errors/load-api-key-error.ts
+var name7 = "AI_LoadAPIKeyError";
+var marker8 = `vercel.ai.error.${name7}`;
+var symbol8 = Symbol.for(marker8);
+var _a8;
+var LoadAPIKeyError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message }) {
+    super({ name: name7, message });
+    this[_a8] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker8);
+  }
+};
+_a8 = symbol8;
+
+// src/errors/load-setting-error.ts
+var name8 = "AI_LoadSettingError";
+var marker9 = `vercel.ai.error.${name8}`;
+var symbol9 = Symbol.for(marker9);
+var _a9;
+var LoadSettingError = class extends AISDKError {
+  // used in isInstance
+  constructor({ message }) {
+    super({ name: name8, message });
+    this[_a9] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker9);
+  }
+};
+_a9 = symbol9;
+
+// src/errors/no-content-generated-error.ts
+var name9 = "AI_NoContentGeneratedError";
+var marker10 = `vercel.ai.error.${name9}`;
+var symbol10 = Symbol.for(marker10);
+var _a10;
+var NoContentGeneratedError = class extends AISDKError {
+  // used in isInstance
+  constructor({
+    message = "No content generated."
+  } = {}) {
+    super({ name: name9, message });
+    this[_a10] = true;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker10);
+  }
+};
+_a10 = symbol10;
+
+// src/errors/no-such-model-error.ts
+var name10 = "AI_NoSuchModelError";
+var marker11 = `vercel.ai.error.${name10}`;
+var symbol11 = Symbol.for(marker11);
+var _a11;
+var NoSuchModelError = class extends AISDKError {
+  constructor({
+    errorName = name10,
+    modelId,
+    modelType,
+    message = `No such ${modelType}: ${modelId}`
+  }) {
+    super({ name: errorName, message });
+    this[_a11] = true;
+    this.modelId = modelId;
+    this.modelType = modelType;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker11);
+  }
+};
+_a11 = symbol11;
+
+// src/errors/too-many-embedding-values-for-call-error.ts
+var name11 = "AI_TooManyEmbeddingValuesForCallError";
+var marker12 = `vercel.ai.error.${name11}`;
+var symbol12 = Symbol.for(marker12);
+var _a12;
+var TooManyEmbeddingValuesForCallError = class extends AISDKError {
+  constructor(options) {
+    super({
+      name: name11,
+      message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
+    });
+    this[_a12] = true;
+    this.provider = options.provider;
+    this.modelId = options.modelId;
+    this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
+    this.values = options.values;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker12);
+  }
+};
+_a12 = symbol12;
+
+// src/errors/type-validation-error.ts
+var name12 = "AI_TypeValidationError";
+var marker13 = `vercel.ai.error.${name12}`;
+var symbol13 = Symbol.for(marker13);
+var _a13;
+var _TypeValidationError = class _TypeValidationError extends AISDKError {
+  constructor({ value, cause }) {
+    super({
+      name: name12,
+      message: `Type validation failed: Value: ${JSON.stringify(value)}.
+Error message: ${getErrorMessage(cause)}`,
+      cause
+    });
+    this[_a13] = true;
+    this.value = value;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker13);
+  }
+  /**
+   * Wraps an error into a TypeValidationError.
+   * If the cause is already a TypeValidationError with the same value, it returns the cause.
+   * Otherwise, it creates a new TypeValidationError.
+   *
+   * @param {Object} params - The parameters for wrapping the error.
+   * @param {unknown} params.value - The value that failed validation.
+   * @param {unknown} params.cause - The original error or cause of the validation failure.
+   * @returns {TypeValidationError} A TypeValidationError instance.
+   */
+  static wrap({
+    value,
+    cause
+  }) {
+    return _TypeValidationError.isInstance(cause) && cause.value === value ? cause : new _TypeValidationError({ value, cause });
+  }
+};
+_a13 = symbol13;
+var TypeValidationError = _TypeValidationError;
+
+// src/errors/unsupported-functionality-error.ts
+var name13 = "AI_UnsupportedFunctionalityError";
+var marker14 = `vercel.ai.error.${name13}`;
+var symbol14 = Symbol.for(marker14);
+var _a14;
+var UnsupportedFunctionalityError = class extends AISDKError {
+  constructor({
+    functionality,
+    message = `'${functionality}' functionality not supported.`
+  }) {
+    super({ name: name13, message });
+    this[_a14] = true;
+    this.functionality = functionality;
+  }
+  static isInstance(error) {
+    return AISDKError.hasMarker(error, marker14);
+  }
+};
+_a14 = symbol14;
+
+// src/json-value/is-json.ts
+function isJSONValue(value) {
+  if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJSONValue);
+  }
+  if (typeof value === "object") {
+    return Object.entries(value).every(
+      ([key, val]) => typeof key === "string" && isJSONValue(val)
+    );
+  }
+  return false;
+}
+function isJSONArray(value) {
+  return Array.isArray(value) && value.every(isJSONValue);
+}
+function isJSONObject(value) {
+  return value != null && typeof value === "object" && Object.entries(value).every(
+    ([key, val]) => typeof key === "string" && isJSONValue(val)
+  );
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (0);
 //# sourceMappingURL=index.js.map
@@ -45737,6 +60547,7 @@ function wrappy (fn, cb) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AI = void 0;
 const ai_1 = __nccwpck_require__(3474);
 const openai_1 = __nccwpck_require__(138);
 const anthropic_1 = __nccwpck_require__(8646);
@@ -45749,6 +60560,7 @@ const models_1 = __nccwpck_require__(1586);
 const core_1 = __nccwpck_require__(3943);
 const utils_1 = __nccwpck_require__(359);
 const gpt_3_encoder_1 = __nccwpck_require__(9277);
+const ai_sdk_provider_1 = __nccwpck_require__(2105);
 const apiKey = (0, core_1.getInput)('apikey', { required: true });
 const provider = (0, core_1.getInput)('provider', { required: true });
 const basePath = (0, core_1.getInput)('basePath');
@@ -45772,6 +60584,7 @@ class AI {
             mistral: mistral_1.createMistral,
             cohere: cohere_1.createCohere,
             deepseek: deepseek_1.createDeepSeek,
+            openrouter: ai_sdk_provider_1.createOpenRouter,
         };
         const initializer = providerInitializers[providerName];
         if (!initializer) {
@@ -45840,6 +60653,7 @@ class AI {
         return translated;
     }
 }
+exports.AI = AI;
 const translator = new AI(provider, apiKey, basePath);
 exports["default"] = translator;
 
@@ -47078,3872 +61892,6 @@ module.exports = require("worker_threads");
 
 "use strict";
 module.exports = require("zlib");
-
-/***/ }),
-
-/***/ 4664:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getDefaultOptions = exports.defaultOptions = exports.jsonDescription = exports.ignoreOverride = void 0;
-exports.ignoreOverride = Symbol("Let zodToJsonSchema decide on which parser to use");
-const jsonDescription = (jsonSchema, def) => {
-    if (def.description) {
-        try {
-            return {
-                ...jsonSchema,
-                ...JSON.parse(def.description),
-            };
-        }
-        catch { }
-    }
-    return jsonSchema;
-};
-exports.jsonDescription = jsonDescription;
-exports.defaultOptions = {
-    name: undefined,
-    $refStrategy: "root",
-    basePath: ["#"],
-    effectStrategy: "input",
-    pipeStrategy: "all",
-    dateStrategy: "format:date-time",
-    mapStrategy: "entries",
-    removeAdditionalStrategy: "passthrough",
-    allowedAdditionalProperties: true,
-    rejectedAdditionalProperties: false,
-    definitionPath: "definitions",
-    target: "jsonSchema7",
-    strictUnions: false,
-    definitions: {},
-    errorMessages: false,
-    markdownDescription: false,
-    patternStrategy: "escape",
-    applyRegexFlags: false,
-    emailStrategy: "format:email",
-    base64Strategy: "contentEncoding:base64",
-    nameStrategy: "ref",
-    openAiAnyTypeName: "OpenAiAnyType"
-};
-const getDefaultOptions = (options) => (typeof options === "string"
-    ? {
-        ...exports.defaultOptions,
-        name: options,
-    }
-    : {
-        ...exports.defaultOptions,
-        ...options,
-    });
-exports.getDefaultOptions = getDefaultOptions;
-
-
-/***/ }),
-
-/***/ 5362:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getRefs = void 0;
-const Options_js_1 = __nccwpck_require__(4664);
-const getRefs = (options) => {
-    const _options = (0, Options_js_1.getDefaultOptions)(options);
-    const currentPath = _options.name !== undefined
-        ? [..._options.basePath, _options.definitionPath, _options.name]
-        : _options.basePath;
-    return {
-        ..._options,
-        flags: { hasReferencedOpenAiAnyType: false },
-        currentPath: currentPath,
-        propertyPath: undefined,
-        seen: new Map(Object.entries(_options.definitions).map(([name, def]) => [
-            def._def,
-            {
-                def: def._def,
-                path: [..._options.basePath, _options.definitionPath, name],
-                // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
-                jsonSchema: undefined,
-            },
-        ])),
-    };
-};
-exports.getRefs = getRefs;
-
-
-/***/ }),
-
-/***/ 8540:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setResponseValueAndErrors = exports.addErrorMessage = void 0;
-function addErrorMessage(res, key, errorMessage, refs) {
-    if (!refs?.errorMessages)
-        return;
-    if (errorMessage) {
-        res.errorMessage = {
-            ...res.errorMessage,
-            [key]: errorMessage,
-        };
-    }
-}
-exports.addErrorMessage = addErrorMessage;
-function setResponseValueAndErrors(res, key, value, errorMessage, refs) {
-    res[key] = value;
-    addErrorMessage(res, key, errorMessage, refs);
-}
-exports.setResponseValueAndErrors = setResponseValueAndErrors;
-
-
-/***/ }),
-
-/***/ 1541:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getRelativePath = void 0;
-const getRelativePath = (pathA, pathB) => {
-    let i = 0;
-    for (; i < pathA.length && i < pathB.length; i++) {
-        if (pathA[i] !== pathB[i])
-            break;
-    }
-    return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
-};
-exports.getRelativePath = getRelativePath;
-
-
-/***/ }),
-
-/***/ 3638:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__nccwpck_require__(4664), exports);
-__exportStar(__nccwpck_require__(5362), exports);
-__exportStar(__nccwpck_require__(8540), exports);
-__exportStar(__nccwpck_require__(1541), exports);
-__exportStar(__nccwpck_require__(2770), exports);
-__exportStar(__nccwpck_require__(1552), exports);
-__exportStar(__nccwpck_require__(7835), exports);
-__exportStar(__nccwpck_require__(5328), exports);
-__exportStar(__nccwpck_require__(8438), exports);
-__exportStar(__nccwpck_require__(1197), exports);
-__exportStar(__nccwpck_require__(1649), exports);
-__exportStar(__nccwpck_require__(5014), exports);
-__exportStar(__nccwpck_require__(1545), exports);
-__exportStar(__nccwpck_require__(5524), exports);
-__exportStar(__nccwpck_require__(5307), exports);
-__exportStar(__nccwpck_require__(968), exports);
-__exportStar(__nccwpck_require__(6308), exports);
-__exportStar(__nccwpck_require__(7746), exports);
-__exportStar(__nccwpck_require__(2627), exports);
-__exportStar(__nccwpck_require__(548), exports);
-__exportStar(__nccwpck_require__(9075), exports);
-__exportStar(__nccwpck_require__(8968), exports);
-__exportStar(__nccwpck_require__(4396), exports);
-__exportStar(__nccwpck_require__(4524), exports);
-__exportStar(__nccwpck_require__(5194), exports);
-__exportStar(__nccwpck_require__(9765), exports);
-__exportStar(__nccwpck_require__(2579), exports);
-__exportStar(__nccwpck_require__(872), exports);
-__exportStar(__nccwpck_require__(43), exports);
-__exportStar(__nccwpck_require__(2316), exports);
-__exportStar(__nccwpck_require__(7181), exports);
-__exportStar(__nccwpck_require__(1544), exports);
-__exportStar(__nccwpck_require__(8179), exports);
-__exportStar(__nccwpck_require__(8473), exports);
-__exportStar(__nccwpck_require__(1362), exports);
-__exportStar(__nccwpck_require__(9655), exports);
-__exportStar(__nccwpck_require__(2823), exports);
-__exportStar(__nccwpck_require__(9683), exports);
-const zodToJsonSchema_js_1 = __nccwpck_require__(9683);
-exports["default"] = zodToJsonSchema_js_1.zodToJsonSchema;
-
-
-/***/ }),
-
-/***/ 2770:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDef = void 0;
-const Options_js_1 = __nccwpck_require__(4664);
-const selectParser_js_1 = __nccwpck_require__(2823);
-const getRelativePath_js_1 = __nccwpck_require__(1541);
-const any_js_1 = __nccwpck_require__(7835);
-function parseDef(def, refs, forceResolution = false) {
-    const seenItem = refs.seen.get(def);
-    if (refs.override) {
-        const overrideResult = refs.override?.(def, refs, seenItem, forceResolution);
-        if (overrideResult !== Options_js_1.ignoreOverride) {
-            return overrideResult;
-        }
-    }
-    if (seenItem && !forceResolution) {
-        const seenSchema = get$ref(seenItem, refs);
-        if (seenSchema !== undefined) {
-            return seenSchema;
-        }
-    }
-    const newItem = { def, path: refs.currentPath, jsonSchema: undefined };
-    refs.seen.set(def, newItem);
-    const jsonSchemaOrGetter = (0, selectParser_js_1.selectParser)(def, def.typeName, refs);
-    // If the return was a function, then the inner definition needs to be extracted before a call to parseDef (recursive)
-    const jsonSchema = typeof jsonSchemaOrGetter === "function"
-        ? parseDef(jsonSchemaOrGetter(), refs)
-        : jsonSchemaOrGetter;
-    if (jsonSchema) {
-        addMeta(def, refs, jsonSchema);
-    }
-    if (refs.postProcess) {
-        const postProcessResult = refs.postProcess(jsonSchema, def, refs);
-        newItem.jsonSchema = jsonSchema;
-        return postProcessResult;
-    }
-    newItem.jsonSchema = jsonSchema;
-    return jsonSchema;
-}
-exports.parseDef = parseDef;
-const get$ref = (item, refs) => {
-    switch (refs.$refStrategy) {
-        case "root":
-            return { $ref: item.path.join("/") };
-        case "relative":
-            return { $ref: (0, getRelativePath_js_1.getRelativePath)(refs.currentPath, item.path) };
-        case "none":
-        case "seen": {
-            if (item.path.length < refs.currentPath.length &&
-                item.path.every((value, index) => refs.currentPath[index] === value)) {
-                console.warn(`Recursive reference detected at ${refs.currentPath.join("/")}! Defaulting to any`);
-                return (0, any_js_1.parseAnyDef)(refs);
-            }
-            return refs.$refStrategy === "seen" ? (0, any_js_1.parseAnyDef)(refs) : undefined;
-        }
-    }
-};
-const addMeta = (def, refs, jsonSchema) => {
-    if (def.description) {
-        jsonSchema.description = def.description;
-        if (refs.markdownDescription) {
-            jsonSchema.markdownDescription = def.description;
-        }
-    }
-    return jsonSchema;
-};
-
-
-/***/ }),
-
-/***/ 1552:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-
-/***/ 7835:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseAnyDef = void 0;
-const getRelativePath_js_1 = __nccwpck_require__(1541);
-function parseAnyDef(refs) {
-    if (refs.target !== "openAi") {
-        return {};
-    }
-    const anyDefinitionPath = [
-        ...refs.basePath,
-        refs.definitionPath,
-        refs.openAiAnyTypeName,
-    ];
-    refs.flags.hasReferencedOpenAiAnyType = true;
-    return {
-        $ref: refs.$refStrategy === "relative"
-            ? (0, getRelativePath_js_1.getRelativePath)(anyDefinitionPath, refs.currentPath)
-            : anyDefinitionPath.join("/"),
-    };
-}
-exports.parseAnyDef = parseAnyDef;
-
-
-/***/ }),
-
-/***/ 5328:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseArrayDef = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const errorMessages_js_1 = __nccwpck_require__(8540);
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseArrayDef(def, refs) {
-    const res = {
-        type: "array",
-    };
-    if (def.type?._def &&
-        def.type?._def?.typeName !== zod_1.ZodFirstPartyTypeKind.ZodAny) {
-        res.items = (0, parseDef_js_1.parseDef)(def.type._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "items"],
-        });
-    }
-    if (def.minLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minItems", def.minLength.value, def.minLength.message, refs);
-    }
-    if (def.maxLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxItems", def.maxLength.value, def.maxLength.message, refs);
-    }
-    if (def.exactLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minItems", def.exactLength.value, def.exactLength.message, refs);
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxItems", def.exactLength.value, def.exactLength.message, refs);
-    }
-    return res;
-}
-exports.parseArrayDef = parseArrayDef;
-
-
-/***/ }),
-
-/***/ 8438:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBigintDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(8540);
-function parseBigintDef(def, refs) {
-    const res = {
-        type: "integer",
-        format: "int64",
-    };
-    if (!def.checks)
-        return res;
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "min":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMinimum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMinimum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                }
-                break;
-            case "max":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMaximum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMaximum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                }
-                break;
-            case "multipleOf":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "multipleOf", check.value, check.message, refs);
-                break;
-        }
-    }
-    return res;
-}
-exports.parseBigintDef = parseBigintDef;
-
-
-/***/ }),
-
-/***/ 1197:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBooleanDef = void 0;
-function parseBooleanDef() {
-    return {
-        type: "boolean",
-    };
-}
-exports.parseBooleanDef = parseBooleanDef;
-
-
-/***/ }),
-
-/***/ 1649:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBrandedDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseBrandedDef(_def, refs) {
-    return (0, parseDef_js_1.parseDef)(_def.type._def, refs);
-}
-exports.parseBrandedDef = parseBrandedDef;
-
-
-/***/ }),
-
-/***/ 5014:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseCatchDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const parseCatchDef = (def, refs) => {
-    return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-};
-exports.parseCatchDef = parseCatchDef;
-
-
-/***/ }),
-
-/***/ 1545:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDateDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(8540);
-function parseDateDef(def, refs, overrideDateStrategy) {
-    const strategy = overrideDateStrategy ?? refs.dateStrategy;
-    if (Array.isArray(strategy)) {
-        return {
-            anyOf: strategy.map((item, i) => parseDateDef(def, refs, item)),
-        };
-    }
-    switch (strategy) {
-        case "string":
-        case "format:date-time":
-            return {
-                type: "string",
-                format: "date-time",
-            };
-        case "format:date":
-            return {
-                type: "string",
-                format: "date",
-            };
-        case "integer":
-            return integerDateParser(def, refs);
-    }
-}
-exports.parseDateDef = parseDateDef;
-const integerDateParser = (def, refs) => {
-    const res = {
-        type: "integer",
-        format: "unix-time",
-    };
-    if (refs.target === "openApi3") {
-        return res;
-    }
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "min":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, // This is in milliseconds
-                check.message, refs);
-                break;
-            case "max":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, // This is in milliseconds
-                check.message, refs);
-                break;
-        }
-    }
-    return res;
-};
-
-
-/***/ }),
-
-/***/ 5524:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDefaultDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseDefaultDef(_def, refs) {
-    return {
-        ...(0, parseDef_js_1.parseDef)(_def.innerType._def, refs),
-        default: _def.defaultValue(),
-    };
-}
-exports.parseDefaultDef = parseDefaultDef;
-
-
-/***/ }),
-
-/***/ 5307:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseEffectsDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const any_js_1 = __nccwpck_require__(7835);
-function parseEffectsDef(_def, refs) {
-    return refs.effectStrategy === "input"
-        ? (0, parseDef_js_1.parseDef)(_def.schema._def, refs)
-        : (0, any_js_1.parseAnyDef)(refs);
-}
-exports.parseEffectsDef = parseEffectsDef;
-
-
-/***/ }),
-
-/***/ 968:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseEnumDef = void 0;
-function parseEnumDef(def) {
-    return {
-        type: "string",
-        enum: Array.from(def.values),
-    };
-}
-exports.parseEnumDef = parseEnumDef;
-
-
-/***/ }),
-
-/***/ 6308:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseIntersectionDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const isJsonSchema7AllOfType = (type) => {
-    if ("type" in type && type.type === "string")
-        return false;
-    return "allOf" in type;
-};
-function parseIntersectionDef(def, refs) {
-    const allOf = [
-        (0, parseDef_js_1.parseDef)(def.left._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "allOf", "0"],
-        }),
-        (0, parseDef_js_1.parseDef)(def.right._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "allOf", "1"],
-        }),
-    ].filter((x) => !!x);
-    let unevaluatedProperties = refs.target === "jsonSchema2019-09"
-        ? { unevaluatedProperties: false }
-        : undefined;
-    const mergedAllOf = [];
-    // If either of the schemas is an allOf, merge them into a single allOf
-    allOf.forEach((schema) => {
-        if (isJsonSchema7AllOfType(schema)) {
-            mergedAllOf.push(...schema.allOf);
-            if (schema.unevaluatedProperties === undefined) {
-                // If one of the schemas has no unevaluatedProperties set,
-                // the merged schema should also have no unevaluatedProperties set
-                unevaluatedProperties = undefined;
-            }
-        }
-        else {
-            let nestedSchema = schema;
-            if ("additionalProperties" in schema &&
-                schema.additionalProperties === false) {
-                const { additionalProperties, ...rest } = schema;
-                nestedSchema = rest;
-            }
-            else {
-                // As soon as one of the schemas has additionalProperties set not to false, we allow unevaluatedProperties
-                unevaluatedProperties = undefined;
-            }
-            mergedAllOf.push(nestedSchema);
-        }
-    });
-    return mergedAllOf.length
-        ? {
-            allOf: mergedAllOf,
-            ...unevaluatedProperties,
-        }
-        : undefined;
-}
-exports.parseIntersectionDef = parseIntersectionDef;
-
-
-/***/ }),
-
-/***/ 7746:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseLiteralDef = void 0;
-function parseLiteralDef(def, refs) {
-    const parsedType = typeof def.value;
-    if (parsedType !== "bigint" &&
-        parsedType !== "number" &&
-        parsedType !== "boolean" &&
-        parsedType !== "string") {
-        return {
-            type: Array.isArray(def.value) ? "array" : "object",
-        };
-    }
-    if (refs.target === "openApi3") {
-        return {
-            type: parsedType === "bigint" ? "integer" : parsedType,
-            enum: [def.value],
-        };
-    }
-    return {
-        type: parsedType === "bigint" ? "integer" : parsedType,
-        const: def.value,
-    };
-}
-exports.parseLiteralDef = parseLiteralDef;
-
-
-/***/ }),
-
-/***/ 2627:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseMapDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const record_js_1 = __nccwpck_require__(2316);
-const any_js_1 = __nccwpck_require__(7835);
-function parseMapDef(def, refs) {
-    if (refs.mapStrategy === "record") {
-        return (0, record_js_1.parseRecordDef)(def, refs);
-    }
-    const keys = (0, parseDef_js_1.parseDef)(def.keyType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items", "items", "0"],
-    }) || (0, any_js_1.parseAnyDef)(refs);
-    const values = (0, parseDef_js_1.parseDef)(def.valueType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items", "items", "1"],
-    }) || (0, any_js_1.parseAnyDef)(refs);
-    return {
-        type: "array",
-        maxItems: 125,
-        items: {
-            type: "array",
-            items: [keys, values],
-            minItems: 2,
-            maxItems: 2,
-        },
-    };
-}
-exports.parseMapDef = parseMapDef;
-
-
-/***/ }),
-
-/***/ 548:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNativeEnumDef = void 0;
-function parseNativeEnumDef(def) {
-    const object = def.values;
-    const actualKeys = Object.keys(def.values).filter((key) => {
-        return typeof object[object[key]] !== "number";
-    });
-    const actualValues = actualKeys.map((key) => object[key]);
-    const parsedTypes = Array.from(new Set(actualValues.map((values) => typeof values)));
-    return {
-        type: parsedTypes.length === 1
-            ? parsedTypes[0] === "string"
-                ? "string"
-                : "number"
-            : ["string", "number"],
-        enum: actualValues,
-    };
-}
-exports.parseNativeEnumDef = parseNativeEnumDef;
-
-
-/***/ }),
-
-/***/ 9075:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNeverDef = void 0;
-const any_js_1 = __nccwpck_require__(7835);
-function parseNeverDef(refs) {
-    return refs.target === "openAi"
-        ? undefined
-        : {
-            not: (0, any_js_1.parseAnyDef)({
-                ...refs,
-                currentPath: [...refs.currentPath, "not"],
-            }),
-        };
-}
-exports.parseNeverDef = parseNeverDef;
-
-
-/***/ }),
-
-/***/ 8968:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNullDef = void 0;
-function parseNullDef(refs) {
-    return refs.target === "openApi3"
-        ? {
-            enum: ["null"],
-            nullable: true,
-        }
-        : {
-            type: "null",
-        };
-}
-exports.parseNullDef = parseNullDef;
-
-
-/***/ }),
-
-/***/ 4396:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNullableDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const union_js_1 = __nccwpck_require__(1362);
-function parseNullableDef(def, refs) {
-    if (["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(def.innerType._def.typeName) &&
-        (!def.innerType._def.checks || !def.innerType._def.checks.length)) {
-        if (refs.target === "openApi3") {
-            return {
-                type: union_js_1.primitiveMappings[def.innerType._def.typeName],
-                nullable: true,
-            };
-        }
-        return {
-            type: [
-                union_js_1.primitiveMappings[def.innerType._def.typeName],
-                "null",
-            ],
-        };
-    }
-    if (refs.target === "openApi3") {
-        const base = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-            ...refs,
-            currentPath: [...refs.currentPath],
-        });
-        if (base && "$ref" in base)
-            return { allOf: [base], nullable: true };
-        return base && { ...base, nullable: true };
-    }
-    const base = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", "0"],
-    });
-    return base && { anyOf: [base, { type: "null" }] };
-}
-exports.parseNullableDef = parseNullableDef;
-
-
-/***/ }),
-
-/***/ 4524:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNumberDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(8540);
-function parseNumberDef(def, refs) {
-    const res = {
-        type: "number",
-    };
-    if (!def.checks)
-        return res;
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "int":
-                res.type = "integer";
-                (0, errorMessages_js_1.addErrorMessage)(res, "type", check.message, refs);
-                break;
-            case "min":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMinimum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMinimum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                }
-                break;
-            case "max":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMaximum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMaximum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                }
-                break;
-            case "multipleOf":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "multipleOf", check.value, check.message, refs);
-                break;
-        }
-    }
-    return res;
-}
-exports.parseNumberDef = parseNumberDef;
-
-
-/***/ }),
-
-/***/ 5194:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseObjectDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseObjectDef(def, refs) {
-    const forceOptionalIntoNullable = refs.target === "openAi";
-    const result = {
-        type: "object",
-        properties: {},
-    };
-    const required = [];
-    const shape = def.shape();
-    for (const propName in shape) {
-        let propDef = shape[propName];
-        if (propDef === undefined || propDef._def === undefined) {
-            continue;
-        }
-        let propOptional = safeIsOptional(propDef);
-        if (propOptional && forceOptionalIntoNullable) {
-            if (propDef._def.typeName === "ZodOptional") {
-                propDef = propDef._def.innerType;
-            }
-            if (!propDef.isNullable()) {
-                propDef = propDef.nullable();
-            }
-            propOptional = false;
-        }
-        const parsedDef = (0, parseDef_js_1.parseDef)(propDef._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "properties", propName],
-            propertyPath: [...refs.currentPath, "properties", propName],
-        });
-        if (parsedDef === undefined) {
-            continue;
-        }
-        result.properties[propName] = parsedDef;
-        if (!propOptional) {
-            required.push(propName);
-        }
-    }
-    if (required.length) {
-        result.required = required;
-    }
-    const additionalProperties = decideAdditionalProperties(def, refs);
-    if (additionalProperties !== undefined) {
-        result.additionalProperties = additionalProperties;
-    }
-    return result;
-}
-exports.parseObjectDef = parseObjectDef;
-function decideAdditionalProperties(def, refs) {
-    if (def.catchall._def.typeName !== "ZodNever") {
-        return (0, parseDef_js_1.parseDef)(def.catchall._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "additionalProperties"],
-        });
-    }
-    switch (def.unknownKeys) {
-        case "passthrough":
-            return refs.allowedAdditionalProperties;
-        case "strict":
-            return refs.rejectedAdditionalProperties;
-        case "strip":
-            return refs.removeAdditionalStrategy === "strict"
-                ? refs.allowedAdditionalProperties
-                : refs.rejectedAdditionalProperties;
-    }
-}
-function safeIsOptional(schema) {
-    try {
-        return schema.isOptional();
-    }
-    catch {
-        return true;
-    }
-}
-
-
-/***/ }),
-
-/***/ 9765:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseOptionalDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const any_js_1 = __nccwpck_require__(7835);
-const parseOptionalDef = (def, refs) => {
-    if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
-        return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-    }
-    const innerSchema = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", "1"],
-    });
-    return innerSchema
-        ? {
-            anyOf: [
-                {
-                    not: (0, any_js_1.parseAnyDef)(refs),
-                },
-                innerSchema,
-            ],
-        }
-        : (0, any_js_1.parseAnyDef)(refs);
-};
-exports.parseOptionalDef = parseOptionalDef;
-
-
-/***/ }),
-
-/***/ 2579:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parsePipelineDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const parsePipelineDef = (def, refs) => {
-    if (refs.pipeStrategy === "input") {
-        return (0, parseDef_js_1.parseDef)(def.in._def, refs);
-    }
-    else if (refs.pipeStrategy === "output") {
-        return (0, parseDef_js_1.parseDef)(def.out._def, refs);
-    }
-    const a = (0, parseDef_js_1.parseDef)(def.in._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "allOf", "0"],
-    });
-    const b = (0, parseDef_js_1.parseDef)(def.out._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "allOf", a ? "1" : "0"],
-    });
-    return {
-        allOf: [a, b].filter((x) => x !== undefined),
-    };
-};
-exports.parsePipelineDef = parsePipelineDef;
-
-
-/***/ }),
-
-/***/ 872:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parsePromiseDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parsePromiseDef(def, refs) {
-    return (0, parseDef_js_1.parseDef)(def.type._def, refs);
-}
-exports.parsePromiseDef = parsePromiseDef;
-
-
-/***/ }),
-
-/***/ 43:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseReadonlyDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const parseReadonlyDef = (def, refs) => {
-    return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-};
-exports.parseReadonlyDef = parseReadonlyDef;
-
-
-/***/ }),
-
-/***/ 2316:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseRecordDef = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const parseDef_js_1 = __nccwpck_require__(2770);
-const string_js_1 = __nccwpck_require__(1544);
-const branded_js_1 = __nccwpck_require__(1649);
-const any_js_1 = __nccwpck_require__(7835);
-function parseRecordDef(def, refs) {
-    if (refs.target === "openAi") {
-        console.warn("Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.");
-    }
-    if (refs.target === "openApi3" &&
-        def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodEnum) {
-        return {
-            type: "object",
-            required: def.keyType._def.values,
-            properties: def.keyType._def.values.reduce((acc, key) => ({
-                ...acc,
-                [key]: (0, parseDef_js_1.parseDef)(def.valueType._def, {
-                    ...refs,
-                    currentPath: [...refs.currentPath, "properties", key],
-                }) ?? (0, any_js_1.parseAnyDef)(refs),
-            }), {}),
-            additionalProperties: refs.rejectedAdditionalProperties,
-        };
-    }
-    const schema = {
-        type: "object",
-        additionalProperties: (0, parseDef_js_1.parseDef)(def.valueType._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "additionalProperties"],
-        }) ?? refs.allowedAdditionalProperties,
-    };
-    if (refs.target === "openApi3") {
-        return schema;
-    }
-    if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
-        def.keyType._def.checks?.length) {
-        const { type, ...keyType } = (0, string_js_1.parseStringDef)(def.keyType._def, refs);
-        return {
-            ...schema,
-            propertyNames: keyType,
-        };
-    }
-    else if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodEnum) {
-        return {
-            ...schema,
-            propertyNames: {
-                enum: def.keyType._def.values,
-            },
-        };
-    }
-    else if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodBranded &&
-        def.keyType._def.type._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
-        def.keyType._def.type._def.checks?.length) {
-        const { type, ...keyType } = (0, branded_js_1.parseBrandedDef)(def.keyType._def, refs);
-        return {
-            ...schema,
-            propertyNames: keyType,
-        };
-    }
-    return schema;
-}
-exports.parseRecordDef = parseRecordDef;
-
-
-/***/ }),
-
-/***/ 7181:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseSetDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(8540);
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseSetDef(def, refs) {
-    const items = (0, parseDef_js_1.parseDef)(def.valueType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items"],
-    });
-    const schema = {
-        type: "array",
-        uniqueItems: true,
-        items,
-    };
-    if (def.minSize) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "minItems", def.minSize.value, def.minSize.message, refs);
-    }
-    if (def.maxSize) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "maxItems", def.maxSize.value, def.maxSize.message, refs);
-    }
-    return schema;
-}
-exports.parseSetDef = parseSetDef;
-
-
-/***/ }),
-
-/***/ 1544:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseStringDef = exports.zodPatterns = void 0;
-const errorMessages_js_1 = __nccwpck_require__(8540);
-let emojiRegex = undefined;
-/**
- * Generated from the regular expressions found here as of 2024-05-22:
- * https://github.com/colinhacks/zod/blob/master/src/types.ts.
- *
- * Expressions with /i flag have been changed accordingly.
- */
-exports.zodPatterns = {
-    /**
-     * `c` was changed to `[cC]` to replicate /i flag
-     */
-    cuid: /^[cC][^\s-]{8,}$/,
-    cuid2: /^[0-9a-z]+$/,
-    ulid: /^[0-9A-HJKMNP-TV-Z]{26}$/,
-    /**
-     * `a-z` was added to replicate /i flag
-     */
-    email: /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
-    /**
-     * Constructed a valid Unicode RegExp
-     *
-     * Lazily instantiate since this type of regex isn't supported
-     * in all envs (e.g. React Native).
-     *
-     * See:
-     * https://github.com/colinhacks/zod/issues/2433
-     * Fix in Zod:
-     * https://github.com/colinhacks/zod/commit/9340fd51e48576a75adc919bff65dbc4a5d4c99b
-     */
-    emoji: () => {
-        if (emojiRegex === undefined) {
-            emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
-        }
-        return emojiRegex;
-    },
-    /**
-     * Unused
-     */
-    uuid: /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
-    /**
-     * Unused
-     */
-    ipv4: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
-    ipv4Cidr: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/,
-    /**
-     * Unused
-     */
-    ipv6: /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/,
-    ipv6Cidr: /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/,
-    base64: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
-    base64url: /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/,
-    nanoid: /^[a-zA-Z0-9_-]{21}$/,
-    jwt: /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/,
-};
-function parseStringDef(def, refs) {
-    const res = {
-        type: "string",
-    };
-    if (def.checks) {
-        for (const check of def.checks) {
-            switch (check.kind) {
-                case "min":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minLength", typeof res.minLength === "number"
-                        ? Math.max(res.minLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "max":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxLength", typeof res.maxLength === "number"
-                        ? Math.min(res.maxLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "email":
-                    switch (refs.emailStrategy) {
-                        case "format:email":
-                            addFormat(res, "email", check.message, refs);
-                            break;
-                        case "format:idn-email":
-                            addFormat(res, "idn-email", check.message, refs);
-                            break;
-                        case "pattern:zod":
-                            addPattern(res, exports.zodPatterns.email, check.message, refs);
-                            break;
-                    }
-                    break;
-                case "url":
-                    addFormat(res, "uri", check.message, refs);
-                    break;
-                case "uuid":
-                    addFormat(res, "uuid", check.message, refs);
-                    break;
-                case "regex":
-                    addPattern(res, check.regex, check.message, refs);
-                    break;
-                case "cuid":
-                    addPattern(res, exports.zodPatterns.cuid, check.message, refs);
-                    break;
-                case "cuid2":
-                    addPattern(res, exports.zodPatterns.cuid2, check.message, refs);
-                    break;
-                case "startsWith":
-                    addPattern(res, RegExp(`^${escapeLiteralCheckValue(check.value, refs)}`), check.message, refs);
-                    break;
-                case "endsWith":
-                    addPattern(res, RegExp(`${escapeLiteralCheckValue(check.value, refs)}$`), check.message, refs);
-                    break;
-                case "datetime":
-                    addFormat(res, "date-time", check.message, refs);
-                    break;
-                case "date":
-                    addFormat(res, "date", check.message, refs);
-                    break;
-                case "time":
-                    addFormat(res, "time", check.message, refs);
-                    break;
-                case "duration":
-                    addFormat(res, "duration", check.message, refs);
-                    break;
-                case "length":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minLength", typeof res.minLength === "number"
-                        ? Math.max(res.minLength, check.value)
-                        : check.value, check.message, refs);
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxLength", typeof res.maxLength === "number"
-                        ? Math.min(res.maxLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "includes": {
-                    addPattern(res, RegExp(escapeLiteralCheckValue(check.value, refs)), check.message, refs);
-                    break;
-                }
-                case "ip": {
-                    if (check.version !== "v6") {
-                        addFormat(res, "ipv4", check.message, refs);
-                    }
-                    if (check.version !== "v4") {
-                        addFormat(res, "ipv6", check.message, refs);
-                    }
-                    break;
-                }
-                case "base64url":
-                    addPattern(res, exports.zodPatterns.base64url, check.message, refs);
-                    break;
-                case "jwt":
-                    addPattern(res, exports.zodPatterns.jwt, check.message, refs);
-                    break;
-                case "cidr": {
-                    if (check.version !== "v6") {
-                        addPattern(res, exports.zodPatterns.ipv4Cidr, check.message, refs);
-                    }
-                    if (check.version !== "v4") {
-                        addPattern(res, exports.zodPatterns.ipv6Cidr, check.message, refs);
-                    }
-                    break;
-                }
-                case "emoji":
-                    addPattern(res, exports.zodPatterns.emoji(), check.message, refs);
-                    break;
-                case "ulid": {
-                    addPattern(res, exports.zodPatterns.ulid, check.message, refs);
-                    break;
-                }
-                case "base64": {
-                    switch (refs.base64Strategy) {
-                        case "format:binary": {
-                            addFormat(res, "binary", check.message, refs);
-                            break;
-                        }
-                        case "contentEncoding:base64": {
-                            (0, errorMessages_js_1.setResponseValueAndErrors)(res, "contentEncoding", "base64", check.message, refs);
-                            break;
-                        }
-                        case "pattern:zod": {
-                            addPattern(res, exports.zodPatterns.base64, check.message, refs);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case "nanoid": {
-                    addPattern(res, exports.zodPatterns.nanoid, check.message, refs);
-                }
-                case "toLowerCase":
-                case "toUpperCase":
-                case "trim":
-                    break;
-                default:
-                    /* c8 ignore next */
-                    ((_) => { })(check);
-            }
-        }
-    }
-    return res;
-}
-exports.parseStringDef = parseStringDef;
-function escapeLiteralCheckValue(literal, refs) {
-    return refs.patternStrategy === "escape"
-        ? escapeNonAlphaNumeric(literal)
-        : literal;
-}
-const ALPHA_NUMERIC = new Set("ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789");
-function escapeNonAlphaNumeric(source) {
-    let result = "";
-    for (let i = 0; i < source.length; i++) {
-        if (!ALPHA_NUMERIC.has(source[i])) {
-            result += "\\";
-        }
-        result += source[i];
-    }
-    return result;
-}
-// Adds a "format" keyword to the schema. If a format exists, both formats will be joined in an allOf-node, along with subsequent ones.
-function addFormat(schema, value, message, refs) {
-    if (schema.format || schema.anyOf?.some((x) => x.format)) {
-        if (!schema.anyOf) {
-            schema.anyOf = [];
-        }
-        if (schema.format) {
-            schema.anyOf.push({
-                format: schema.format,
-                ...(schema.errorMessage &&
-                    refs.errorMessages && {
-                    errorMessage: { format: schema.errorMessage.format },
-                }),
-            });
-            delete schema.format;
-            if (schema.errorMessage) {
-                delete schema.errorMessage.format;
-                if (Object.keys(schema.errorMessage).length === 0) {
-                    delete schema.errorMessage;
-                }
-            }
-        }
-        schema.anyOf.push({
-            format: value,
-            ...(message &&
-                refs.errorMessages && { errorMessage: { format: message } }),
-        });
-    }
-    else {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "format", value, message, refs);
-    }
-}
-// Adds a "pattern" keyword to the schema. If a pattern exists, both patterns will be joined in an allOf-node, along with subsequent ones.
-function addPattern(schema, regex, message, refs) {
-    if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
-        if (!schema.allOf) {
-            schema.allOf = [];
-        }
-        if (schema.pattern) {
-            schema.allOf.push({
-                pattern: schema.pattern,
-                ...(schema.errorMessage &&
-                    refs.errorMessages && {
-                    errorMessage: { pattern: schema.errorMessage.pattern },
-                }),
-            });
-            delete schema.pattern;
-            if (schema.errorMessage) {
-                delete schema.errorMessage.pattern;
-                if (Object.keys(schema.errorMessage).length === 0) {
-                    delete schema.errorMessage;
-                }
-            }
-        }
-        schema.allOf.push({
-            pattern: stringifyRegExpWithFlags(regex, refs),
-            ...(message &&
-                refs.errorMessages && { errorMessage: { pattern: message } }),
-        });
-    }
-    else {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "pattern", stringifyRegExpWithFlags(regex, refs), message, refs);
-    }
-}
-// Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
-function stringifyRegExpWithFlags(regex, refs) {
-    if (!refs.applyRegexFlags || !regex.flags) {
-        return regex.source;
-    }
-    // Currently handled flags
-    const flags = {
-        i: regex.flags.includes("i"),
-        m: regex.flags.includes("m"),
-        s: regex.flags.includes("s"), // `.` matches newlines
-    };
-    // The general principle here is to step through each character, one at a time, applying mutations as flags require. We keep track when the current character is escaped, and when it's inside a group /like [this]/ or (also) a range like /[a-z]/. The following is fairly brittle imperative code; edit at your peril!
-    const source = flags.i ? regex.source.toLowerCase() : regex.source;
-    let pattern = "";
-    let isEscaped = false;
-    let inCharGroup = false;
-    let inCharRange = false;
-    for (let i = 0; i < source.length; i++) {
-        if (isEscaped) {
-            pattern += source[i];
-            isEscaped = false;
-            continue;
-        }
-        if (flags.i) {
-            if (inCharGroup) {
-                if (source[i].match(/[a-z]/)) {
-                    if (inCharRange) {
-                        pattern += source[i];
-                        pattern += `${source[i - 2]}-${source[i]}`.toUpperCase();
-                        inCharRange = false;
-                    }
-                    else if (source[i + 1] === "-" && source[i + 2]?.match(/[a-z]/)) {
-                        pattern += source[i];
-                        inCharRange = true;
-                    }
-                    else {
-                        pattern += `${source[i]}${source[i].toUpperCase()}`;
-                    }
-                    continue;
-                }
-            }
-            else if (source[i].match(/[a-z]/)) {
-                pattern += `[${source[i]}${source[i].toUpperCase()}]`;
-                continue;
-            }
-        }
-        if (flags.m) {
-            if (source[i] === "^") {
-                pattern += `(^|(?<=[\r\n]))`;
-                continue;
-            }
-            else if (source[i] === "$") {
-                pattern += `($|(?=[\r\n]))`;
-                continue;
-            }
-        }
-        if (flags.s && source[i] === ".") {
-            pattern += inCharGroup ? `${source[i]}\r\n` : `[${source[i]}\r\n]`;
-            continue;
-        }
-        pattern += source[i];
-        if (source[i] === "\\") {
-            isEscaped = true;
-        }
-        else if (inCharGroup && source[i] === "]") {
-            inCharGroup = false;
-        }
-        else if (!inCharGroup && source[i] === "[") {
-            inCharGroup = true;
-        }
-    }
-    try {
-        new RegExp(pattern);
-    }
-    catch {
-        console.warn(`Could not convert regex pattern at ${refs.currentPath.join("/")} to a flag-independent form! Falling back to the flag-ignorant source`);
-        return regex.source;
-    }
-    return pattern;
-}
-
-
-/***/ }),
-
-/***/ 8179:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseTupleDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-function parseTupleDef(def, refs) {
-    if (def.rest) {
-        return {
-            type: "array",
-            minItems: def.items.length,
-            items: def.items
-                .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "items", `${i}`],
-            }))
-                .reduce((acc, x) => (x === undefined ? acc : [...acc, x]), []),
-            additionalItems: (0, parseDef_js_1.parseDef)(def.rest._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "additionalItems"],
-            }),
-        };
-    }
-    else {
-        return {
-            type: "array",
-            minItems: def.items.length,
-            maxItems: def.items.length,
-            items: def.items
-                .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "items", `${i}`],
-            }))
-                .reduce((acc, x) => (x === undefined ? acc : [...acc, x]), []),
-        };
-    }
-}
-exports.parseTupleDef = parseTupleDef;
-
-
-/***/ }),
-
-/***/ 8473:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUndefinedDef = void 0;
-const any_js_1 = __nccwpck_require__(7835);
-function parseUndefinedDef(refs) {
-    return {
-        not: (0, any_js_1.parseAnyDef)(refs),
-    };
-}
-exports.parseUndefinedDef = parseUndefinedDef;
-
-
-/***/ }),
-
-/***/ 1362:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUnionDef = exports.primitiveMappings = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-exports.primitiveMappings = {
-    ZodString: "string",
-    ZodNumber: "number",
-    ZodBigInt: "integer",
-    ZodBoolean: "boolean",
-    ZodNull: "null",
-};
-function parseUnionDef(def, refs) {
-    if (refs.target === "openApi3")
-        return asAnyOf(def, refs);
-    const options = def.options instanceof Map ? Array.from(def.options.values()) : def.options;
-    // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
-    if (options.every((x) => x._def.typeName in exports.primitiveMappings &&
-        (!x._def.checks || !x._def.checks.length))) {
-        // all types in union are primitive and lack checks, so might as well squash into {type: [...]}
-        const types = options.reduce((types, x) => {
-            const type = exports.primitiveMappings[x._def.typeName]; //Can be safely casted due to row 43
-            return type && !types.includes(type) ? [...types, type] : types;
-        }, []);
-        return {
-            type: types.length > 1 ? types : types[0],
-        };
-    }
-    else if (options.every((x) => x._def.typeName === "ZodLiteral" && !x.description)) {
-        // all options literals
-        const types = options.reduce((acc, x) => {
-            const type = typeof x._def.value;
-            switch (type) {
-                case "string":
-                case "number":
-                case "boolean":
-                    return [...acc, type];
-                case "bigint":
-                    return [...acc, "integer"];
-                case "object":
-                    if (x._def.value === null)
-                        return [...acc, "null"];
-                case "symbol":
-                case "undefined":
-                case "function":
-                default:
-                    return acc;
-            }
-        }, []);
-        if (types.length === options.length) {
-            // all the literals are primitive, as far as null can be considered primitive
-            const uniqueTypes = types.filter((x, i, a) => a.indexOf(x) === i);
-            return {
-                type: uniqueTypes.length > 1 ? uniqueTypes : uniqueTypes[0],
-                enum: options.reduce((acc, x) => {
-                    return acc.includes(x._def.value) ? acc : [...acc, x._def.value];
-                }, []),
-            };
-        }
-    }
-    else if (options.every((x) => x._def.typeName === "ZodEnum")) {
-        return {
-            type: "string",
-            enum: options.reduce((acc, x) => [
-                ...acc,
-                ...x._def.values.filter((x) => !acc.includes(x)),
-            ], []),
-        };
-    }
-    return asAnyOf(def, refs);
-}
-exports.parseUnionDef = parseUnionDef;
-const asAnyOf = (def, refs) => {
-    const anyOf = (def.options instanceof Map
-        ? Array.from(def.options.values())
-        : def.options)
-        .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", `${i}`],
-    }))
-        .filter((x) => !!x &&
-        (!refs.strictUnions ||
-            (typeof x === "object" && Object.keys(x).length > 0)));
-    return anyOf.length ? { anyOf } : undefined;
-};
-
-
-/***/ }),
-
-/***/ 9655:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUnknownDef = void 0;
-const any_js_1 = __nccwpck_require__(7835);
-function parseUnknownDef(refs) {
-    return (0, any_js_1.parseAnyDef)(refs);
-}
-exports.parseUnknownDef = parseUnknownDef;
-
-
-/***/ }),
-
-/***/ 2823:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.selectParser = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const any_js_1 = __nccwpck_require__(7835);
-const array_js_1 = __nccwpck_require__(5328);
-const bigint_js_1 = __nccwpck_require__(8438);
-const boolean_js_1 = __nccwpck_require__(1197);
-const branded_js_1 = __nccwpck_require__(1649);
-const catch_js_1 = __nccwpck_require__(5014);
-const date_js_1 = __nccwpck_require__(1545);
-const default_js_1 = __nccwpck_require__(5524);
-const effects_js_1 = __nccwpck_require__(5307);
-const enum_js_1 = __nccwpck_require__(968);
-const intersection_js_1 = __nccwpck_require__(6308);
-const literal_js_1 = __nccwpck_require__(7746);
-const map_js_1 = __nccwpck_require__(2627);
-const nativeEnum_js_1 = __nccwpck_require__(548);
-const never_js_1 = __nccwpck_require__(9075);
-const null_js_1 = __nccwpck_require__(8968);
-const nullable_js_1 = __nccwpck_require__(4396);
-const number_js_1 = __nccwpck_require__(4524);
-const object_js_1 = __nccwpck_require__(5194);
-const optional_js_1 = __nccwpck_require__(9765);
-const pipeline_js_1 = __nccwpck_require__(2579);
-const promise_js_1 = __nccwpck_require__(872);
-const record_js_1 = __nccwpck_require__(2316);
-const set_js_1 = __nccwpck_require__(7181);
-const string_js_1 = __nccwpck_require__(1544);
-const tuple_js_1 = __nccwpck_require__(8179);
-const undefined_js_1 = __nccwpck_require__(8473);
-const union_js_1 = __nccwpck_require__(1362);
-const unknown_js_1 = __nccwpck_require__(9655);
-const readonly_js_1 = __nccwpck_require__(43);
-const selectParser = (def, typeName, refs) => {
-    switch (typeName) {
-        case zod_1.ZodFirstPartyTypeKind.ZodString:
-            return (0, string_js_1.parseStringDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNumber:
-            return (0, number_js_1.parseNumberDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodObject:
-            return (0, object_js_1.parseObjectDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBigInt:
-            return (0, bigint_js_1.parseBigintDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBoolean:
-            return (0, boolean_js_1.parseBooleanDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodDate:
-            return (0, date_js_1.parseDateDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUndefined:
-            return (0, undefined_js_1.parseUndefinedDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNull:
-            return (0, null_js_1.parseNullDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodArray:
-            return (0, array_js_1.parseArrayDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUnion:
-        case zod_1.ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
-            return (0, union_js_1.parseUnionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodIntersection:
-            return (0, intersection_js_1.parseIntersectionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodTuple:
-            return (0, tuple_js_1.parseTupleDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodRecord:
-            return (0, record_js_1.parseRecordDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLiteral:
-            return (0, literal_js_1.parseLiteralDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodEnum:
-            return (0, enum_js_1.parseEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNativeEnum:
-            return (0, nativeEnum_js_1.parseNativeEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNullable:
-            return (0, nullable_js_1.parseNullableDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodOptional:
-            return (0, optional_js_1.parseOptionalDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodMap:
-            return (0, map_js_1.parseMapDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodSet:
-            return (0, set_js_1.parseSetDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLazy:
-            return () => def.getter()._def;
-        case zod_1.ZodFirstPartyTypeKind.ZodPromise:
-            return (0, promise_js_1.parsePromiseDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNaN:
-        case zod_1.ZodFirstPartyTypeKind.ZodNever:
-            return (0, never_js_1.parseNeverDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodEffects:
-            return (0, effects_js_1.parseEffectsDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodAny:
-            return (0, any_js_1.parseAnyDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUnknown:
-            return (0, unknown_js_1.parseUnknownDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodDefault:
-            return (0, default_js_1.parseDefaultDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBranded:
-            return (0, branded_js_1.parseBrandedDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodReadonly:
-            return (0, readonly_js_1.parseReadonlyDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodCatch:
-            return (0, catch_js_1.parseCatchDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodPipeline:
-            return (0, pipeline_js_1.parsePipelineDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodFunction:
-        case zod_1.ZodFirstPartyTypeKind.ZodVoid:
-        case zod_1.ZodFirstPartyTypeKind.ZodSymbol:
-            return undefined;
-        default:
-            /* c8 ignore next */
-            return ((_) => undefined)(typeName);
-    }
-};
-exports.selectParser = selectParser;
-
-
-/***/ }),
-
-/***/ 9683:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.zodToJsonSchema = void 0;
-const parseDef_js_1 = __nccwpck_require__(2770);
-const Refs_js_1 = __nccwpck_require__(5362);
-const any_js_1 = __nccwpck_require__(7835);
-const zodToJsonSchema = (schema, options) => {
-    const refs = (0, Refs_js_1.getRefs)(options);
-    let definitions = typeof options === "object" && options.definitions
-        ? Object.entries(options.definitions).reduce((acc, [name, schema]) => ({
-            ...acc,
-            [name]: (0, parseDef_js_1.parseDef)(schema._def, {
-                ...refs,
-                currentPath: [...refs.basePath, refs.definitionPath, name],
-            }, true) ?? (0, any_js_1.parseAnyDef)(refs),
-        }), {})
-        : undefined;
-    const name = typeof options === "string"
-        ? options
-        : options?.nameStrategy === "title"
-            ? undefined
-            : options?.name;
-    const main = (0, parseDef_js_1.parseDef)(schema._def, name === undefined
-        ? refs
-        : {
-            ...refs,
-            currentPath: [...refs.basePath, refs.definitionPath, name],
-        }, false) ?? (0, any_js_1.parseAnyDef)(refs);
-    const title = typeof options === "object" &&
-        options.name !== undefined &&
-        options.nameStrategy === "title"
-        ? options.name
-        : undefined;
-    if (title !== undefined) {
-        main.title = title;
-    }
-    if (refs.flags.hasReferencedOpenAiAnyType) {
-        if (!definitions) {
-            definitions = {};
-        }
-        if (!definitions[refs.openAiAnyTypeName]) {
-            definitions[refs.openAiAnyTypeName] = {
-                // Skipping "object" as no properties can be defined and additionalProperties must be "false"
-                type: ["string", "number", "integer", "boolean", "array", "null"],
-                items: {
-                    $ref: refs.$refStrategy === "relative"
-                        ? "1"
-                        : [
-                            ...refs.basePath,
-                            refs.definitionPath,
-                            refs.openAiAnyTypeName,
-                        ].join("/"),
-                },
-            };
-        }
-    }
-    const combined = name === undefined
-        ? definitions
-            ? {
-                ...main,
-                [refs.definitionPath]: definitions,
-            }
-            : main
-        : {
-            $ref: [
-                ...(refs.$refStrategy === "relative" ? [] : refs.basePath),
-                refs.definitionPath,
-                name,
-            ].join("/"),
-            [refs.definitionPath]: {
-                ...definitions,
-                [name]: main,
-            },
-        };
-    if (refs.target === "jsonSchema7") {
-        combined.$schema = "http://json-schema.org/draft-07/schema#";
-    }
-    else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
-        combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
-    }
-    if (refs.target === "openAi" &&
-        ("anyOf" in combined ||
-            "oneOf" in combined ||
-            "allOf" in combined ||
-            ("type" in combined && Array.isArray(combined.type)))) {
-        console.warn("Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.");
-    }
-    return combined;
-};
-exports.zodToJsonSchema = zodToJsonSchema;
-
-
-/***/ }),
-
-/***/ 7427:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getDefaultOptions = exports.defaultOptions = exports.jsonDescription = exports.ignoreOverride = void 0;
-exports.ignoreOverride = Symbol("Let zodToJsonSchema decide on which parser to use");
-const jsonDescription = (jsonSchema, def) => {
-    if (def.description) {
-        try {
-            return {
-                ...jsonSchema,
-                ...JSON.parse(def.description),
-            };
-        }
-        catch { }
-    }
-    return jsonSchema;
-};
-exports.jsonDescription = jsonDescription;
-exports.defaultOptions = {
-    name: undefined,
-    $refStrategy: "root",
-    basePath: ["#"],
-    effectStrategy: "input",
-    pipeStrategy: "all",
-    dateStrategy: "format:date-time",
-    mapStrategy: "entries",
-    removeAdditionalStrategy: "passthrough",
-    allowedAdditionalProperties: true,
-    rejectedAdditionalProperties: false,
-    definitionPath: "definitions",
-    target: "jsonSchema7",
-    strictUnions: false,
-    definitions: {},
-    errorMessages: false,
-    markdownDescription: false,
-    patternStrategy: "escape",
-    applyRegexFlags: false,
-    emailStrategy: "format:email",
-    base64Strategy: "contentEncoding:base64",
-    nameStrategy: "ref",
-    openAiAnyTypeName: "OpenAiAnyType"
-};
-const getDefaultOptions = (options) => (typeof options === "string"
-    ? {
-        ...exports.defaultOptions,
-        name: options,
-    }
-    : {
-        ...exports.defaultOptions,
-        ...options,
-    });
-exports.getDefaultOptions = getDefaultOptions;
-
-
-/***/ }),
-
-/***/ 6847:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getRefs = void 0;
-const Options_js_1 = __nccwpck_require__(7427);
-const getRefs = (options) => {
-    const _options = (0, Options_js_1.getDefaultOptions)(options);
-    const currentPath = _options.name !== undefined
-        ? [..._options.basePath, _options.definitionPath, _options.name]
-        : _options.basePath;
-    return {
-        ..._options,
-        flags: { hasReferencedOpenAiAnyType: false },
-        currentPath: currentPath,
-        propertyPath: undefined,
-        seen: new Map(Object.entries(_options.definitions).map(([name, def]) => [
-            def._def,
-            {
-                def: def._def,
-                path: [..._options.basePath, _options.definitionPath, name],
-                // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
-                jsonSchema: undefined,
-            },
-        ])),
-    };
-};
-exports.getRefs = getRefs;
-
-
-/***/ }),
-
-/***/ 4511:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setResponseValueAndErrors = exports.addErrorMessage = void 0;
-function addErrorMessage(res, key, errorMessage, refs) {
-    if (!refs?.errorMessages)
-        return;
-    if (errorMessage) {
-        res.errorMessage = {
-            ...res.errorMessage,
-            [key]: errorMessage,
-        };
-    }
-}
-exports.addErrorMessage = addErrorMessage;
-function setResponseValueAndErrors(res, key, value, errorMessage, refs) {
-    res[key] = value;
-    addErrorMessage(res, key, errorMessage, refs);
-}
-exports.setResponseValueAndErrors = setResponseValueAndErrors;
-
-
-/***/ }),
-
-/***/ 4838:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getRelativePath = void 0;
-const getRelativePath = (pathA, pathB) => {
-    let i = 0;
-    for (; i < pathA.length && i < pathB.length; i++) {
-        if (pathA[i] !== pathB[i])
-            break;
-    }
-    return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
-};
-exports.getRelativePath = getRelativePath;
-
-
-/***/ }),
-
-/***/ 9:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__nccwpck_require__(7427), exports);
-__exportStar(__nccwpck_require__(6847), exports);
-__exportStar(__nccwpck_require__(4511), exports);
-__exportStar(__nccwpck_require__(4838), exports);
-__exportStar(__nccwpck_require__(6571), exports);
-__exportStar(__nccwpck_require__(5469), exports);
-__exportStar(__nccwpck_require__(4012), exports);
-__exportStar(__nccwpck_require__(8939), exports);
-__exportStar(__nccwpck_require__(7119), exports);
-__exportStar(__nccwpck_require__(222), exports);
-__exportStar(__nccwpck_require__(4138), exports);
-__exportStar(__nccwpck_require__(5053), exports);
-__exportStar(__nccwpck_require__(5784), exports);
-__exportStar(__nccwpck_require__(9647), exports);
-__exportStar(__nccwpck_require__(7744), exports);
-__exportStar(__nccwpck_require__(5729), exports);
-__exportStar(__nccwpck_require__(413), exports);
-__exportStar(__nccwpck_require__(2121), exports);
-__exportStar(__nccwpck_require__(7260), exports);
-__exportStar(__nccwpck_require__(2402), exports);
-__exportStar(__nccwpck_require__(280), exports);
-__exportStar(__nccwpck_require__(9413), exports);
-__exportStar(__nccwpck_require__(6369), exports);
-__exportStar(__nccwpck_require__(8441), exports);
-__exportStar(__nccwpck_require__(5067), exports);
-__exportStar(__nccwpck_require__(8732), exports);
-__exportStar(__nccwpck_require__(2674), exports);
-__exportStar(__nccwpck_require__(2163), exports);
-__exportStar(__nccwpck_require__(9094), exports);
-__exportStar(__nccwpck_require__(7001), exports);
-__exportStar(__nccwpck_require__(6222), exports);
-__exportStar(__nccwpck_require__(7541), exports);
-__exportStar(__nccwpck_require__(9692), exports);
-__exportStar(__nccwpck_require__(614), exports);
-__exportStar(__nccwpck_require__(9497), exports);
-__exportStar(__nccwpck_require__(6044), exports);
-__exportStar(__nccwpck_require__(9502), exports);
-__exportStar(__nccwpck_require__(8664), exports);
-const zodToJsonSchema_js_1 = __nccwpck_require__(8664);
-exports["default"] = zodToJsonSchema_js_1.zodToJsonSchema;
-
-
-/***/ }),
-
-/***/ 6571:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDef = void 0;
-const Options_js_1 = __nccwpck_require__(7427);
-const selectParser_js_1 = __nccwpck_require__(9502);
-const getRelativePath_js_1 = __nccwpck_require__(4838);
-const any_js_1 = __nccwpck_require__(4012);
-function parseDef(def, refs, forceResolution = false) {
-    const seenItem = refs.seen.get(def);
-    if (refs.override) {
-        const overrideResult = refs.override?.(def, refs, seenItem, forceResolution);
-        if (overrideResult !== Options_js_1.ignoreOverride) {
-            return overrideResult;
-        }
-    }
-    if (seenItem && !forceResolution) {
-        const seenSchema = get$ref(seenItem, refs);
-        if (seenSchema !== undefined) {
-            return seenSchema;
-        }
-    }
-    const newItem = { def, path: refs.currentPath, jsonSchema: undefined };
-    refs.seen.set(def, newItem);
-    const jsonSchemaOrGetter = (0, selectParser_js_1.selectParser)(def, def.typeName, refs);
-    // If the return was a function, then the inner definition needs to be extracted before a call to parseDef (recursive)
-    const jsonSchema = typeof jsonSchemaOrGetter === "function"
-        ? parseDef(jsonSchemaOrGetter(), refs)
-        : jsonSchemaOrGetter;
-    if (jsonSchema) {
-        addMeta(def, refs, jsonSchema);
-    }
-    if (refs.postProcess) {
-        const postProcessResult = refs.postProcess(jsonSchema, def, refs);
-        newItem.jsonSchema = jsonSchema;
-        return postProcessResult;
-    }
-    newItem.jsonSchema = jsonSchema;
-    return jsonSchema;
-}
-exports.parseDef = parseDef;
-const get$ref = (item, refs) => {
-    switch (refs.$refStrategy) {
-        case "root":
-            return { $ref: item.path.join("/") };
-        case "relative":
-            return { $ref: (0, getRelativePath_js_1.getRelativePath)(refs.currentPath, item.path) };
-        case "none":
-        case "seen": {
-            if (item.path.length < refs.currentPath.length &&
-                item.path.every((value, index) => refs.currentPath[index] === value)) {
-                console.warn(`Recursive reference detected at ${refs.currentPath.join("/")}! Defaulting to any`);
-                return (0, any_js_1.parseAnyDef)(refs);
-            }
-            return refs.$refStrategy === "seen" ? (0, any_js_1.parseAnyDef)(refs) : undefined;
-        }
-    }
-};
-const addMeta = (def, refs, jsonSchema) => {
-    if (def.description) {
-        jsonSchema.description = def.description;
-        if (refs.markdownDescription) {
-            jsonSchema.markdownDescription = def.description;
-        }
-    }
-    return jsonSchema;
-};
-
-
-/***/ }),
-
-/***/ 5469:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-
-/***/ 4012:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseAnyDef = void 0;
-const getRelativePath_js_1 = __nccwpck_require__(4838);
-function parseAnyDef(refs) {
-    if (refs.target !== "openAi") {
-        return {};
-    }
-    const anyDefinitionPath = [
-        ...refs.basePath,
-        refs.definitionPath,
-        refs.openAiAnyTypeName,
-    ];
-    refs.flags.hasReferencedOpenAiAnyType = true;
-    return {
-        $ref: refs.$refStrategy === "relative"
-            ? (0, getRelativePath_js_1.getRelativePath)(anyDefinitionPath, refs.currentPath)
-            : anyDefinitionPath.join("/"),
-    };
-}
-exports.parseAnyDef = parseAnyDef;
-
-
-/***/ }),
-
-/***/ 8939:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseArrayDef = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const errorMessages_js_1 = __nccwpck_require__(4511);
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseArrayDef(def, refs) {
-    const res = {
-        type: "array",
-    };
-    if (def.type?._def &&
-        def.type?._def?.typeName !== zod_1.ZodFirstPartyTypeKind.ZodAny) {
-        res.items = (0, parseDef_js_1.parseDef)(def.type._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "items"],
-        });
-    }
-    if (def.minLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minItems", def.minLength.value, def.minLength.message, refs);
-    }
-    if (def.maxLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxItems", def.maxLength.value, def.maxLength.message, refs);
-    }
-    if (def.exactLength) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minItems", def.exactLength.value, def.exactLength.message, refs);
-        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxItems", def.exactLength.value, def.exactLength.message, refs);
-    }
-    return res;
-}
-exports.parseArrayDef = parseArrayDef;
-
-
-/***/ }),
-
-/***/ 7119:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBigintDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(4511);
-function parseBigintDef(def, refs) {
-    const res = {
-        type: "integer",
-        format: "int64",
-    };
-    if (!def.checks)
-        return res;
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "min":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMinimum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMinimum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                }
-                break;
-            case "max":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMaximum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMaximum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                }
-                break;
-            case "multipleOf":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "multipleOf", check.value, check.message, refs);
-                break;
-        }
-    }
-    return res;
-}
-exports.parseBigintDef = parseBigintDef;
-
-
-/***/ }),
-
-/***/ 222:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBooleanDef = void 0;
-function parseBooleanDef() {
-    return {
-        type: "boolean",
-    };
-}
-exports.parseBooleanDef = parseBooleanDef;
-
-
-/***/ }),
-
-/***/ 4138:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBrandedDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseBrandedDef(_def, refs) {
-    return (0, parseDef_js_1.parseDef)(_def.type._def, refs);
-}
-exports.parseBrandedDef = parseBrandedDef;
-
-
-/***/ }),
-
-/***/ 5053:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseCatchDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const parseCatchDef = (def, refs) => {
-    return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-};
-exports.parseCatchDef = parseCatchDef;
-
-
-/***/ }),
-
-/***/ 5784:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDateDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(4511);
-function parseDateDef(def, refs, overrideDateStrategy) {
-    const strategy = overrideDateStrategy ?? refs.dateStrategy;
-    if (Array.isArray(strategy)) {
-        return {
-            anyOf: strategy.map((item, i) => parseDateDef(def, refs, item)),
-        };
-    }
-    switch (strategy) {
-        case "string":
-        case "format:date-time":
-            return {
-                type: "string",
-                format: "date-time",
-            };
-        case "format:date":
-            return {
-                type: "string",
-                format: "date",
-            };
-        case "integer":
-            return integerDateParser(def, refs);
-    }
-}
-exports.parseDateDef = parseDateDef;
-const integerDateParser = (def, refs) => {
-    const res = {
-        type: "integer",
-        format: "unix-time",
-    };
-    if (refs.target === "openApi3") {
-        return res;
-    }
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "min":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, // This is in milliseconds
-                check.message, refs);
-                break;
-            case "max":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, // This is in milliseconds
-                check.message, refs);
-                break;
-        }
-    }
-    return res;
-};
-
-
-/***/ }),
-
-/***/ 9647:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseDefaultDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseDefaultDef(_def, refs) {
-    return {
-        ...(0, parseDef_js_1.parseDef)(_def.innerType._def, refs),
-        default: _def.defaultValue(),
-    };
-}
-exports.parseDefaultDef = parseDefaultDef;
-
-
-/***/ }),
-
-/***/ 7744:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseEffectsDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const any_js_1 = __nccwpck_require__(4012);
-function parseEffectsDef(_def, refs) {
-    return refs.effectStrategy === "input"
-        ? (0, parseDef_js_1.parseDef)(_def.schema._def, refs)
-        : (0, any_js_1.parseAnyDef)(refs);
-}
-exports.parseEffectsDef = parseEffectsDef;
-
-
-/***/ }),
-
-/***/ 5729:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseEnumDef = void 0;
-function parseEnumDef(def) {
-    return {
-        type: "string",
-        enum: Array.from(def.values),
-    };
-}
-exports.parseEnumDef = parseEnumDef;
-
-
-/***/ }),
-
-/***/ 413:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseIntersectionDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const isJsonSchema7AllOfType = (type) => {
-    if ("type" in type && type.type === "string")
-        return false;
-    return "allOf" in type;
-};
-function parseIntersectionDef(def, refs) {
-    const allOf = [
-        (0, parseDef_js_1.parseDef)(def.left._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "allOf", "0"],
-        }),
-        (0, parseDef_js_1.parseDef)(def.right._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "allOf", "1"],
-        }),
-    ].filter((x) => !!x);
-    let unevaluatedProperties = refs.target === "jsonSchema2019-09"
-        ? { unevaluatedProperties: false }
-        : undefined;
-    const mergedAllOf = [];
-    // If either of the schemas is an allOf, merge them into a single allOf
-    allOf.forEach((schema) => {
-        if (isJsonSchema7AllOfType(schema)) {
-            mergedAllOf.push(...schema.allOf);
-            if (schema.unevaluatedProperties === undefined) {
-                // If one of the schemas has no unevaluatedProperties set,
-                // the merged schema should also have no unevaluatedProperties set
-                unevaluatedProperties = undefined;
-            }
-        }
-        else {
-            let nestedSchema = schema;
-            if ("additionalProperties" in schema &&
-                schema.additionalProperties === false) {
-                const { additionalProperties, ...rest } = schema;
-                nestedSchema = rest;
-            }
-            else {
-                // As soon as one of the schemas has additionalProperties set not to false, we allow unevaluatedProperties
-                unevaluatedProperties = undefined;
-            }
-            mergedAllOf.push(nestedSchema);
-        }
-    });
-    return mergedAllOf.length
-        ? {
-            allOf: mergedAllOf,
-            ...unevaluatedProperties,
-        }
-        : undefined;
-}
-exports.parseIntersectionDef = parseIntersectionDef;
-
-
-/***/ }),
-
-/***/ 2121:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseLiteralDef = void 0;
-function parseLiteralDef(def, refs) {
-    const parsedType = typeof def.value;
-    if (parsedType !== "bigint" &&
-        parsedType !== "number" &&
-        parsedType !== "boolean" &&
-        parsedType !== "string") {
-        return {
-            type: Array.isArray(def.value) ? "array" : "object",
-        };
-    }
-    if (refs.target === "openApi3") {
-        return {
-            type: parsedType === "bigint" ? "integer" : parsedType,
-            enum: [def.value],
-        };
-    }
-    return {
-        type: parsedType === "bigint" ? "integer" : parsedType,
-        const: def.value,
-    };
-}
-exports.parseLiteralDef = parseLiteralDef;
-
-
-/***/ }),
-
-/***/ 7260:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseMapDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const record_js_1 = __nccwpck_require__(7001);
-const any_js_1 = __nccwpck_require__(4012);
-function parseMapDef(def, refs) {
-    if (refs.mapStrategy === "record") {
-        return (0, record_js_1.parseRecordDef)(def, refs);
-    }
-    const keys = (0, parseDef_js_1.parseDef)(def.keyType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items", "items", "0"],
-    }) || (0, any_js_1.parseAnyDef)(refs);
-    const values = (0, parseDef_js_1.parseDef)(def.valueType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items", "items", "1"],
-    }) || (0, any_js_1.parseAnyDef)(refs);
-    return {
-        type: "array",
-        maxItems: 125,
-        items: {
-            type: "array",
-            items: [keys, values],
-            minItems: 2,
-            maxItems: 2,
-        },
-    };
-}
-exports.parseMapDef = parseMapDef;
-
-
-/***/ }),
-
-/***/ 2402:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNativeEnumDef = void 0;
-function parseNativeEnumDef(def) {
-    const object = def.values;
-    const actualKeys = Object.keys(def.values).filter((key) => {
-        return typeof object[object[key]] !== "number";
-    });
-    const actualValues = actualKeys.map((key) => object[key]);
-    const parsedTypes = Array.from(new Set(actualValues.map((values) => typeof values)));
-    return {
-        type: parsedTypes.length === 1
-            ? parsedTypes[0] === "string"
-                ? "string"
-                : "number"
-            : ["string", "number"],
-        enum: actualValues,
-    };
-}
-exports.parseNativeEnumDef = parseNativeEnumDef;
-
-
-/***/ }),
-
-/***/ 280:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNeverDef = void 0;
-const any_js_1 = __nccwpck_require__(4012);
-function parseNeverDef(refs) {
-    return refs.target === "openAi"
-        ? undefined
-        : {
-            not: (0, any_js_1.parseAnyDef)({
-                ...refs,
-                currentPath: [...refs.currentPath, "not"],
-            }),
-        };
-}
-exports.parseNeverDef = parseNeverDef;
-
-
-/***/ }),
-
-/***/ 9413:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNullDef = void 0;
-function parseNullDef(refs) {
-    return refs.target === "openApi3"
-        ? {
-            enum: ["null"],
-            nullable: true,
-        }
-        : {
-            type: "null",
-        };
-}
-exports.parseNullDef = parseNullDef;
-
-
-/***/ }),
-
-/***/ 6369:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNullableDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const union_js_1 = __nccwpck_require__(9497);
-function parseNullableDef(def, refs) {
-    if (["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(def.innerType._def.typeName) &&
-        (!def.innerType._def.checks || !def.innerType._def.checks.length)) {
-        if (refs.target === "openApi3") {
-            return {
-                type: union_js_1.primitiveMappings[def.innerType._def.typeName],
-                nullable: true,
-            };
-        }
-        return {
-            type: [
-                union_js_1.primitiveMappings[def.innerType._def.typeName],
-                "null",
-            ],
-        };
-    }
-    if (refs.target === "openApi3") {
-        const base = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-            ...refs,
-            currentPath: [...refs.currentPath],
-        });
-        if (base && "$ref" in base)
-            return { allOf: [base], nullable: true };
-        return base && { ...base, nullable: true };
-    }
-    const base = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", "0"],
-    });
-    return base && { anyOf: [base, { type: "null" }] };
-}
-exports.parseNullableDef = parseNullableDef;
-
-
-/***/ }),
-
-/***/ 8441:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseNumberDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(4511);
-function parseNumberDef(def, refs) {
-    const res = {
-        type: "number",
-    };
-    if (!def.checks)
-        return res;
-    for (const check of def.checks) {
-        switch (check.kind) {
-            case "int":
-                res.type = "integer";
-                (0, errorMessages_js_1.addErrorMessage)(res, "type", check.message, refs);
-                break;
-            case "min":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMinimum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMinimum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minimum", check.value, check.message, refs);
-                }
-                break;
-            case "max":
-                if (refs.target === "jsonSchema7") {
-                    if (check.inclusive) {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                    }
-                    else {
-                        (0, errorMessages_js_1.setResponseValueAndErrors)(res, "exclusiveMaximum", check.value, check.message, refs);
-                    }
-                }
-                else {
-                    if (!check.inclusive) {
-                        res.exclusiveMaximum = true;
-                    }
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maximum", check.value, check.message, refs);
-                }
-                break;
-            case "multipleOf":
-                (0, errorMessages_js_1.setResponseValueAndErrors)(res, "multipleOf", check.value, check.message, refs);
-                break;
-        }
-    }
-    return res;
-}
-exports.parseNumberDef = parseNumberDef;
-
-
-/***/ }),
-
-/***/ 5067:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseObjectDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseObjectDef(def, refs) {
-    const forceOptionalIntoNullable = refs.target === "openAi";
-    const result = {
-        type: "object",
-        properties: {},
-    };
-    const required = [];
-    const shape = def.shape();
-    for (const propName in shape) {
-        let propDef = shape[propName];
-        if (propDef === undefined || propDef._def === undefined) {
-            continue;
-        }
-        let propOptional = safeIsOptional(propDef);
-        if (propOptional && forceOptionalIntoNullable) {
-            if (propDef._def.typeName === "ZodOptional") {
-                propDef = propDef._def.innerType;
-            }
-            if (!propDef.isNullable()) {
-                propDef = propDef.nullable();
-            }
-            propOptional = false;
-        }
-        const parsedDef = (0, parseDef_js_1.parseDef)(propDef._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "properties", propName],
-            propertyPath: [...refs.currentPath, "properties", propName],
-        });
-        if (parsedDef === undefined) {
-            continue;
-        }
-        result.properties[propName] = parsedDef;
-        if (!propOptional) {
-            required.push(propName);
-        }
-    }
-    if (required.length) {
-        result.required = required;
-    }
-    const additionalProperties = decideAdditionalProperties(def, refs);
-    if (additionalProperties !== undefined) {
-        result.additionalProperties = additionalProperties;
-    }
-    return result;
-}
-exports.parseObjectDef = parseObjectDef;
-function decideAdditionalProperties(def, refs) {
-    if (def.catchall._def.typeName !== "ZodNever") {
-        return (0, parseDef_js_1.parseDef)(def.catchall._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "additionalProperties"],
-        });
-    }
-    switch (def.unknownKeys) {
-        case "passthrough":
-            return refs.allowedAdditionalProperties;
-        case "strict":
-            return refs.rejectedAdditionalProperties;
-        case "strip":
-            return refs.removeAdditionalStrategy === "strict"
-                ? refs.allowedAdditionalProperties
-                : refs.rejectedAdditionalProperties;
-    }
-}
-function safeIsOptional(schema) {
-    try {
-        return schema.isOptional();
-    }
-    catch {
-        return true;
-    }
-}
-
-
-/***/ }),
-
-/***/ 8732:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseOptionalDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const any_js_1 = __nccwpck_require__(4012);
-const parseOptionalDef = (def, refs) => {
-    if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
-        return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-    }
-    const innerSchema = (0, parseDef_js_1.parseDef)(def.innerType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", "1"],
-    });
-    return innerSchema
-        ? {
-            anyOf: [
-                {
-                    not: (0, any_js_1.parseAnyDef)(refs),
-                },
-                innerSchema,
-            ],
-        }
-        : (0, any_js_1.parseAnyDef)(refs);
-};
-exports.parseOptionalDef = parseOptionalDef;
-
-
-/***/ }),
-
-/***/ 2674:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parsePipelineDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const parsePipelineDef = (def, refs) => {
-    if (refs.pipeStrategy === "input") {
-        return (0, parseDef_js_1.parseDef)(def.in._def, refs);
-    }
-    else if (refs.pipeStrategy === "output") {
-        return (0, parseDef_js_1.parseDef)(def.out._def, refs);
-    }
-    const a = (0, parseDef_js_1.parseDef)(def.in._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "allOf", "0"],
-    });
-    const b = (0, parseDef_js_1.parseDef)(def.out._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "allOf", a ? "1" : "0"],
-    });
-    return {
-        allOf: [a, b].filter((x) => x !== undefined),
-    };
-};
-exports.parsePipelineDef = parsePipelineDef;
-
-
-/***/ }),
-
-/***/ 2163:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parsePromiseDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parsePromiseDef(def, refs) {
-    return (0, parseDef_js_1.parseDef)(def.type._def, refs);
-}
-exports.parsePromiseDef = parsePromiseDef;
-
-
-/***/ }),
-
-/***/ 9094:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseReadonlyDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const parseReadonlyDef = (def, refs) => {
-    return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
-};
-exports.parseReadonlyDef = parseReadonlyDef;
-
-
-/***/ }),
-
-/***/ 7001:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseRecordDef = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const parseDef_js_1 = __nccwpck_require__(6571);
-const string_js_1 = __nccwpck_require__(7541);
-const branded_js_1 = __nccwpck_require__(4138);
-const any_js_1 = __nccwpck_require__(4012);
-function parseRecordDef(def, refs) {
-    if (refs.target === "openAi") {
-        console.warn("Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.");
-    }
-    if (refs.target === "openApi3" &&
-        def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodEnum) {
-        return {
-            type: "object",
-            required: def.keyType._def.values,
-            properties: def.keyType._def.values.reduce((acc, key) => ({
-                ...acc,
-                [key]: (0, parseDef_js_1.parseDef)(def.valueType._def, {
-                    ...refs,
-                    currentPath: [...refs.currentPath, "properties", key],
-                }) ?? (0, any_js_1.parseAnyDef)(refs),
-            }), {}),
-            additionalProperties: refs.rejectedAdditionalProperties,
-        };
-    }
-    const schema = {
-        type: "object",
-        additionalProperties: (0, parseDef_js_1.parseDef)(def.valueType._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "additionalProperties"],
-        }) ?? refs.allowedAdditionalProperties,
-    };
-    if (refs.target === "openApi3") {
-        return schema;
-    }
-    if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
-        def.keyType._def.checks?.length) {
-        const { type, ...keyType } = (0, string_js_1.parseStringDef)(def.keyType._def, refs);
-        return {
-            ...schema,
-            propertyNames: keyType,
-        };
-    }
-    else if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodEnum) {
-        return {
-            ...schema,
-            propertyNames: {
-                enum: def.keyType._def.values,
-            },
-        };
-    }
-    else if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodBranded &&
-        def.keyType._def.type._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
-        def.keyType._def.type._def.checks?.length) {
-        const { type, ...keyType } = (0, branded_js_1.parseBrandedDef)(def.keyType._def, refs);
-        return {
-            ...schema,
-            propertyNames: keyType,
-        };
-    }
-    return schema;
-}
-exports.parseRecordDef = parseRecordDef;
-
-
-/***/ }),
-
-/***/ 6222:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseSetDef = void 0;
-const errorMessages_js_1 = __nccwpck_require__(4511);
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseSetDef(def, refs) {
-    const items = (0, parseDef_js_1.parseDef)(def.valueType._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "items"],
-    });
-    const schema = {
-        type: "array",
-        uniqueItems: true,
-        items,
-    };
-    if (def.minSize) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "minItems", def.minSize.value, def.minSize.message, refs);
-    }
-    if (def.maxSize) {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "maxItems", def.maxSize.value, def.maxSize.message, refs);
-    }
-    return schema;
-}
-exports.parseSetDef = parseSetDef;
-
-
-/***/ }),
-
-/***/ 7541:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseStringDef = exports.zodPatterns = void 0;
-const errorMessages_js_1 = __nccwpck_require__(4511);
-let emojiRegex = undefined;
-/**
- * Generated from the regular expressions found here as of 2024-05-22:
- * https://github.com/colinhacks/zod/blob/master/src/types.ts.
- *
- * Expressions with /i flag have been changed accordingly.
- */
-exports.zodPatterns = {
-    /**
-     * `c` was changed to `[cC]` to replicate /i flag
-     */
-    cuid: /^[cC][^\s-]{8,}$/,
-    cuid2: /^[0-9a-z]+$/,
-    ulid: /^[0-9A-HJKMNP-TV-Z]{26}$/,
-    /**
-     * `a-z` was added to replicate /i flag
-     */
-    email: /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
-    /**
-     * Constructed a valid Unicode RegExp
-     *
-     * Lazily instantiate since this type of regex isn't supported
-     * in all envs (e.g. React Native).
-     *
-     * See:
-     * https://github.com/colinhacks/zod/issues/2433
-     * Fix in Zod:
-     * https://github.com/colinhacks/zod/commit/9340fd51e48576a75adc919bff65dbc4a5d4c99b
-     */
-    emoji: () => {
-        if (emojiRegex === undefined) {
-            emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
-        }
-        return emojiRegex;
-    },
-    /**
-     * Unused
-     */
-    uuid: /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
-    /**
-     * Unused
-     */
-    ipv4: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
-    ipv4Cidr: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/,
-    /**
-     * Unused
-     */
-    ipv6: /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/,
-    ipv6Cidr: /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/,
-    base64: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
-    base64url: /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/,
-    nanoid: /^[a-zA-Z0-9_-]{21}$/,
-    jwt: /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/,
-};
-function parseStringDef(def, refs) {
-    const res = {
-        type: "string",
-    };
-    if (def.checks) {
-        for (const check of def.checks) {
-            switch (check.kind) {
-                case "min":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minLength", typeof res.minLength === "number"
-                        ? Math.max(res.minLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "max":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxLength", typeof res.maxLength === "number"
-                        ? Math.min(res.maxLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "email":
-                    switch (refs.emailStrategy) {
-                        case "format:email":
-                            addFormat(res, "email", check.message, refs);
-                            break;
-                        case "format:idn-email":
-                            addFormat(res, "idn-email", check.message, refs);
-                            break;
-                        case "pattern:zod":
-                            addPattern(res, exports.zodPatterns.email, check.message, refs);
-                            break;
-                    }
-                    break;
-                case "url":
-                    addFormat(res, "uri", check.message, refs);
-                    break;
-                case "uuid":
-                    addFormat(res, "uuid", check.message, refs);
-                    break;
-                case "regex":
-                    addPattern(res, check.regex, check.message, refs);
-                    break;
-                case "cuid":
-                    addPattern(res, exports.zodPatterns.cuid, check.message, refs);
-                    break;
-                case "cuid2":
-                    addPattern(res, exports.zodPatterns.cuid2, check.message, refs);
-                    break;
-                case "startsWith":
-                    addPattern(res, RegExp(`^${escapeLiteralCheckValue(check.value, refs)}`), check.message, refs);
-                    break;
-                case "endsWith":
-                    addPattern(res, RegExp(`${escapeLiteralCheckValue(check.value, refs)}$`), check.message, refs);
-                    break;
-                case "datetime":
-                    addFormat(res, "date-time", check.message, refs);
-                    break;
-                case "date":
-                    addFormat(res, "date", check.message, refs);
-                    break;
-                case "time":
-                    addFormat(res, "time", check.message, refs);
-                    break;
-                case "duration":
-                    addFormat(res, "duration", check.message, refs);
-                    break;
-                case "length":
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minLength", typeof res.minLength === "number"
-                        ? Math.max(res.minLength, check.value)
-                        : check.value, check.message, refs);
-                    (0, errorMessages_js_1.setResponseValueAndErrors)(res, "maxLength", typeof res.maxLength === "number"
-                        ? Math.min(res.maxLength, check.value)
-                        : check.value, check.message, refs);
-                    break;
-                case "includes": {
-                    addPattern(res, RegExp(escapeLiteralCheckValue(check.value, refs)), check.message, refs);
-                    break;
-                }
-                case "ip": {
-                    if (check.version !== "v6") {
-                        addFormat(res, "ipv4", check.message, refs);
-                    }
-                    if (check.version !== "v4") {
-                        addFormat(res, "ipv6", check.message, refs);
-                    }
-                    break;
-                }
-                case "base64url":
-                    addPattern(res, exports.zodPatterns.base64url, check.message, refs);
-                    break;
-                case "jwt":
-                    addPattern(res, exports.zodPatterns.jwt, check.message, refs);
-                    break;
-                case "cidr": {
-                    if (check.version !== "v6") {
-                        addPattern(res, exports.zodPatterns.ipv4Cidr, check.message, refs);
-                    }
-                    if (check.version !== "v4") {
-                        addPattern(res, exports.zodPatterns.ipv6Cidr, check.message, refs);
-                    }
-                    break;
-                }
-                case "emoji":
-                    addPattern(res, exports.zodPatterns.emoji(), check.message, refs);
-                    break;
-                case "ulid": {
-                    addPattern(res, exports.zodPatterns.ulid, check.message, refs);
-                    break;
-                }
-                case "base64": {
-                    switch (refs.base64Strategy) {
-                        case "format:binary": {
-                            addFormat(res, "binary", check.message, refs);
-                            break;
-                        }
-                        case "contentEncoding:base64": {
-                            (0, errorMessages_js_1.setResponseValueAndErrors)(res, "contentEncoding", "base64", check.message, refs);
-                            break;
-                        }
-                        case "pattern:zod": {
-                            addPattern(res, exports.zodPatterns.base64, check.message, refs);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case "nanoid": {
-                    addPattern(res, exports.zodPatterns.nanoid, check.message, refs);
-                }
-                case "toLowerCase":
-                case "toUpperCase":
-                case "trim":
-                    break;
-                default:
-                    /* c8 ignore next */
-                    ((_) => { })(check);
-            }
-        }
-    }
-    return res;
-}
-exports.parseStringDef = parseStringDef;
-function escapeLiteralCheckValue(literal, refs) {
-    return refs.patternStrategy === "escape"
-        ? escapeNonAlphaNumeric(literal)
-        : literal;
-}
-const ALPHA_NUMERIC = new Set("ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789");
-function escapeNonAlphaNumeric(source) {
-    let result = "";
-    for (let i = 0; i < source.length; i++) {
-        if (!ALPHA_NUMERIC.has(source[i])) {
-            result += "\\";
-        }
-        result += source[i];
-    }
-    return result;
-}
-// Adds a "format" keyword to the schema. If a format exists, both formats will be joined in an allOf-node, along with subsequent ones.
-function addFormat(schema, value, message, refs) {
-    if (schema.format || schema.anyOf?.some((x) => x.format)) {
-        if (!schema.anyOf) {
-            schema.anyOf = [];
-        }
-        if (schema.format) {
-            schema.anyOf.push({
-                format: schema.format,
-                ...(schema.errorMessage &&
-                    refs.errorMessages && {
-                    errorMessage: { format: schema.errorMessage.format },
-                }),
-            });
-            delete schema.format;
-            if (schema.errorMessage) {
-                delete schema.errorMessage.format;
-                if (Object.keys(schema.errorMessage).length === 0) {
-                    delete schema.errorMessage;
-                }
-            }
-        }
-        schema.anyOf.push({
-            format: value,
-            ...(message &&
-                refs.errorMessages && { errorMessage: { format: message } }),
-        });
-    }
-    else {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "format", value, message, refs);
-    }
-}
-// Adds a "pattern" keyword to the schema. If a pattern exists, both patterns will be joined in an allOf-node, along with subsequent ones.
-function addPattern(schema, regex, message, refs) {
-    if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
-        if (!schema.allOf) {
-            schema.allOf = [];
-        }
-        if (schema.pattern) {
-            schema.allOf.push({
-                pattern: schema.pattern,
-                ...(schema.errorMessage &&
-                    refs.errorMessages && {
-                    errorMessage: { pattern: schema.errorMessage.pattern },
-                }),
-            });
-            delete schema.pattern;
-            if (schema.errorMessage) {
-                delete schema.errorMessage.pattern;
-                if (Object.keys(schema.errorMessage).length === 0) {
-                    delete schema.errorMessage;
-                }
-            }
-        }
-        schema.allOf.push({
-            pattern: stringifyRegExpWithFlags(regex, refs),
-            ...(message &&
-                refs.errorMessages && { errorMessage: { pattern: message } }),
-        });
-    }
-    else {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "pattern", stringifyRegExpWithFlags(regex, refs), message, refs);
-    }
-}
-// Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
-function stringifyRegExpWithFlags(regex, refs) {
-    if (!refs.applyRegexFlags || !regex.flags) {
-        return regex.source;
-    }
-    // Currently handled flags
-    const flags = {
-        i: regex.flags.includes("i"),
-        m: regex.flags.includes("m"),
-        s: regex.flags.includes("s"), // `.` matches newlines
-    };
-    // The general principle here is to step through each character, one at a time, applying mutations as flags require. We keep track when the current character is escaped, and when it's inside a group /like [this]/ or (also) a range like /[a-z]/. The following is fairly brittle imperative code; edit at your peril!
-    const source = flags.i ? regex.source.toLowerCase() : regex.source;
-    let pattern = "";
-    let isEscaped = false;
-    let inCharGroup = false;
-    let inCharRange = false;
-    for (let i = 0; i < source.length; i++) {
-        if (isEscaped) {
-            pattern += source[i];
-            isEscaped = false;
-            continue;
-        }
-        if (flags.i) {
-            if (inCharGroup) {
-                if (source[i].match(/[a-z]/)) {
-                    if (inCharRange) {
-                        pattern += source[i];
-                        pattern += `${source[i - 2]}-${source[i]}`.toUpperCase();
-                        inCharRange = false;
-                    }
-                    else if (source[i + 1] === "-" && source[i + 2]?.match(/[a-z]/)) {
-                        pattern += source[i];
-                        inCharRange = true;
-                    }
-                    else {
-                        pattern += `${source[i]}${source[i].toUpperCase()}`;
-                    }
-                    continue;
-                }
-            }
-            else if (source[i].match(/[a-z]/)) {
-                pattern += `[${source[i]}${source[i].toUpperCase()}]`;
-                continue;
-            }
-        }
-        if (flags.m) {
-            if (source[i] === "^") {
-                pattern += `(^|(?<=[\r\n]))`;
-                continue;
-            }
-            else if (source[i] === "$") {
-                pattern += `($|(?=[\r\n]))`;
-                continue;
-            }
-        }
-        if (flags.s && source[i] === ".") {
-            pattern += inCharGroup ? `${source[i]}\r\n` : `[${source[i]}\r\n]`;
-            continue;
-        }
-        pattern += source[i];
-        if (source[i] === "\\") {
-            isEscaped = true;
-        }
-        else if (inCharGroup && source[i] === "]") {
-            inCharGroup = false;
-        }
-        else if (!inCharGroup && source[i] === "[") {
-            inCharGroup = true;
-        }
-    }
-    try {
-        new RegExp(pattern);
-    }
-    catch {
-        console.warn(`Could not convert regex pattern at ${refs.currentPath.join("/")} to a flag-independent form! Falling back to the flag-ignorant source`);
-        return regex.source;
-    }
-    return pattern;
-}
-
-
-/***/ }),
-
-/***/ 9692:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseTupleDef = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-function parseTupleDef(def, refs) {
-    if (def.rest) {
-        return {
-            type: "array",
-            minItems: def.items.length,
-            items: def.items
-                .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "items", `${i}`],
-            }))
-                .reduce((acc, x) => (x === undefined ? acc : [...acc, x]), []),
-            additionalItems: (0, parseDef_js_1.parseDef)(def.rest._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "additionalItems"],
-            }),
-        };
-    }
-    else {
-        return {
-            type: "array",
-            minItems: def.items.length,
-            maxItems: def.items.length,
-            items: def.items
-                .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "items", `${i}`],
-            }))
-                .reduce((acc, x) => (x === undefined ? acc : [...acc, x]), []),
-        };
-    }
-}
-exports.parseTupleDef = parseTupleDef;
-
-
-/***/ }),
-
-/***/ 614:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUndefinedDef = void 0;
-const any_js_1 = __nccwpck_require__(4012);
-function parseUndefinedDef(refs) {
-    return {
-        not: (0, any_js_1.parseAnyDef)(refs),
-    };
-}
-exports.parseUndefinedDef = parseUndefinedDef;
-
-
-/***/ }),
-
-/***/ 9497:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUnionDef = exports.primitiveMappings = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-exports.primitiveMappings = {
-    ZodString: "string",
-    ZodNumber: "number",
-    ZodBigInt: "integer",
-    ZodBoolean: "boolean",
-    ZodNull: "null",
-};
-function parseUnionDef(def, refs) {
-    if (refs.target === "openApi3")
-        return asAnyOf(def, refs);
-    const options = def.options instanceof Map ? Array.from(def.options.values()) : def.options;
-    // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
-    if (options.every((x) => x._def.typeName in exports.primitiveMappings &&
-        (!x._def.checks || !x._def.checks.length))) {
-        // all types in union are primitive and lack checks, so might as well squash into {type: [...]}
-        const types = options.reduce((types, x) => {
-            const type = exports.primitiveMappings[x._def.typeName]; //Can be safely casted due to row 43
-            return type && !types.includes(type) ? [...types, type] : types;
-        }, []);
-        return {
-            type: types.length > 1 ? types : types[0],
-        };
-    }
-    else if (options.every((x) => x._def.typeName === "ZodLiteral" && !x.description)) {
-        // all options literals
-        const types = options.reduce((acc, x) => {
-            const type = typeof x._def.value;
-            switch (type) {
-                case "string":
-                case "number":
-                case "boolean":
-                    return [...acc, type];
-                case "bigint":
-                    return [...acc, "integer"];
-                case "object":
-                    if (x._def.value === null)
-                        return [...acc, "null"];
-                case "symbol":
-                case "undefined":
-                case "function":
-                default:
-                    return acc;
-            }
-        }, []);
-        if (types.length === options.length) {
-            // all the literals are primitive, as far as null can be considered primitive
-            const uniqueTypes = types.filter((x, i, a) => a.indexOf(x) === i);
-            return {
-                type: uniqueTypes.length > 1 ? uniqueTypes : uniqueTypes[0],
-                enum: options.reduce((acc, x) => {
-                    return acc.includes(x._def.value) ? acc : [...acc, x._def.value];
-                }, []),
-            };
-        }
-    }
-    else if (options.every((x) => x._def.typeName === "ZodEnum")) {
-        return {
-            type: "string",
-            enum: options.reduce((acc, x) => [
-                ...acc,
-                ...x._def.values.filter((x) => !acc.includes(x)),
-            ], []),
-        };
-    }
-    return asAnyOf(def, refs);
-}
-exports.parseUnionDef = parseUnionDef;
-const asAnyOf = (def, refs) => {
-    const anyOf = (def.options instanceof Map
-        ? Array.from(def.options.values())
-        : def.options)
-        .map((x, i) => (0, parseDef_js_1.parseDef)(x._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "anyOf", `${i}`],
-    }))
-        .filter((x) => !!x &&
-        (!refs.strictUnions ||
-            (typeof x === "object" && Object.keys(x).length > 0)));
-    return anyOf.length ? { anyOf } : undefined;
-};
-
-
-/***/ }),
-
-/***/ 6044:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUnknownDef = void 0;
-const any_js_1 = __nccwpck_require__(4012);
-function parseUnknownDef(refs) {
-    return (0, any_js_1.parseAnyDef)(refs);
-}
-exports.parseUnknownDef = parseUnknownDef;
-
-
-/***/ }),
-
-/***/ 9502:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.selectParser = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const any_js_1 = __nccwpck_require__(4012);
-const array_js_1 = __nccwpck_require__(8939);
-const bigint_js_1 = __nccwpck_require__(7119);
-const boolean_js_1 = __nccwpck_require__(222);
-const branded_js_1 = __nccwpck_require__(4138);
-const catch_js_1 = __nccwpck_require__(5053);
-const date_js_1 = __nccwpck_require__(5784);
-const default_js_1 = __nccwpck_require__(9647);
-const effects_js_1 = __nccwpck_require__(7744);
-const enum_js_1 = __nccwpck_require__(5729);
-const intersection_js_1 = __nccwpck_require__(413);
-const literal_js_1 = __nccwpck_require__(2121);
-const map_js_1 = __nccwpck_require__(7260);
-const nativeEnum_js_1 = __nccwpck_require__(2402);
-const never_js_1 = __nccwpck_require__(280);
-const null_js_1 = __nccwpck_require__(9413);
-const nullable_js_1 = __nccwpck_require__(6369);
-const number_js_1 = __nccwpck_require__(8441);
-const object_js_1 = __nccwpck_require__(5067);
-const optional_js_1 = __nccwpck_require__(8732);
-const pipeline_js_1 = __nccwpck_require__(2674);
-const promise_js_1 = __nccwpck_require__(2163);
-const record_js_1 = __nccwpck_require__(7001);
-const set_js_1 = __nccwpck_require__(6222);
-const string_js_1 = __nccwpck_require__(7541);
-const tuple_js_1 = __nccwpck_require__(9692);
-const undefined_js_1 = __nccwpck_require__(614);
-const union_js_1 = __nccwpck_require__(9497);
-const unknown_js_1 = __nccwpck_require__(6044);
-const readonly_js_1 = __nccwpck_require__(9094);
-const selectParser = (def, typeName, refs) => {
-    switch (typeName) {
-        case zod_1.ZodFirstPartyTypeKind.ZodString:
-            return (0, string_js_1.parseStringDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNumber:
-            return (0, number_js_1.parseNumberDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodObject:
-            return (0, object_js_1.parseObjectDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBigInt:
-            return (0, bigint_js_1.parseBigintDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBoolean:
-            return (0, boolean_js_1.parseBooleanDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodDate:
-            return (0, date_js_1.parseDateDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUndefined:
-            return (0, undefined_js_1.parseUndefinedDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNull:
-            return (0, null_js_1.parseNullDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodArray:
-            return (0, array_js_1.parseArrayDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUnion:
-        case zod_1.ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
-            return (0, union_js_1.parseUnionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodIntersection:
-            return (0, intersection_js_1.parseIntersectionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodTuple:
-            return (0, tuple_js_1.parseTupleDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodRecord:
-            return (0, record_js_1.parseRecordDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLiteral:
-            return (0, literal_js_1.parseLiteralDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodEnum:
-            return (0, enum_js_1.parseEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNativeEnum:
-            return (0, nativeEnum_js_1.parseNativeEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNullable:
-            return (0, nullable_js_1.parseNullableDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodOptional:
-            return (0, optional_js_1.parseOptionalDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodMap:
-            return (0, map_js_1.parseMapDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodSet:
-            return (0, set_js_1.parseSetDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLazy:
-            return () => def.getter()._def;
-        case zod_1.ZodFirstPartyTypeKind.ZodPromise:
-            return (0, promise_js_1.parsePromiseDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNaN:
-        case zod_1.ZodFirstPartyTypeKind.ZodNever:
-            return (0, never_js_1.parseNeverDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodEffects:
-            return (0, effects_js_1.parseEffectsDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodAny:
-            return (0, any_js_1.parseAnyDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUnknown:
-            return (0, unknown_js_1.parseUnknownDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodDefault:
-            return (0, default_js_1.parseDefaultDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBranded:
-            return (0, branded_js_1.parseBrandedDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodReadonly:
-            return (0, readonly_js_1.parseReadonlyDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodCatch:
-            return (0, catch_js_1.parseCatchDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodPipeline:
-            return (0, pipeline_js_1.parsePipelineDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodFunction:
-        case zod_1.ZodFirstPartyTypeKind.ZodVoid:
-        case zod_1.ZodFirstPartyTypeKind.ZodSymbol:
-            return undefined;
-        default:
-            /* c8 ignore next */
-            return ((_) => undefined)(typeName);
-    }
-};
-exports.selectParser = selectParser;
-
-
-/***/ }),
-
-/***/ 8664:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.zodToJsonSchema = void 0;
-const parseDef_js_1 = __nccwpck_require__(6571);
-const Refs_js_1 = __nccwpck_require__(6847);
-const any_js_1 = __nccwpck_require__(4012);
-const zodToJsonSchema = (schema, options) => {
-    const refs = (0, Refs_js_1.getRefs)(options);
-    let definitions = typeof options === "object" && options.definitions
-        ? Object.entries(options.definitions).reduce((acc, [name, schema]) => ({
-            ...acc,
-            [name]: (0, parseDef_js_1.parseDef)(schema._def, {
-                ...refs,
-                currentPath: [...refs.basePath, refs.definitionPath, name],
-            }, true) ?? (0, any_js_1.parseAnyDef)(refs),
-        }), {})
-        : undefined;
-    const name = typeof options === "string"
-        ? options
-        : options?.nameStrategy === "title"
-            ? undefined
-            : options?.name;
-    const main = (0, parseDef_js_1.parseDef)(schema._def, name === undefined
-        ? refs
-        : {
-            ...refs,
-            currentPath: [...refs.basePath, refs.definitionPath, name],
-        }, false) ?? (0, any_js_1.parseAnyDef)(refs);
-    const title = typeof options === "object" &&
-        options.name !== undefined &&
-        options.nameStrategy === "title"
-        ? options.name
-        : undefined;
-    if (title !== undefined) {
-        main.title = title;
-    }
-    if (refs.flags.hasReferencedOpenAiAnyType) {
-        if (!definitions) {
-            definitions = {};
-        }
-        if (!definitions[refs.openAiAnyTypeName]) {
-            definitions[refs.openAiAnyTypeName] = {
-                // Skipping "object" as no properties can be defined and additionalProperties must be "false"
-                type: ["string", "number", "integer", "boolean", "array", "null"],
-                items: {
-                    $ref: refs.$refStrategy === "relative"
-                        ? "1"
-                        : [
-                            ...refs.basePath,
-                            refs.definitionPath,
-                            refs.openAiAnyTypeName,
-                        ].join("/"),
-                },
-            };
-        }
-    }
-    const combined = name === undefined
-        ? definitions
-            ? {
-                ...main,
-                [refs.definitionPath]: definitions,
-            }
-            : main
-        : {
-            $ref: [
-                ...(refs.$refStrategy === "relative" ? [] : refs.basePath),
-                refs.definitionPath,
-                name,
-            ].join("/"),
-            [refs.definitionPath]: {
-                ...definitions,
-                [name]: main,
-            },
-        };
-    if (refs.target === "jsonSchema7") {
-        combined.$schema = "http://json-schema.org/draft-07/schema#";
-    }
-    else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
-        combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
-    }
-    if (refs.target === "openAi" &&
-        ("anyOf" in combined ||
-            "oneOf" in combined ||
-            "allOf" in combined ||
-            ("type" in combined && Array.isArray(combined.type)))) {
-        console.warn("Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.");
-    }
-    return combined;
-};
-exports.zodToJsonSchema = zodToJsonSchema;
-
 
 /***/ }),
 
@@ -60467,8 +71415,21 @@ exports.PathScurry = process.platform === 'win32' ? PathScurryWin32
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getDefaultOptions = exports.defaultOptions = exports.ignoreOverride = void 0;
+exports.getDefaultOptions = exports.defaultOptions = exports.jsonDescription = exports.ignoreOverride = void 0;
 exports.ignoreOverride = Symbol("Let zodToJsonSchema decide on which parser to use");
+const jsonDescription = (jsonSchema, def) => {
+    if (def.description) {
+        try {
+            return {
+                ...jsonSchema,
+                ...JSON.parse(def.description),
+            };
+        }
+        catch { }
+    }
+    return jsonSchema;
+};
+exports.jsonDescription = jsonDescription;
 exports.defaultOptions = {
     name: undefined,
     $refStrategy: "root",
@@ -60478,6 +71439,8 @@ exports.defaultOptions = {
     dateStrategy: "format:date-time",
     mapStrategy: "entries",
     removeAdditionalStrategy: "passthrough",
+    allowedAdditionalProperties: true,
+    rejectedAdditionalProperties: false,
     definitionPath: "definitions",
     target: "jsonSchema7",
     strictUnions: false,
@@ -60485,7 +71448,11 @@ exports.defaultOptions = {
     errorMessages: false,
     markdownDescription: false,
     patternStrategy: "escape",
+    applyRegexFlags: false,
     emailStrategy: "format:email",
+    base64Strategy: "contentEncoding:base64",
+    nameStrategy: "ref",
+    openAiAnyTypeName: "OpenAiAnyType"
 };
 const getDefaultOptions = (options) => (typeof options === "string"
     ? {
@@ -60516,6 +71483,7 @@ const getRefs = (options) => {
         : _options.basePath;
     return {
         ..._options,
+        flags: { hasReferencedOpenAiAnyType: false },
         currentPath: currentPath,
         propertyPath: undefined,
         seen: new Map(Object.entries(_options.definitions).map(([name, def]) => [
@@ -60561,6 +71529,26 @@ exports.setResponseValueAndErrors = setResponseValueAndErrors;
 
 /***/ }),
 
+/***/ 3427:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRelativePath = void 0;
+const getRelativePath = (pathA, pathB) => {
+    let i = 0;
+    for (; i < pathA.length && i < pathB.length; i++) {
+        if (pathA[i] !== pathB[i])
+            break;
+    }
+    return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
+};
+exports.getRelativePath = getRelativePath;
+
+
+/***/ }),
+
 /***/ 2708:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -60581,9 +71569,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__nccwpck_require__(5486), exports);
 __exportStar(__nccwpck_require__(6746), exports);
+__exportStar(__nccwpck_require__(4652), exports);
+__exportStar(__nccwpck_require__(5486), exports);
+__exportStar(__nccwpck_require__(3427), exports);
 __exportStar(__nccwpck_require__(2796), exports);
+__exportStar(__nccwpck_require__(5914), exports);
 __exportStar(__nccwpck_require__(1253), exports);
 __exportStar(__nccwpck_require__(4942), exports);
 __exportStar(__nccwpck_require__(5916), exports);
@@ -60614,7 +71605,7 @@ __exportStar(__nccwpck_require__(2273), exports);
 __exportStar(__nccwpck_require__(5339), exports);
 __exportStar(__nccwpck_require__(2388), exports);
 __exportStar(__nccwpck_require__(7581), exports);
-__exportStar(__nccwpck_require__(4652), exports);
+__exportStar(__nccwpck_require__(5705), exports);
 __exportStar(__nccwpck_require__(4193), exports);
 const zodToJsonSchema_js_1 = __nccwpck_require__(4193);
 exports["default"] = zodToJsonSchema_js_1.zodToJsonSchema;
@@ -60629,38 +71620,10 @@ exports["default"] = zodToJsonSchema_js_1.zodToJsonSchema;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseDef = void 0;
-const zod_1 = __nccwpck_require__(8975);
-const any_js_1 = __nccwpck_require__(1253);
-const array_js_1 = __nccwpck_require__(4942);
-const bigint_js_1 = __nccwpck_require__(5916);
-const boolean_js_1 = __nccwpck_require__(2379);
-const branded_js_1 = __nccwpck_require__(4587);
-const catch_js_1 = __nccwpck_require__(9740);
-const date_js_1 = __nccwpck_require__(1867);
-const default_js_1 = __nccwpck_require__(8350);
-const effects_js_1 = __nccwpck_require__(1609);
-const enum_js_1 = __nccwpck_require__(3526);
-const intersection_js_1 = __nccwpck_require__(3254);
-const literal_js_1 = __nccwpck_require__(3372);
-const map_js_1 = __nccwpck_require__(5481);
-const nativeEnum_js_1 = __nccwpck_require__(4957);
-const never_js_1 = __nccwpck_require__(765);
-const null_js_1 = __nccwpck_require__(4774);
-const nullable_js_1 = __nccwpck_require__(6710);
-const number_js_1 = __nccwpck_require__(5714);
-const object_js_1 = __nccwpck_require__(2996);
-const optional_js_1 = __nccwpck_require__(259);
-const pipeline_js_1 = __nccwpck_require__(2305);
-const promise_js_1 = __nccwpck_require__(8282);
-const record_js_1 = __nccwpck_require__(4630);
-const set_js_1 = __nccwpck_require__(1135);
-const string_js_1 = __nccwpck_require__(2546);
-const tuple_js_1 = __nccwpck_require__(2273);
-const undefined_js_1 = __nccwpck_require__(5339);
-const union_js_1 = __nccwpck_require__(2388);
-const unknown_js_1 = __nccwpck_require__(7581);
-const readonly_js_1 = __nccwpck_require__(2553);
 const Options_js_1 = __nccwpck_require__(6746);
+const selectParser_js_1 = __nccwpck_require__(5705);
+const getRelativePath_js_1 = __nccwpck_require__(3427);
+const any_js_1 = __nccwpck_require__(1253);
 function parseDef(def, refs, forceResolution = false) {
     const seenItem = refs.seen.get(def);
     if (refs.override) {
@@ -60677,9 +71640,18 @@ function parseDef(def, refs, forceResolution = false) {
     }
     const newItem = { def, path: refs.currentPath, jsonSchema: undefined };
     refs.seen.set(def, newItem);
-    const jsonSchema = selectParser(def, def.typeName, refs);
+    const jsonSchemaOrGetter = (0, selectParser_js_1.selectParser)(def, def.typeName, refs);
+    // If the return was a function, then the inner definition needs to be extracted before a call to parseDef (recursive)
+    const jsonSchema = typeof jsonSchemaOrGetter === "function"
+        ? parseDef(jsonSchemaOrGetter(), refs)
+        : jsonSchemaOrGetter;
     if (jsonSchema) {
         addMeta(def, refs, jsonSchema);
+    }
+    if (refs.postProcess) {
+        const postProcessResult = refs.postProcess(jsonSchema, def, refs);
+        newItem.jsonSchema = jsonSchema;
+        return postProcessResult;
     }
     newItem.jsonSchema = jsonSchema;
     return jsonSchema;
@@ -60690,98 +71662,16 @@ const get$ref = (item, refs) => {
         case "root":
             return { $ref: item.path.join("/") };
         case "relative":
-            return { $ref: getRelativePath(refs.currentPath, item.path) };
+            return { $ref: (0, getRelativePath_js_1.getRelativePath)(refs.currentPath, item.path) };
         case "none":
         case "seen": {
             if (item.path.length < refs.currentPath.length &&
                 item.path.every((value, index) => refs.currentPath[index] === value)) {
                 console.warn(`Recursive reference detected at ${refs.currentPath.join("/")}! Defaulting to any`);
-                return {};
+                return (0, any_js_1.parseAnyDef)(refs);
             }
-            return refs.$refStrategy === "seen" ? {} : undefined;
+            return refs.$refStrategy === "seen" ? (0, any_js_1.parseAnyDef)(refs) : undefined;
         }
-    }
-};
-const getRelativePath = (pathA, pathB) => {
-    let i = 0;
-    for (; i < pathA.length && i < pathB.length; i++) {
-        if (pathA[i] !== pathB[i])
-            break;
-    }
-    return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
-};
-const selectParser = (def, typeName, refs) => {
-    switch (typeName) {
-        case zod_1.ZodFirstPartyTypeKind.ZodString:
-            return (0, string_js_1.parseStringDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNumber:
-            return (0, number_js_1.parseNumberDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodObject:
-            return (0, object_js_1.parseObjectDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBigInt:
-            return (0, bigint_js_1.parseBigintDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBoolean:
-            return (0, boolean_js_1.parseBooleanDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodDate:
-            return (0, date_js_1.parseDateDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUndefined:
-            return (0, undefined_js_1.parseUndefinedDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodNull:
-            return (0, null_js_1.parseNullDef)(refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodArray:
-            return (0, array_js_1.parseArrayDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodUnion:
-        case zod_1.ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
-            return (0, union_js_1.parseUnionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodIntersection:
-            return (0, intersection_js_1.parseIntersectionDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodTuple:
-            return (0, tuple_js_1.parseTupleDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodRecord:
-            return (0, record_js_1.parseRecordDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLiteral:
-            return (0, literal_js_1.parseLiteralDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodEnum:
-            return (0, enum_js_1.parseEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNativeEnum:
-            return (0, nativeEnum_js_1.parseNativeEnumDef)(def);
-        case zod_1.ZodFirstPartyTypeKind.ZodNullable:
-            return (0, nullable_js_1.parseNullableDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodOptional:
-            return (0, optional_js_1.parseOptionalDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodMap:
-            return (0, map_js_1.parseMapDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodSet:
-            return (0, set_js_1.parseSetDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodLazy:
-            return parseDef(def.getter()._def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodPromise:
-            return (0, promise_js_1.parsePromiseDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodNaN:
-        case zod_1.ZodFirstPartyTypeKind.ZodNever:
-            return (0, never_js_1.parseNeverDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodEffects:
-            return (0, effects_js_1.parseEffectsDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodAny:
-            return (0, any_js_1.parseAnyDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodUnknown:
-            return (0, unknown_js_1.parseUnknownDef)();
-        case zod_1.ZodFirstPartyTypeKind.ZodDefault:
-            return (0, default_js_1.parseDefaultDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodBranded:
-            return (0, branded_js_1.parseBrandedDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodReadonly:
-            return (0, readonly_js_1.parseReadonlyDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodCatch:
-            return (0, catch_js_1.parseCatchDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodPipeline:
-            return (0, pipeline_js_1.parsePipelineDef)(def, refs);
-        case zod_1.ZodFirstPartyTypeKind.ZodFunction:
-        case zod_1.ZodFirstPartyTypeKind.ZodVoid:
-        case zod_1.ZodFirstPartyTypeKind.ZodSymbol:
-            return undefined;
-        default:
-            return ((_) => undefined)(typeName);
     }
 };
 const addMeta = (def, refs, jsonSchema) => {
@@ -60797,15 +71687,39 @@ const addMeta = (def, refs, jsonSchema) => {
 
 /***/ }),
 
-/***/ 1253:
+/***/ 5914:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 1253:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseAnyDef = void 0;
-function parseAnyDef() {
-    return {};
+const getRelativePath_js_1 = __nccwpck_require__(3427);
+function parseAnyDef(refs) {
+    if (refs.target !== "openAi") {
+        return {};
+    }
+    const anyDefinitionPath = [
+        ...refs.basePath,
+        refs.definitionPath,
+        refs.openAiAnyTypeName,
+    ];
+    refs.flags.hasReferencedOpenAiAnyType = true;
+    return {
+        $ref: refs.$refStrategy === "relative"
+            ? (0, getRelativePath_js_1.getRelativePath)(anyDefinitionPath, refs.currentPath)
+            : anyDefinitionPath.join("/"),
+    };
 }
 exports.parseAnyDef = parseAnyDef;
 
@@ -60826,7 +71740,8 @@ function parseArrayDef(def, refs) {
     const res = {
         type: "array",
     };
-    if (def.type?._def?.typeName !== zod_1.ZodFirstPartyTypeKind.ZodAny) {
+    if (def.type?._def &&
+        def.type?._def?.typeName !== zod_1.ZodFirstPartyTypeKind.ZodAny) {
         res.items = (0, parseDef_js_1.parseDef)(def.type._def, {
             ...refs,
             currentPath: [...refs.currentPath, "items"],
@@ -61044,10 +71959,11 @@ exports.parseDefaultDef = parseDefaultDef;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseEffectsDef = void 0;
 const parseDef_js_1 = __nccwpck_require__(2796);
+const any_js_1 = __nccwpck_require__(1253);
 function parseEffectsDef(_def, refs) {
     return refs.effectStrategy === "input"
         ? (0, parseDef_js_1.parseDef)(_def.schema._def, refs)
-        : {};
+        : (0, any_js_1.parseAnyDef)(refs);
 }
 exports.parseEffectsDef = parseEffectsDef;
 
@@ -61064,7 +71980,7 @@ exports.parseEnumDef = void 0;
 function parseEnumDef(def) {
     return {
         type: "string",
-        enum: def.values,
+        enum: Array.from(def.values),
     };
 }
 exports.parseEnumDef = parseEnumDef;
@@ -61178,6 +72094,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseMapDef = void 0;
 const parseDef_js_1 = __nccwpck_require__(2796);
 const record_js_1 = __nccwpck_require__(4630);
+const any_js_1 = __nccwpck_require__(1253);
 function parseMapDef(def, refs) {
     if (refs.mapStrategy === "record") {
         return (0, record_js_1.parseRecordDef)(def, refs);
@@ -61185,11 +72102,11 @@ function parseMapDef(def, refs) {
     const keys = (0, parseDef_js_1.parseDef)(def.keyType._def, {
         ...refs,
         currentPath: [...refs.currentPath, "items", "items", "0"],
-    }) || {};
+    }) || (0, any_js_1.parseAnyDef)(refs);
     const values = (0, parseDef_js_1.parseDef)(def.valueType._def, {
         ...refs,
         currentPath: [...refs.currentPath, "items", "items", "1"],
-    }) || {};
+    }) || (0, any_js_1.parseAnyDef)(refs);
     return {
         type: "array",
         maxItems: 125,
@@ -61235,16 +72152,22 @@ exports.parseNativeEnumDef = parseNativeEnumDef;
 /***/ }),
 
 /***/ 765:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseNeverDef = void 0;
-function parseNeverDef() {
-    return {
-        not: {},
-    };
+const any_js_1 = __nccwpck_require__(1253);
+function parseNeverDef(refs) {
+    return refs.target === "openAi"
+        ? undefined
+        : {
+            not: (0, any_js_1.parseAnyDef)({
+                ...refs,
+                currentPath: [...refs.currentPath, "not"],
+            }),
+        };
 }
 exports.parseNeverDef = parseNeverDef;
 
@@ -61303,7 +72226,7 @@ function parseNullableDef(def, refs) {
             ...refs,
             currentPath: [...refs.currentPath],
         });
-        if (base && '$ref' in base)
+        if (base && "$ref" in base)
             return { allOf: [base], nullable: true };
         return base && { ...base, nullable: true };
     }
@@ -61388,107 +72311,80 @@ exports.parseNumberDef = parseNumberDef;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseObjectDef = exports.parseObjectDefX = void 0;
+exports.parseObjectDef = void 0;
 const parseDef_js_1 = __nccwpck_require__(2796);
-function decideAdditionalProperties(def, refs) {
-    if (refs.removeAdditionalStrategy === "strict") {
-        return def.catchall._def.typeName === "ZodNever"
-            ? def.unknownKeys !== "strict"
-            : (0, parseDef_js_1.parseDef)(def.catchall._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "additionalProperties"],
-            }) ?? true;
-    }
-    else {
-        return def.catchall._def.typeName === "ZodNever"
-            ? def.unknownKeys === "passthrough"
-            : (0, parseDef_js_1.parseDef)(def.catchall._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "additionalProperties"],
-            }) ?? true;
-    }
-}
-;
-function parseObjectDefX(def, refs) {
-    Object.keys(def.shape()).reduce((schema, key) => {
-        let prop = def.shape()[key];
-        const isOptional = prop.isOptional();
-        if (!isOptional) {
-            prop = { ...prop._def.innerSchema };
-        }
-        const propSchema = (0, parseDef_js_1.parseDef)(prop._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "properties", key],
-            propertyPath: [...refs.currentPath, "properties", key],
-        });
-        if (propSchema !== undefined) {
-            schema.properties[key] = propSchema;
-            if (!isOptional) {
-                if (!schema.required) {
-                    schema.required = [];
-                }
-                schema.required.push(key);
-            }
-        }
-        return schema;
-    }, {
+function parseObjectDef(def, refs) {
+    const forceOptionalIntoNullable = refs.target === "openAi";
+    const result = {
         type: "object",
         properties: {},
-        additionalProperties: decideAdditionalProperties(def, refs),
-    });
-    const result = {
-        type: "object",
-        ...Object.entries(def.shape()).reduce((acc, [propName, propDef]) => {
-            if (propDef === undefined || propDef._def === undefined)
-                return acc;
-            const parsedDef = (0, parseDef_js_1.parseDef)(propDef._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "properties", propName],
-                propertyPath: [...refs.currentPath, "properties", propName],
-            });
-            if (parsedDef === undefined)
-                return acc;
-            return {
-                properties: { ...acc.properties, [propName]: parsedDef },
-                required: propDef.isOptional()
-                    ? acc.required
-                    : [...acc.required, propName],
-            };
-        }, { properties: {}, required: [] }),
-        additionalProperties: decideAdditionalProperties(def, refs),
     };
-    if (!result.required.length)
-        delete result.required;
-    return result;
-}
-exports.parseObjectDefX = parseObjectDefX;
-function parseObjectDef(def, refs) {
-    const result = {
-        type: "object",
-        ...Object.entries(def.shape()).reduce((acc, [propName, propDef]) => {
-            if (propDef === undefined || propDef._def === undefined)
-                return acc;
-            const parsedDef = (0, parseDef_js_1.parseDef)(propDef._def, {
-                ...refs,
-                currentPath: [...refs.currentPath, "properties", propName],
-                propertyPath: [...refs.currentPath, "properties", propName],
-            });
-            if (parsedDef === undefined)
-                return acc;
-            return {
-                properties: { ...acc.properties, [propName]: parsedDef },
-                required: propDef.isOptional()
-                    ? acc.required
-                    : [...acc.required, propName],
-            };
-        }, { properties: {}, required: [] }),
-        additionalProperties: decideAdditionalProperties(def, refs),
-    };
-    if (!result.required.length)
-        delete result.required;
+    const required = [];
+    const shape = def.shape();
+    for (const propName in shape) {
+        let propDef = shape[propName];
+        if (propDef === undefined || propDef._def === undefined) {
+            continue;
+        }
+        let propOptional = safeIsOptional(propDef);
+        if (propOptional && forceOptionalIntoNullable) {
+            if (propDef._def.typeName === "ZodOptional") {
+                propDef = propDef._def.innerType;
+            }
+            if (!propDef.isNullable()) {
+                propDef = propDef.nullable();
+            }
+            propOptional = false;
+        }
+        const parsedDef = (0, parseDef_js_1.parseDef)(propDef._def, {
+            ...refs,
+            currentPath: [...refs.currentPath, "properties", propName],
+            propertyPath: [...refs.currentPath, "properties", propName],
+        });
+        if (parsedDef === undefined) {
+            continue;
+        }
+        result.properties[propName] = parsedDef;
+        if (!propOptional) {
+            required.push(propName);
+        }
+    }
+    if (required.length) {
+        result.required = required;
+    }
+    const additionalProperties = decideAdditionalProperties(def, refs);
+    if (additionalProperties !== undefined) {
+        result.additionalProperties = additionalProperties;
+    }
     return result;
 }
 exports.parseObjectDef = parseObjectDef;
+function decideAdditionalProperties(def, refs) {
+    if (def.catchall._def.typeName !== "ZodNever") {
+        return (0, parseDef_js_1.parseDef)(def.catchall._def, {
+            ...refs,
+            currentPath: [...refs.currentPath, "additionalProperties"],
+        });
+    }
+    switch (def.unknownKeys) {
+        case "passthrough":
+            return refs.allowedAdditionalProperties;
+        case "strict":
+            return refs.rejectedAdditionalProperties;
+        case "strip":
+            return refs.removeAdditionalStrategy === "strict"
+                ? refs.allowedAdditionalProperties
+                : refs.rejectedAdditionalProperties;
+    }
+}
+function safeIsOptional(schema) {
+    try {
+        return schema.isOptional();
+    }
+    catch {
+        return true;
+    }
+}
 
 
 /***/ }),
@@ -61501,6 +72397,7 @@ exports.parseObjectDef = parseObjectDef;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseOptionalDef = void 0;
 const parseDef_js_1 = __nccwpck_require__(2796);
+const any_js_1 = __nccwpck_require__(1253);
 const parseOptionalDef = (def, refs) => {
     if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
         return (0, parseDef_js_1.parseDef)(def.innerType._def, refs);
@@ -61513,12 +72410,12 @@ const parseOptionalDef = (def, refs) => {
         ? {
             anyOf: [
                 {
-                    not: {},
+                    not: (0, any_js_1.parseAnyDef)(refs),
                 },
                 innerSchema,
             ],
         }
-        : {};
+        : (0, any_js_1.parseAnyDef)(refs);
 };
 exports.parseOptionalDef = parseOptionalDef;
 
@@ -61599,7 +72496,12 @@ exports.parseRecordDef = void 0;
 const zod_1 = __nccwpck_require__(8975);
 const parseDef_js_1 = __nccwpck_require__(2796);
 const string_js_1 = __nccwpck_require__(2546);
+const branded_js_1 = __nccwpck_require__(4587);
+const any_js_1 = __nccwpck_require__(1253);
 function parseRecordDef(def, refs) {
+    if (refs.target === "openAi") {
+        console.warn("Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.");
+    }
     if (refs.target === "openApi3" &&
         def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodEnum) {
         return {
@@ -61610,9 +72512,9 @@ function parseRecordDef(def, refs) {
                 [key]: (0, parseDef_js_1.parseDef)(def.valueType._def, {
                     ...refs,
                     currentPath: [...refs.currentPath, "properties", key],
-                }) ?? {},
+                }) ?? (0, any_js_1.parseAnyDef)(refs),
             }), {}),
-            additionalProperties: false,
+            additionalProperties: refs.rejectedAdditionalProperties,
         };
     }
     const schema = {
@@ -61620,14 +72522,14 @@ function parseRecordDef(def, refs) {
         additionalProperties: (0, parseDef_js_1.parseDef)(def.valueType._def, {
             ...refs,
             currentPath: [...refs.currentPath, "additionalProperties"],
-        }) ?? {},
+        }) ?? refs.allowedAdditionalProperties,
     };
     if (refs.target === "openApi3") {
         return schema;
     }
     if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
         def.keyType._def.checks?.length) {
-        const keyType = Object.entries((0, string_js_1.parseStringDef)(def.keyType._def, refs)).reduce((acc, [key, value]) => (key === "type" ? acc : { ...acc, [key]: value }), {});
+        const { type, ...keyType } = (0, string_js_1.parseStringDef)(def.keyType._def, refs);
         return {
             ...schema,
             propertyNames: keyType,
@@ -61639,6 +72541,15 @@ function parseRecordDef(def, refs) {
             propertyNames: {
                 enum: def.keyType._def.values,
             },
+        };
+    }
+    else if (def.keyType?._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodBranded &&
+        def.keyType._def.type._def.typeName === zod_1.ZodFirstPartyTypeKind.ZodString &&
+        def.keyType._def.type._def.checks?.length) {
+        const { type, ...keyType } = (0, branded_js_1.parseBrandedDef)(def.keyType._def, refs);
+        return {
+            ...schema,
+            propertyNames: keyType,
         };
     }
     return schema;
@@ -61688,46 +72599,64 @@ exports.parseSetDef = parseSetDef;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseStringDef = exports.zodPatterns = void 0;
 const errorMessages_js_1 = __nccwpck_require__(5486);
+let emojiRegex = undefined;
 /**
- * Generated from the .source property of regular expressins found here:
+ * Generated from the regular expressions found here as of 2024-05-22:
  * https://github.com/colinhacks/zod/blob/master/src/types.ts.
  *
- * Escapes have been doubled, and expressions with /i flag have been changed accordingly
+ * Expressions with /i flag have been changed accordingly.
  */
 exports.zodPatterns = {
     /**
      * `c` was changed to `[cC]` to replicate /i flag
      */
-    cuid: "^[cC][^\\s-]{8,}$",
-    cuid2: "^[a-z][a-z0-9]*$",
-    ulid: "^[0-9A-HJKMNP-TV-Z]{26}$",
+    cuid: /^[cC][^\s-]{8,}$/,
+    cuid2: /^[0-9a-z]+$/,
+    ulid: /^[0-9A-HJKMNP-TV-Z]{26}$/,
     /**
      * `a-z` was added to replicate /i flag
      */
-    email: "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
-    emoji: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+    email: /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
+    /**
+     * Constructed a valid Unicode RegExp
+     *
+     * Lazily instantiate since this type of regex isn't supported
+     * in all envs (e.g. React Native).
+     *
+     * See:
+     * https://github.com/colinhacks/zod/issues/2433
+     * Fix in Zod:
+     * https://github.com/colinhacks/zod/commit/9340fd51e48576a75adc919bff65dbc4a5d4c99b
+     */
+    emoji: () => {
+        if (emojiRegex === undefined) {
+            emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
+        }
+        return emojiRegex;
+    },
     /**
      * Unused
      */
-    uuid: "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
+    uuid: /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
     /**
      * Unused
      */
-    ipv4: "^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$",
+    ipv4: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
+    ipv4Cidr: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/,
     /**
      * Unused
      */
-    ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
+    ipv6: /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/,
+    ipv6Cidr: /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/,
+    base64: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+    base64url: /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/,
+    nanoid: /^[a-zA-Z0-9_-]{21}$/,
+    jwt: /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/,
 };
 function parseStringDef(def, refs) {
     const res = {
         type: "string",
     };
-    function processPattern(value) {
-        return refs.patternStrategy === "escape"
-            ? escapeNonAlphaNumeric(value)
-            : value;
-    }
     if (def.checks) {
         for (const check of def.checks) {
             switch (check.kind) {
@@ -61761,7 +72690,7 @@ function parseStringDef(def, refs) {
                     addFormat(res, "uuid", check.message, refs);
                     break;
                 case "regex":
-                    addPattern(res, check.regex.source, check.message, refs);
+                    addPattern(res, check.regex, check.message, refs);
                     break;
                 case "cuid":
                     addPattern(res, exports.zodPatterns.cuid, check.message, refs);
@@ -61770,13 +72699,22 @@ function parseStringDef(def, refs) {
                     addPattern(res, exports.zodPatterns.cuid2, check.message, refs);
                     break;
                 case "startsWith":
-                    addPattern(res, "^" + processPattern(check.value), check.message, refs);
+                    addPattern(res, RegExp(`^${escapeLiteralCheckValue(check.value, refs)}`), check.message, refs);
                     break;
                 case "endsWith":
-                    addPattern(res, processPattern(check.value) + "$", check.message, refs);
+                    addPattern(res, RegExp(`${escapeLiteralCheckValue(check.value, refs)}$`), check.message, refs);
                     break;
                 case "datetime":
                     addFormat(res, "date-time", check.message, refs);
+                    break;
+                case "date":
+                    addFormat(res, "date", check.message, refs);
+                    break;
+                case "time":
+                    addFormat(res, "time", check.message, refs);
+                    break;
+                case "duration":
+                    addFormat(res, "duration", check.message, refs);
                     break;
                 case "length":
                     (0, errorMessages_js_1.setResponseValueAndErrors)(res, "minLength", typeof res.minLength === "number"
@@ -61787,7 +72725,7 @@ function parseStringDef(def, refs) {
                         : check.value, check.message, refs);
                     break;
                 case "includes": {
-                    addPattern(res, processPattern(check.value), check.message, refs);
+                    addPattern(res, RegExp(escapeLiteralCheckValue(check.value, refs)), check.message, refs);
                     break;
                 }
                 case "ip": {
@@ -61799,19 +72737,54 @@ function parseStringDef(def, refs) {
                     }
                     break;
                 }
+                case "base64url":
+                    addPattern(res, exports.zodPatterns.base64url, check.message, refs);
+                    break;
+                case "jwt":
+                    addPattern(res, exports.zodPatterns.jwt, check.message, refs);
+                    break;
+                case "cidr": {
+                    if (check.version !== "v6") {
+                        addPattern(res, exports.zodPatterns.ipv4Cidr, check.message, refs);
+                    }
+                    if (check.version !== "v4") {
+                        addPattern(res, exports.zodPatterns.ipv6Cidr, check.message, refs);
+                    }
+                    break;
+                }
                 case "emoji":
-                    addPattern(res, exports.zodPatterns.emoji, check.message, refs);
+                    addPattern(res, exports.zodPatterns.emoji(), check.message, refs);
                     break;
                 case "ulid": {
                     addPattern(res, exports.zodPatterns.ulid, check.message, refs);
                     break;
                 }
+                case "base64": {
+                    switch (refs.base64Strategy) {
+                        case "format:binary": {
+                            addFormat(res, "binary", check.message, refs);
+                            break;
+                        }
+                        case "contentEncoding:base64": {
+                            (0, errorMessages_js_1.setResponseValueAndErrors)(res, "contentEncoding", "base64", check.message, refs);
+                            break;
+                        }
+                        case "pattern:zod": {
+                            addPattern(res, exports.zodPatterns.base64, check.message, refs);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "nanoid": {
+                    addPattern(res, exports.zodPatterns.nanoid, check.message, refs);
+                }
                 case "toLowerCase":
                 case "toUpperCase":
                 case "trim":
-                    // I have no idea why these are checks in Zod 🤷
                     break;
                 default:
+                    /* c8 ignore next */
                     ((_) => { })(check);
             }
         }
@@ -61819,10 +72792,24 @@ function parseStringDef(def, refs) {
     return res;
 }
 exports.parseStringDef = parseStringDef;
-const escapeNonAlphaNumeric = (value) => Array.from(value)
-    .map((c) => (/[a-zA-Z0-9]/.test(c) ? c : `\\${c}`))
-    .join("");
-const addFormat = (schema, value, message, refs) => {
+function escapeLiteralCheckValue(literal, refs) {
+    return refs.patternStrategy === "escape"
+        ? escapeNonAlphaNumeric(literal)
+        : literal;
+}
+const ALPHA_NUMERIC = new Set("ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789");
+function escapeNonAlphaNumeric(source) {
+    let result = "";
+    for (let i = 0; i < source.length; i++) {
+        if (!ALPHA_NUMERIC.has(source[i])) {
+            result += "\\";
+        }
+        result += source[i];
+    }
+    return result;
+}
+// Adds a "format" keyword to the schema. If a format exists, both formats will be joined in an allOf-node, along with subsequent ones.
+function addFormat(schema, value, message, refs) {
     if (schema.format || schema.anyOf?.some((x) => x.format)) {
         if (!schema.anyOf) {
             schema.anyOf = [];
@@ -61852,8 +72839,9 @@ const addFormat = (schema, value, message, refs) => {
     else {
         (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "format", value, message, refs);
     }
-};
-const addPattern = (schema, value, message, refs) => {
+}
+// Adds a "pattern" keyword to the schema. If a pattern exists, both patterns will be joined in an allOf-node, along with subsequent ones.
+function addPattern(schema, regex, message, refs) {
     if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
         if (!schema.allOf) {
             schema.allOf = [];
@@ -61875,15 +72863,95 @@ const addPattern = (schema, value, message, refs) => {
             }
         }
         schema.allOf.push({
-            pattern: value,
+            pattern: stringifyRegExpWithFlags(regex, refs),
             ...(message &&
                 refs.errorMessages && { errorMessage: { pattern: message } }),
         });
     }
     else {
-        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "pattern", value, message, refs);
+        (0, errorMessages_js_1.setResponseValueAndErrors)(schema, "pattern", stringifyRegExpWithFlags(regex, refs), message, refs);
     }
-};
+}
+// Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
+function stringifyRegExpWithFlags(regex, refs) {
+    if (!refs.applyRegexFlags || !regex.flags) {
+        return regex.source;
+    }
+    // Currently handled flags
+    const flags = {
+        i: regex.flags.includes("i"),
+        m: regex.flags.includes("m"),
+        s: regex.flags.includes("s"), // `.` matches newlines
+    };
+    // The general principle here is to step through each character, one at a time, applying mutations as flags require. We keep track when the current character is escaped, and when it's inside a group /like [this]/ or (also) a range like /[a-z]/. The following is fairly brittle imperative code; edit at your peril!
+    const source = flags.i ? regex.source.toLowerCase() : regex.source;
+    let pattern = "";
+    let isEscaped = false;
+    let inCharGroup = false;
+    let inCharRange = false;
+    for (let i = 0; i < source.length; i++) {
+        if (isEscaped) {
+            pattern += source[i];
+            isEscaped = false;
+            continue;
+        }
+        if (flags.i) {
+            if (inCharGroup) {
+                if (source[i].match(/[a-z]/)) {
+                    if (inCharRange) {
+                        pattern += source[i];
+                        pattern += `${source[i - 2]}-${source[i]}`.toUpperCase();
+                        inCharRange = false;
+                    }
+                    else if (source[i + 1] === "-" && source[i + 2]?.match(/[a-z]/)) {
+                        pattern += source[i];
+                        inCharRange = true;
+                    }
+                    else {
+                        pattern += `${source[i]}${source[i].toUpperCase()}`;
+                    }
+                    continue;
+                }
+            }
+            else if (source[i].match(/[a-z]/)) {
+                pattern += `[${source[i]}${source[i].toUpperCase()}]`;
+                continue;
+            }
+        }
+        if (flags.m) {
+            if (source[i] === "^") {
+                pattern += `(^|(?<=[\r\n]))`;
+                continue;
+            }
+            else if (source[i] === "$") {
+                pattern += `($|(?=[\r\n]))`;
+                continue;
+            }
+        }
+        if (flags.s && source[i] === ".") {
+            pattern += inCharGroup ? `${source[i]}\r\n` : `[${source[i]}\r\n]`;
+            continue;
+        }
+        pattern += source[i];
+        if (source[i] === "\\") {
+            isEscaped = true;
+        }
+        else if (inCharGroup && source[i] === "]") {
+            inCharGroup = false;
+        }
+        else if (!inCharGroup && source[i] === "[") {
+            inCharGroup = true;
+        }
+    }
+    try {
+        new RegExp(pattern);
+    }
+    catch {
+        console.warn(`Could not convert regex pattern at ${refs.currentPath.join("/")} to a flag-independent form! Falling back to the flag-ignorant source`);
+        return regex.source;
+    }
+    return pattern;
+}
 
 
 /***/ }),
@@ -61933,15 +73001,16 @@ exports.parseTupleDef = parseTupleDef;
 /***/ }),
 
 /***/ 5339:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseUndefinedDef = void 0;
-function parseUndefinedDef() {
+const any_js_1 = __nccwpck_require__(1253);
+function parseUndefinedDef(refs) {
     return {
-        not: {},
+        not: (0, any_js_1.parseAnyDef)(refs),
     };
 }
 exports.parseUndefinedDef = parseUndefinedDef;
@@ -62042,16 +73111,135 @@ const asAnyOf = (def, refs) => {
 /***/ }),
 
 /***/ 7581:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseUnknownDef = void 0;
-function parseUnknownDef() {
-    return {};
+const any_js_1 = __nccwpck_require__(1253);
+function parseUnknownDef(refs) {
+    return (0, any_js_1.parseAnyDef)(refs);
 }
 exports.parseUnknownDef = parseUnknownDef;
+
+
+/***/ }),
+
+/***/ 5705:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectParser = void 0;
+const zod_1 = __nccwpck_require__(8975);
+const any_js_1 = __nccwpck_require__(1253);
+const array_js_1 = __nccwpck_require__(4942);
+const bigint_js_1 = __nccwpck_require__(5916);
+const boolean_js_1 = __nccwpck_require__(2379);
+const branded_js_1 = __nccwpck_require__(4587);
+const catch_js_1 = __nccwpck_require__(9740);
+const date_js_1 = __nccwpck_require__(1867);
+const default_js_1 = __nccwpck_require__(8350);
+const effects_js_1 = __nccwpck_require__(1609);
+const enum_js_1 = __nccwpck_require__(3526);
+const intersection_js_1 = __nccwpck_require__(3254);
+const literal_js_1 = __nccwpck_require__(3372);
+const map_js_1 = __nccwpck_require__(5481);
+const nativeEnum_js_1 = __nccwpck_require__(4957);
+const never_js_1 = __nccwpck_require__(765);
+const null_js_1 = __nccwpck_require__(4774);
+const nullable_js_1 = __nccwpck_require__(6710);
+const number_js_1 = __nccwpck_require__(5714);
+const object_js_1 = __nccwpck_require__(2996);
+const optional_js_1 = __nccwpck_require__(259);
+const pipeline_js_1 = __nccwpck_require__(2305);
+const promise_js_1 = __nccwpck_require__(8282);
+const record_js_1 = __nccwpck_require__(4630);
+const set_js_1 = __nccwpck_require__(1135);
+const string_js_1 = __nccwpck_require__(2546);
+const tuple_js_1 = __nccwpck_require__(2273);
+const undefined_js_1 = __nccwpck_require__(5339);
+const union_js_1 = __nccwpck_require__(2388);
+const unknown_js_1 = __nccwpck_require__(7581);
+const readonly_js_1 = __nccwpck_require__(2553);
+const selectParser = (def, typeName, refs) => {
+    switch (typeName) {
+        case zod_1.ZodFirstPartyTypeKind.ZodString:
+            return (0, string_js_1.parseStringDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodNumber:
+            return (0, number_js_1.parseNumberDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodObject:
+            return (0, object_js_1.parseObjectDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodBigInt:
+            return (0, bigint_js_1.parseBigintDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodBoolean:
+            return (0, boolean_js_1.parseBooleanDef)();
+        case zod_1.ZodFirstPartyTypeKind.ZodDate:
+            return (0, date_js_1.parseDateDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodUndefined:
+            return (0, undefined_js_1.parseUndefinedDef)(refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodNull:
+            return (0, null_js_1.parseNullDef)(refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodArray:
+            return (0, array_js_1.parseArrayDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodUnion:
+        case zod_1.ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
+            return (0, union_js_1.parseUnionDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodIntersection:
+            return (0, intersection_js_1.parseIntersectionDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodTuple:
+            return (0, tuple_js_1.parseTupleDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodRecord:
+            return (0, record_js_1.parseRecordDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodLiteral:
+            return (0, literal_js_1.parseLiteralDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodEnum:
+            return (0, enum_js_1.parseEnumDef)(def);
+        case zod_1.ZodFirstPartyTypeKind.ZodNativeEnum:
+            return (0, nativeEnum_js_1.parseNativeEnumDef)(def);
+        case zod_1.ZodFirstPartyTypeKind.ZodNullable:
+            return (0, nullable_js_1.parseNullableDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodOptional:
+            return (0, optional_js_1.parseOptionalDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodMap:
+            return (0, map_js_1.parseMapDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodSet:
+            return (0, set_js_1.parseSetDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodLazy:
+            return () => def.getter()._def;
+        case zod_1.ZodFirstPartyTypeKind.ZodPromise:
+            return (0, promise_js_1.parsePromiseDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodNaN:
+        case zod_1.ZodFirstPartyTypeKind.ZodNever:
+            return (0, never_js_1.parseNeverDef)(refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodEffects:
+            return (0, effects_js_1.parseEffectsDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodAny:
+            return (0, any_js_1.parseAnyDef)(refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodUnknown:
+            return (0, unknown_js_1.parseUnknownDef)(refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodDefault:
+            return (0, default_js_1.parseDefaultDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodBranded:
+            return (0, branded_js_1.parseBrandedDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodReadonly:
+            return (0, readonly_js_1.parseReadonlyDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodCatch:
+            return (0, catch_js_1.parseCatchDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodPipeline:
+            return (0, pipeline_js_1.parsePipelineDef)(def, refs);
+        case zod_1.ZodFirstPartyTypeKind.ZodFunction:
+        case zod_1.ZodFirstPartyTypeKind.ZodVoid:
+        case zod_1.ZodFirstPartyTypeKind.ZodSymbol:
+            return undefined;
+        default:
+            /* c8 ignore next */
+            return ((_) => undefined)(typeName);
+    }
+};
+exports.selectParser = selectParser;
 
 
 /***/ }),
@@ -62065,24 +73253,57 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.zodToJsonSchema = void 0;
 const parseDef_js_1 = __nccwpck_require__(2796);
 const Refs_js_1 = __nccwpck_require__(4652);
+const any_js_1 = __nccwpck_require__(1253);
 const zodToJsonSchema = (schema, options) => {
     const refs = (0, Refs_js_1.getRefs)(options);
-    const definitions = typeof options === "object" && options.definitions
+    let definitions = typeof options === "object" && options.definitions
         ? Object.entries(options.definitions).reduce((acc, [name, schema]) => ({
             ...acc,
             [name]: (0, parseDef_js_1.parseDef)(schema._def, {
                 ...refs,
                 currentPath: [...refs.basePath, refs.definitionPath, name],
-            }, true) ?? {},
+            }, true) ?? (0, any_js_1.parseAnyDef)(refs),
         }), {})
         : undefined;
-    const name = typeof options === "string" ? options : options?.name;
+    const name = typeof options === "string"
+        ? options
+        : options?.nameStrategy === "title"
+            ? undefined
+            : options?.name;
     const main = (0, parseDef_js_1.parseDef)(schema._def, name === undefined
         ? refs
         : {
             ...refs,
             currentPath: [...refs.basePath, refs.definitionPath, name],
-        }, false) ?? {};
+        }, false) ?? (0, any_js_1.parseAnyDef)(refs);
+    const title = typeof options === "object" &&
+        options.name !== undefined &&
+        options.nameStrategy === "title"
+        ? options.name
+        : undefined;
+    if (title !== undefined) {
+        main.title = title;
+    }
+    if (refs.flags.hasReferencedOpenAiAnyType) {
+        if (!definitions) {
+            definitions = {};
+        }
+        if (!definitions[refs.openAiAnyTypeName]) {
+            definitions[refs.openAiAnyTypeName] = {
+                // Skipping "object" as no properties can be defined and additionalProperties must be "false"
+                type: ["string", "number", "integer", "boolean", "array", "null"],
+                items: {
+                    $ref: refs.$refStrategy === "relative"
+                        ? "1"
+                        : [
+                            ...refs.basePath,
+                            refs.definitionPath,
+                            refs.openAiAnyTypeName,
+                        ].join("/"),
+                },
+            };
+        }
+    }
     const combined = name === undefined
         ? definitions
             ? {
@@ -62104,8 +73325,15 @@ const zodToJsonSchema = (schema, options) => {
     if (refs.target === "jsonSchema7") {
         combined.$schema = "http://json-schema.org/draft-07/schema#";
     }
-    else if (refs.target === "jsonSchema2019-09") {
+    else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
         combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
+    }
+    if (refs.target === "openAi" &&
+        ("anyOf" in combined ||
+            "oneOf" in combined ||
+            "allOf" in combined ||
+            ("type" in combined && Array.isArray(combined.type)))) {
+        console.warn("Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.");
     }
     return combined;
 };
@@ -62235,6 +73463,156 @@ exports.createParser = createParser;
 
 Object.defineProperty(exports, "__esModule", ({ value: !0 }));
 var index = __nccwpck_require__(9358);
+class EventSourceParserStream extends TransformStream {
+  constructor({ onError, onRetry, onComment } = {}) {
+    let parser;
+    super({
+      start(controller) {
+        parser = index.createParser({
+          onEvent: (event) => {
+            controller.enqueue(event);
+          },
+          onError(error) {
+            onError === "terminate" ? controller.error(error) : typeof onError == "function" && onError(error);
+          },
+          onRetry,
+          onComment
+        });
+      },
+      transform(chunk) {
+        parser.feed(chunk);
+      }
+    });
+  }
+}
+exports.ParseError = index.ParseError;
+exports.EventSourceParserStream = EventSourceParserStream;
+//# sourceMappingURL=stream.cjs.map
+
+
+/***/ }),
+
+/***/ 6148:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: !0 }));
+class ParseError extends Error {
+  constructor(message, options) {
+    super(message), this.name = "ParseError", this.type = options.type, this.field = options.field, this.value = options.value, this.line = options.line;
+  }
+}
+function noop(_arg) {
+}
+function createParser(callbacks) {
+  if (typeof callbacks == "function")
+    throw new TypeError(
+      "`callbacks` must be an object, got a function instead. Did you mean `{onEvent: fn}`?"
+    );
+  const { onEvent = noop, onError = noop, onRetry = noop, onComment } = callbacks;
+  let incompleteLine = "", isFirstChunk = !0, id, data = "", eventType = "";
+  function feed(newChunk) {
+    const chunk = isFirstChunk ? newChunk.replace(/^\xEF\xBB\xBF/, "") : newChunk, [complete, incomplete] = splitLines(`${incompleteLine}${chunk}`);
+    for (const line of complete)
+      parseLine(line);
+    incompleteLine = incomplete, isFirstChunk = !1;
+  }
+  function parseLine(line) {
+    if (line === "") {
+      dispatchEvent();
+      return;
+    }
+    if (line.startsWith(":")) {
+      onComment && onComment(line.slice(line.startsWith(": ") ? 2 : 1));
+      return;
+    }
+    const fieldSeparatorIndex = line.indexOf(":");
+    if (fieldSeparatorIndex !== -1) {
+      const field = line.slice(0, fieldSeparatorIndex), offset = line[fieldSeparatorIndex + 1] === " " ? 2 : 1, value = line.slice(fieldSeparatorIndex + offset);
+      processField(field, value, line);
+      return;
+    }
+    processField(line, "", line);
+  }
+  function processField(field, value, line) {
+    switch (field) {
+      case "event":
+        eventType = value;
+        break;
+      case "data":
+        data = `${data}${value}
+`;
+        break;
+      case "id":
+        id = value.includes("\0") ? void 0 : value;
+        break;
+      case "retry":
+        /^\d+$/.test(value) ? onRetry(parseInt(value, 10)) : onError(
+          new ParseError(`Invalid \`retry\` value: "${value}"`, {
+            type: "invalid-retry",
+            value,
+            line
+          })
+        );
+        break;
+      default:
+        onError(
+          new ParseError(
+            `Unknown field "${field.length > 20 ? `${field.slice(0, 20)}\u2026` : field}"`,
+            { type: "unknown-field", field, value, line }
+          )
+        );
+        break;
+    }
+  }
+  function dispatchEvent() {
+    data.length > 0 && onEvent({
+      id,
+      event: eventType || void 0,
+      // If the data buffer's last character is a U+000A LINE FEED (LF) character,
+      // then remove the last character from the data buffer.
+      data: data.endsWith(`
+`) ? data.slice(0, -1) : data
+    }), id = void 0, data = "", eventType = "";
+  }
+  function reset(options = {}) {
+    incompleteLine && options.consume && parseLine(incompleteLine), isFirstChunk = !0, id = void 0, data = "", eventType = "", incompleteLine = "";
+  }
+  return { feed, reset };
+}
+function splitLines(chunk) {
+  const lines = [];
+  let incompleteLine = "", searchIndex = 0;
+  for (; searchIndex < chunk.length; ) {
+    const crIndex = chunk.indexOf("\r", searchIndex), lfIndex = chunk.indexOf(`
+`, searchIndex);
+    let lineEnd = -1;
+    if (crIndex !== -1 && lfIndex !== -1 ? lineEnd = Math.min(crIndex, lfIndex) : crIndex !== -1 ? crIndex === chunk.length - 1 ? lineEnd = -1 : lineEnd = crIndex : lfIndex !== -1 && (lineEnd = lfIndex), lineEnd === -1) {
+      incompleteLine = chunk.slice(searchIndex);
+      break;
+    } else {
+      const line = chunk.slice(searchIndex, lineEnd);
+      lines.push(line), searchIndex = lineEnd + 1, chunk[searchIndex - 1] === "\r" && chunk[searchIndex] === `
+` && searchIndex++;
+    }
+  }
+  return [lines, incompleteLine];
+}
+exports.ParseError = ParseError;
+exports.createParser = createParser;
+//# sourceMappingURL=index.cjs.map
+
+
+/***/ }),
+
+/***/ 3832:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: !0 }));
+var index = __nccwpck_require__(6148);
 class EventSourceParserStream extends TransformStream {
   constructor({ onError, onRetry, onComment } = {}) {
     let parser;
@@ -62436,6 +73814,156 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 module.exports = __toCommonJS(src_exports);
+
+
+/***/ }),
+
+/***/ 7234:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: !0 }));
+class ParseError extends Error {
+  constructor(message, options) {
+    super(message), this.name = "ParseError", this.type = options.type, this.field = options.field, this.value = options.value, this.line = options.line;
+  }
+}
+function noop(_arg) {
+}
+function createParser(callbacks) {
+  if (typeof callbacks == "function")
+    throw new TypeError(
+      "`callbacks` must be an object, got a function instead. Did you mean `{onEvent: fn}`?"
+    );
+  const { onEvent = noop, onError = noop, onRetry = noop, onComment } = callbacks;
+  let incompleteLine = "", isFirstChunk = !0, id, data = "", eventType = "";
+  function feed(newChunk) {
+    const chunk = isFirstChunk ? newChunk.replace(/^\xEF\xBB\xBF/, "") : newChunk, [complete, incomplete] = splitLines(`${incompleteLine}${chunk}`);
+    for (const line of complete)
+      parseLine(line);
+    incompleteLine = incomplete, isFirstChunk = !1;
+  }
+  function parseLine(line) {
+    if (line === "") {
+      dispatchEvent();
+      return;
+    }
+    if (line.startsWith(":")) {
+      onComment && onComment(line.slice(line.startsWith(": ") ? 2 : 1));
+      return;
+    }
+    const fieldSeparatorIndex = line.indexOf(":");
+    if (fieldSeparatorIndex !== -1) {
+      const field = line.slice(0, fieldSeparatorIndex), offset = line[fieldSeparatorIndex + 1] === " " ? 2 : 1, value = line.slice(fieldSeparatorIndex + offset);
+      processField(field, value, line);
+      return;
+    }
+    processField(line, "", line);
+  }
+  function processField(field, value, line) {
+    switch (field) {
+      case "event":
+        eventType = value;
+        break;
+      case "data":
+        data = `${data}${value}
+`;
+        break;
+      case "id":
+        id = value.includes("\0") ? void 0 : value;
+        break;
+      case "retry":
+        /^\d+$/.test(value) ? onRetry(parseInt(value, 10)) : onError(
+          new ParseError(`Invalid \`retry\` value: "${value}"`, {
+            type: "invalid-retry",
+            value,
+            line
+          })
+        );
+        break;
+      default:
+        onError(
+          new ParseError(
+            `Unknown field "${field.length > 20 ? `${field.slice(0, 20)}\u2026` : field}"`,
+            { type: "unknown-field", field, value, line }
+          )
+        );
+        break;
+    }
+  }
+  function dispatchEvent() {
+    data.length > 0 && onEvent({
+      id,
+      event: eventType || void 0,
+      // If the data buffer's last character is a U+000A LINE FEED (LF) character,
+      // then remove the last character from the data buffer.
+      data: data.endsWith(`
+`) ? data.slice(0, -1) : data
+    }), id = void 0, data = "", eventType = "";
+  }
+  function reset(options = {}) {
+    incompleteLine && options.consume && parseLine(incompleteLine), isFirstChunk = !0, id = void 0, data = "", eventType = "", incompleteLine = "";
+  }
+  return { feed, reset };
+}
+function splitLines(chunk) {
+  const lines = [];
+  let incompleteLine = "", searchIndex = 0;
+  for (; searchIndex < chunk.length; ) {
+    const crIndex = chunk.indexOf("\r", searchIndex), lfIndex = chunk.indexOf(`
+`, searchIndex);
+    let lineEnd = -1;
+    if (crIndex !== -1 && lfIndex !== -1 ? lineEnd = Math.min(crIndex, lfIndex) : crIndex !== -1 ? crIndex === chunk.length - 1 ? lineEnd = -1 : lineEnd = crIndex : lfIndex !== -1 && (lineEnd = lfIndex), lineEnd === -1) {
+      incompleteLine = chunk.slice(searchIndex);
+      break;
+    } else {
+      const line = chunk.slice(searchIndex, lineEnd);
+      lines.push(line), searchIndex = lineEnd + 1, chunk[searchIndex - 1] === "\r" && chunk[searchIndex] === `
+` && searchIndex++;
+    }
+  }
+  return [lines, incompleteLine];
+}
+exports.ParseError = ParseError;
+exports.createParser = createParser;
+//# sourceMappingURL=index.cjs.map
+
+
+/***/ }),
+
+/***/ 7990:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: !0 }));
+var index = __nccwpck_require__(7234);
+class EventSourceParserStream extends TransformStream {
+  constructor({ onError, onRetry, onComment } = {}) {
+    let parser;
+    super({
+      start(controller) {
+        parser = index.createParser({
+          onEvent: (event) => {
+            controller.enqueue(event);
+          },
+          onError(error) {
+            onError === "terminate" ? controller.error(error) : typeof onError == "function" && onError(error);
+          },
+          onRetry,
+          onComment
+        });
+      },
+      transform(chunk) {
+        parser.feed(chunk);
+      }
+    });
+  }
+}
+exports.ParseError = index.ParseError;
+exports.EventSourceParserStream = EventSourceParserStream;
+//# sourceMappingURL=stream.cjs.map
 
 
 /***/ }),
