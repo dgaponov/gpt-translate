@@ -5,6 +5,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createMistral } from '@ai-sdk/mistral'
 import { createAzure } from '@ai-sdk/azure'
 import { createCohere } from '@ai-sdk/cohere'
+import { createDeepSeek } from '@ai-sdk/deepseek'
 import { minimumTokens, modelTokens } from './models'
 import { error, getInput, info } from '@actions/core'
 import { getInputAsNumber } from './utils'
@@ -39,6 +40,7 @@ class AI {
       google: createGoogleGenerativeAI,
       mistral: createMistral,
       cohere: createCohere,
+      deepseek: createDeepSeek,
     }
 
     const initializer = providerInitializers[providerName]

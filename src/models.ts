@@ -365,6 +365,17 @@ const cohereModels = {
   'cohere.command-light-text-v14': 4000 // Amazon Bedrock ID
 }
 
+/**
+ * DeepSeek
+ * https://api-docs.deepseek.com/quick_start/pricing
+ *
+ * Values are set based on Maximum Output Tokens from the latest documentation
+ */
+const deepSeekModels = {
+  'deepseek-chat': 8000,      // 64k context with 8k max output
+  'deepseek-reasoner': 8000,  // 64k context with 8k max output (32k CoT)
+}
+
 export const modelTokens = {
   ...openAIModels,
   ...groqModels,
@@ -374,4 +385,5 @@ export const modelTokens = {
   ...googleVertexModels,
   ...mistralModels,
   ...cohereModels,
+  ...deepSeekModels,
 }
