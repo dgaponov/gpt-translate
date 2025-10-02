@@ -8,15 +8,13 @@ export const postError = async (message: string) => {
   process.exit(1)
 }
 
-export const isPR = () => {
-  const { payload } = context
-  console.log('payload', payload)
-  return !!payload.issue?.pull_request || !!payload.pull_request?.number
+export const isPR = (): boolean => {
+  return !!getPRNumber()
 }
 
-export const getPRNumber = () => {
+export const getPRNumber = (): number | undefined => {
   const { payload } = context
-  return payload.pull_request?.number || payload.issue?.pull_request
+  return payload.pull_request?.number || payload.issue?.pull_request || getInputAsNumber('pullRequestNumber')
 }
 
 export const removeSymbols = (input: string): string => {

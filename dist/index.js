@@ -61451,14 +61451,12 @@ const postError = async (message) => {
 };
 exports.postError = postError;
 const isPR = () => {
-    const { payload } = github_1.context;
-    console.log('payload', payload);
-    return !!payload.issue?.pull_request || !!payload.pull_request?.number;
+    return !!(0, exports.getPRNumber)();
 };
 exports.isPR = isPR;
 const getPRNumber = () => {
     const { payload } = github_1.context;
-    return payload.pull_request?.number || payload.issue?.pull_request;
+    return payload.pull_request?.number || payload.issue?.pull_request || (0, exports.getInputAsNumber)('pullRequestNumber');
 };
 exports.getPRNumber = getPRNumber;
 const removeSymbols = (input) => {

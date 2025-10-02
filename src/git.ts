@@ -35,7 +35,7 @@ export const gitCheckout = async () => {
     },
   } = await pulls.get({
     ...context.repo,
-    pull_number: getPRNumber(),
+    pull_number: getPRNumber()!,
   })
 
   await exec('git', ['fetch', 'origin', branch])
@@ -102,7 +102,7 @@ export const gitPostComment = async (message: string) => {
 
   await issues.createComment({
     ...context.repo,
-    issue_number: getPRNumber(),
+    issue_number: getPRNumber()!,
     body: message,
   })
 }
