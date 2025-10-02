@@ -55,6 +55,7 @@ export const gitCreateBranch = async () => {
 export const gitCommitPush = async (
   branch: string,
   filePath: string | string[],
+  rebase = false
 ) => {
   info('Committing and pushing...')
 
@@ -65,6 +66,9 @@ export const gitCommitPush = async (
   }
 
   await exec('git', ['commit', '-m', `💬Generate LLM translations`])
+  if (rebase) {
+    await exec('git', ['pull', 'origin', branch, '--rebase'])
+  }
   await exec('git', ['push', 'origin', branch])
 }
 

@@ -60905,7 +60905,7 @@ const gitCreateBranch = async () => {
     return branch;
 };
 exports.gitCreateBranch = gitCreateBranch;
-const gitCommitPush = async (branch, filePath) => {
+const gitCommitPush = async (branch, filePath, rebase = false) => {
     (0, core_1.info)('Committing and pushing...');
     if (Array.isArray(filePath)) {
         await (0, exec_1.exec)('git', ['add', ...filePath]);
@@ -60914,6 +60914,9 @@ const gitCommitPush = async (branch, filePath) => {
         await (0, exec_1.exec)('git', ['add', filePath]);
     }
     await (0, exec_1.exec)('git', ['commit', '-m', `💬Generate LLM translations`]);
+    if (rebase) {
+        await (0, exec_1.exec)('git', ['pull', 'origin', branch, '--rebase']);
+    }
     await (0, exec_1.exec)('git', ['push', 'origin', branch]);
 };
 exports.gitCommitPush = gitCommitPush;
@@ -61393,8 +61396,8 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
     await Promise.all(languages.map(async (language, index) => {
         return (0, exports.createTranslatedFiles)(inputFiles, outputFilePaths[index], language);
     }));
-    await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat());
     if ((0, utils_1.isPR)()) {
+        await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat(), true);
         await (0, git_1.gitPostComment)('🎉 Translation completed!');
         return;
     }
