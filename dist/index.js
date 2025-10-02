@@ -60868,6 +60868,7 @@ const exec_1 = __nccwpck_require__(6919);
 const github_1 = __nccwpck_require__(9475);
 const core_1 = __nccwpck_require__(3943);
 const crypto_1 = __nccwpck_require__(6982);
+const utils_1 = __nccwpck_require__(359);
 const GITHUB_TOKEN = (0, core_1.getInput)('token');
 if (!GITHUB_TOKEN) {
     (0, core_1.setFailed)('Error: GITHUB_TOKEN could not be retrieved.');
@@ -60890,7 +60891,7 @@ const gitCheckout = async () => {
     const { rest: { pulls }, } = (0, github_1.getOctokit)(GITHUB_TOKEN);
     const { data: { head: { ref: branch }, }, } = await pulls.get({
         ...github_1.context.repo,
-        pull_number: github_1.context.issue.number,
+        pull_number: (0, utils_1.getPRNumber)(),
     });
     await (0, exec_1.exec)('git', ['fetch', 'origin', branch]);
     await (0, exec_1.exec)('git', ['checkout', branch]);
@@ -60933,7 +60934,7 @@ const gitPostComment = async (message) => {
     const { rest: { issues }, } = (0, github_1.getOctokit)(GITHUB_TOKEN);
     await issues.createComment({
         ...github_1.context.repo,
-        issue_number: github_1.context.issue.number,
+        issue_number: (0, utils_1.getPRNumber)(),
         body: message,
     });
 };
@@ -61436,7 +61437,7 @@ exports.createTranslatedFiles = createTranslatedFiles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getInputAsNumber = exports.generatePRBody = exports.delay = exports.removeSymbols = exports.isPR = exports.postError = void 0;
+exports.getInputAsNumber = exports.generatePRBody = exports.delay = exports.removeSymbols = exports.getPRNumber = exports.isPR = exports.postError = void 0;
 const core_1 = __nccwpck_require__(3943);
 const git_1 = __nccwpck_require__(7010);
 const github_1 = __nccwpck_require__(9475);
@@ -61448,10 +61449,14 @@ const postError = async (message) => {
 exports.postError = postError;
 const isPR = () => {
     const { payload } = github_1.context;
-    console.log('payload', payload);
-    return !!payload.issue?.pull_request;
+    return !!payload.issue?.pull_request || !!payload.pull_request?.number;
 };
 exports.isPR = isPR;
+const getPRNumber = () => {
+    const { payload } = github_1.context;
+    return payload.pull_request?.number || payload.issue?.pull_request;
+};
+exports.getPRNumber = getPRNumber;
 const removeSymbols = (input) => {
     return input.replace(/[^\w\s]/gi, '');
 };

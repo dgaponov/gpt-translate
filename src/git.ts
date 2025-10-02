@@ -2,6 +2,7 @@ import { exec } from '@actions/exec'
 import { context, getOctokit } from '@actions/github'
 import { setFailed, info, getInput } from '@actions/core'
 import { randomUUID } from 'crypto'
+import { getPRNumber } from './utils'
 
 const GITHUB_TOKEN = getInput('token')
 if (!GITHUB_TOKEN) {
@@ -34,7 +35,7 @@ export const gitCheckout = async () => {
     },
   } = await pulls.get({
     ...context.repo,
-    pull_number: context.issue.number,
+    pull_number: getPRNumber(),
   })
 
   await exec('git', ['fetch', 'origin', branch])
@@ -97,7 +98,7 @@ export const gitPostComment = async (message: string) => {
 
   await issues.createComment({
     ...context.repo,
-    issue_number: context.issue.number,
+    issue_number: getPRNumber(),
     body: message,
   })
 }
