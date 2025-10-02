@@ -99,7 +99,6 @@ export const translateByManual = async (
 
   if (isPR()) {
     await gitCommitPush(branch, outputFilePaths.flat(), true)
-    await gitPostComment('🎉 Translation to ' + languages.join(', ') + ' completed!')
     return
   }
 

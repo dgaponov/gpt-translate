@@ -65,7 +65,7 @@ export const gitCommitPush = async (
     await exec('git', ['add', filePath])
   }
 
-  await exec('git', ['commit', '-m', `💬Generate LLM translations`])
+  await exec('git', ['commit', '-m', getInput('commitMessage') || `💬Generate LLM translations`])
   if (rebase) {
     await exec('git', ['pull', 'origin', branch, '--rebase'])
   }

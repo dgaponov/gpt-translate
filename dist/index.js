@@ -60913,7 +60913,7 @@ const gitCommitPush = async (branch, filePath, rebase = false) => {
     else {
         await (0, exec_1.exec)('git', ['add', filePath]);
     }
-    await (0, exec_1.exec)('git', ['commit', '-m', `💬Generate LLM translations`]);
+    await (0, exec_1.exec)('git', ['commit', '-m', (0, core_1.getInput)('commitMessage') || `💬Generate LLM translations`]);
     if (rebase) {
         await (0, exec_1.exec)('git', ['pull', 'origin', branch, '--rebase']);
     }
@@ -61398,7 +61398,6 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
     }));
     if ((0, utils_1.isPR)()) {
         await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat(), true);
-        await (0, git_1.gitPostComment)('🎉 Translation to ' + languages.join(', ') + ' completed!');
         return;
     }
     const title = '🌐 Add LLM Translations';
