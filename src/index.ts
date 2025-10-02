@@ -21,6 +21,7 @@ async function main() {
 
     case 'push':
     case 'workflow_dispatch':
+    case 'pull_request':
       // ⚠ Experimental Feature
       // Translate any file from the parameter specification.
       // Multiple output and target languages can be selected.
