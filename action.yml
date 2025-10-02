@@ -31,6 +31,12 @@ inputs:
   outputFiles:
     description: 'Output files to save'
     required: false
+  pullRequestNumber:
+    description: 'Pull request number for commmit translations'
+    required: false
+  commitMessage:
+    description: 'Commit message for translations'
+    required: false
   languages:
     description: 'Language to translate to'
     required: false
