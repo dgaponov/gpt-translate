@@ -61383,6 +61383,8 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
     if (outputFiles.length !== languages.length) {
         throw new Error('Error: outputFiles and language must be same length.');
     }
+    await (0, git_1.gitSetConfig)();
+    const branch = (0, utils_1.isPR)() ? await (0, git_1.gitCheckout)() : await (0, git_1.gitCreateBranch)();
     const outputFilePaths = outputFiles.map((outputFile) => {
         return (0, file_1.generateOutputFilePaths)(inputFiles, outputFile);
     });
@@ -61390,8 +61392,11 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
     await Promise.all(languages.map(async (language, index) => {
         return (0, exports.createTranslatedFiles)(inputFiles, outputFilePaths[index], language);
     }));
-    await (0, git_1.gitSetConfig)();
-    const branch = await (0, git_1.gitCreateBranch)();
+    await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat());
+    if ((0, utils_1.isPR)()) {
+        await (0, git_1.gitPostComment)('🎉 Translation completed!');
+        return;
+    }
     const title = '🌐 Add LLM Translations';
     await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat());
     const body = (0, utils_1.generatePRBody)(inputFiles, outputFilePaths, languages);

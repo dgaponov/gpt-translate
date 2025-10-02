@@ -83,6 +83,9 @@ export const translateByManual = async (
     throw new Error('Error: outputFiles and language must be same length.')
   }
 
+  await gitSetConfig()
+  const branch = isPR() ? await gitCheckout() : await gitCreateBranch()
+
   const outputFilePaths: string[][] = outputFiles.map((outputFile) => {
     return generateOutputFilePaths(inputFiles, outputFile)
   })
@@ -94,8 +97,12 @@ export const translateByManual = async (
     }),
   )
 
-  await gitSetConfig()
-  const branch = await gitCreateBranch()
+  await gitCommitPush(branch, outputFilePaths.flat())
+  if (isPR()) {
+    await gitPostComment('🎉 Translation completed!')
+    return
+  }
+
   const title = '🌐 Add LLM Translations'
   await gitCommitPush(branch, outputFilePaths.flat())
   const body = generatePRBody(inputFiles, outputFilePaths, languages)
