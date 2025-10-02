@@ -61448,6 +61448,7 @@ const postError = async (message) => {
 exports.postError = postError;
 const isPR = () => {
     const { payload } = github_1.context;
+    console.log('payload', payload);
     return !!payload.issue?.pull_request;
 };
 exports.isPR = isPR;

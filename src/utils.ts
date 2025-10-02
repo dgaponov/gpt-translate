@@ -10,6 +10,7 @@ export const postError = async (message: string) => {
 
 export const isPR = () => {
   const { payload } = context
+  console.log('payload', payload)
   return !!payload.issue?.pull_request
 }
 
