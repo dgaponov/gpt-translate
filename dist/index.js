@@ -61398,7 +61398,7 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
     }));
     if ((0, utils_1.isPR)()) {
         await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat(), true);
-        await (0, git_1.gitPostComment)('🎉 Translation completed!');
+        await (0, git_1.gitPostComment)('🎉 Translation to ' + languages.join(', ') + ' completed!');
         return;
     }
     const title = '🌐 Add LLM Translations';
@@ -61452,6 +61452,7 @@ const postError = async (message) => {
 exports.postError = postError;
 const isPR = () => {
     const { payload } = github_1.context;
+    console.log('payload', payload);
     return !!payload.issue?.pull_request || !!payload.pull_request?.number;
 };
 exports.isPR = isPR;
