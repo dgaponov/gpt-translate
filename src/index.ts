@@ -33,7 +33,7 @@ async function main() {
       break
 
     default:
-      throw new Error('This event is not supported.')
+      throw new Error(`This event ${context.eventName} is not supported.`)
   }
 }
 

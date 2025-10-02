@@ -92029,7 +92029,7 @@ async function main() {
             await (0, translate_1.translateByManual)(inputFiles, outputFiles, languages);
             break;
         default:
-            throw new Error('This event is not supported.');
+            throw new Error(`This event ${github_1.context.eventName} is not supported.`);
     }
 }
 main().catch((e) => (0, core_1.setFailed)(e));
