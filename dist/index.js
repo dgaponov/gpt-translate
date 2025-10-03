@@ -61370,7 +61370,7 @@ const translateByCommand = async (inputFiles, outputFiles, languages) => {
         return;
     }
     const issueNumber = github_1.context.issue.number;
-    const title = '🌐 Add LLM Translations';
+    const title = (0, core_1.getInput)('pullRequestTitle') || '🌐 Add LLM Translations';
     const body = (0, utils_1.generatePRBody)(inputFiles, outputFilePaths, languages, issueNumber);
     await (0, git_1.gitCreatePullRequest)(branch, title, body);
     await (0, git_1.gitPostComment)('🎉Translation PR created!');
@@ -61400,7 +61400,7 @@ const translateByManual = async (inputFiles, outputFiles, languages) => {
         await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat(), true);
         return;
     }
-    const title = '🌐 Add LLM Translations';
+    const title = (0, core_1.getInput)('pullRequestTitle') || '🌐 Add LLM Translations';
     await (0, git_1.gitCommitPush)(branch, outputFilePaths.flat());
     const body = (0, utils_1.generatePRBody)(inputFiles, outputFilePaths, languages);
     await (0, git_1.gitCreatePullRequest)(branch, title, body);

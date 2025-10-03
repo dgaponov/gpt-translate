@@ -37,6 +37,9 @@ inputs:
   commitMessage:
     description: 'Commit message for translations'
     required: false
+  pullRequestTitle:
+    description: 'Pull request title (when creating a pull request)'
+    required: false
   languages:
     description: 'Language to translate to'
     required: false

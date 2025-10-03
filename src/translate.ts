@@ -2,7 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { glob } from 'glob'
 import { context } from '@actions/github'
-import { info } from '@actions/core'
+import { getInput, info } from '@actions/core'
 import { generatePRBody, isPR } from './utils'
 import {
   gitCheckout,
@@ -52,7 +52,7 @@ export const translateByCommand = async (
   }
 
   const issueNumber = context.issue.number
-  const title = '🌐 Add LLM Translations'
+  const title = getInput('pullRequestTitle') || '🌐 Add LLM Translations'
   const body = generatePRBody(
     inputFiles,
     outputFilePaths,
@@ -102,7 +102,7 @@ export const translateByManual = async (
     return
   }
 
-  const title = '🌐 Add LLM Translations'
+  const title = getInput('pullRequestTitle') || '🌐 Add LLM Translations'
   await gitCommitPush(branch, outputFilePaths.flat())
   const body = generatePRBody(inputFiles, outputFilePaths, languages)
   await gitCreatePullRequest(branch, title, body)
