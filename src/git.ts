@@ -65,6 +65,17 @@ export const gitCommitPush = async (
     await exec('git', ['add', filePath])
   }
 
+  // Check if there are staged changes to commit
+  const hasStagedChanges = await exec('git', ['diff', '--cached', '--quiet'], {
+    ignoreReturnCode: true,
+  })
+
+  // git diff --cached --quiet returns 1 if there are changes, 0 if no changes
+  if (hasStagedChanges === 0) {
+    info('No changes to commit, skipping commit and push.')
+    return
+  }
+
   await exec('git', ['commit', '-m', getInput('commitMessage') || `💬Generate LLM translations`])
   if (rebase) {
     await exec('git', ['pull', 'origin', branch, '--rebase'])

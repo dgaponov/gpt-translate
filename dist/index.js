@@ -60913,6 +60913,15 @@ const gitCommitPush = async (branch, filePath, rebase = false) => {
     else {
         await (0, exec_1.exec)('git', ['add', filePath]);
     }
+    // Check if there are staged changes to commit
+    const hasStagedChanges = await (0, exec_1.exec)('git', ['diff', '--cached', '--quiet'], {
+        ignoreReturnCode: true,
+    });
+    // git diff --cached --quiet returns 1 if there are changes, 0 if no changes
+    if (hasStagedChanges === 0) {
+        (0, core_1.info)('No changes to commit, skipping commit and push.');
+        return;
+    }
     await (0, exec_1.exec)('git', ['commit', '-m', (0, core_1.getInput)('commitMessage') || `💬Generate LLM translations`]);
     if (rebase) {
         await (0, exec_1.exec)('git', ['pull', 'origin', branch, '--rebase']);
